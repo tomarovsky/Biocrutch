@@ -1,7 +1,7 @@
 from argparse import ArgumentParser, FileType
-from fasta_opener import Fasta_opener
+from Biotoolsoup.Parsers.fasta_opener import Fasta_opener
 from collections import defaultdict
-from quast_core import Quast_core
+from Biotoolsoup.Statistics.quast_core import Quast_core
 import constants as c
 import pandas as pd
 from os import path
