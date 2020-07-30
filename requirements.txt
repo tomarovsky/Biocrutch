@@ -47,7 +47,7 @@ gpg==1.12.0
 h5py==2.8.0
 html5lib==1.0.1
 HTSeq==0.11.2
-httplib2==0.11.3
+httplib2==0.18.0
 idna==2.6
 imagesize==1.2.0
 iotop==0.6
