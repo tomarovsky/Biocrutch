@@ -3,4 +3,6 @@
 
 Сoncept scripts for bioinformatics.
 
+To use the Biotoolsuop package, you need to add the package path to PYTHONPATH.
+
 Copyright (c) 2020 Andrey Tomarovsky
