@@ -1,9 +1,8 @@
-import os
 import argparse
+import os
 from Pipelines import FilteringPipeline
 from RouToolPa.Collections.General import IdList
 from RouToolPa.Routines.File import check_path
-
 
 parser = argparse.ArgumentParser()
 

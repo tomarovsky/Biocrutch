@@ -52,8 +52,6 @@ class Quast_core:
                 n_count = l
                 return [n_count, l_count]
 
-
-
 if __name__ == "__main__":
     PATH = 'data/sample.fna'
     fasta = Fasta_opener(PATH)

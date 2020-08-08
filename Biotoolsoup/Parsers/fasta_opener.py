@@ -53,6 +53,6 @@ class Fasta_opener:
 
 
 if __name__ == "__main__":
-    data = Fasta_opener('data/sample.fasta.gz')
+    data = Fasta_opener('data/sample.fasta')
     print(data.parse_sequences(5000000))
     print(data.lengths_to_frame())
