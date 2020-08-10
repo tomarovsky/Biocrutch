@@ -14,8 +14,8 @@ def main():
 
         if args.metrics:
             print("Metrics:")
-            SRR_id = SRR_id.split("_")[0]
-            metrics_frame = SRR_metrics(SRR_id)
+            SRR_id_only = SRR_id.split("_")[0]
+            metrics_frame = SRR_metrics(SRR_id_only)
             print(metrics_frame)
             print("Counting reads...")
             lines_count_command = ("wc -l {}".format(SRR_id)).split()
@@ -26,7 +26,7 @@ def main():
             lines_count = lines_count_run.stdout.split()[0]
             reads_count = int(lines_count)/4
             print("Number of reads = {}".format(reads_count))
-            if int(metrics_frame[SRR_id][0].replace(',', '')) == int(reads_count):
+            if int(metrics_frame[SRR_id_only][0].replace(',', '')) == int(reads_count):
                 print("Yes! Reads.fastq downloaded without damage")
             else:
                 print("No. Reads.fastq downloaded with damage")
