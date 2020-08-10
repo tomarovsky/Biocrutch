@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 import subprocess
 from Biotoolsoup.Parsers.url_parsers import SRR_download_link
 from Biotoolsoup.Parsers.url_parsers import SRR_metrics
-
+import os
 
 def main():
     for SRR_id in args.input:
@@ -18,7 +18,11 @@ def main():
             print(metrics_frame)
             print("Counting reads...")
             lines_count_command = ("wc -l {}".format(SRR_id)).split()
-            lines_count = subprocess.call(lines_count_command)
+            lines_count_run = subprocess.run(lines_count_command,
+                                             stdout=subprocess.PIPE,
+                                             stderr=subprocess.PIPE,
+                                             universal_newlines=True)
+            lines_count = lines_count_run.stdout.split()[0]
             print("Number of lines = {}".format(lines_count))
             if (4 * int(metrics_frame[SRR_id][0].replace(',', ''))) == int(lines_count):
                 print("Yes! Reads.fastq downloaded without damage")
