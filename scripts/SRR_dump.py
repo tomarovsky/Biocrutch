@@ -14,10 +14,11 @@ def main():
 
         if args.metrics:
             print("Metrics:")
-            metrics_frame = SRR_metrics(SRR_id)
+            metrics_frame = SRR_metrics(SRR_id.split("_")[0])
             print(metrics_frame)
             print("Counting reads...")
-            reads_count = ("wc -l {} | awk '{$1=$1/4; print}'".format(SRR_id)).split()
+            reads_count_command = ("wc -l {} | awk '{$1=$1/4; print}'".format(SRR_id)).split()
+            reads_count = subprocess.Popen(reads_count_command, shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT).communicate()
             print("Number of reads = {}".format(reads_count))
             if int(metrics_frame[SRR_id][0].replace(',', '')) == int(reads_count):
                 print("Yes! Reads.fastq downloaded without damage")
