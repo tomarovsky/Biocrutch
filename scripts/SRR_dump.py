@@ -18,12 +18,11 @@ def main():
             metrics_frame = SRR_metrics(SRR_id_only)
             print(metrics_frame)
             print("Counting reads...")
-            lines_count_command = ("wc -l {}".format(SRR_id)).split()
-            lines_count_run = subprocess.run(lines_count_command,
-                                             stdout=subprocess.PIPE,
-                                             stderr=subprocess.PIPE,
-                                             universal_newlines=True, shell=True)
-            lines_count = lines_count_run.stdout.split()[0]
+            cat = subprocess.Popen(['cat', SRR_id], stdout=subprocess.PIPE)
+            wc = subprocess.Popen(['parallel', '--pipe', 'wc', '-l'], stdin=cat.stdout, stdout=subprocess.PIPE)
+            awk = subprocess.Popen(['awk', '{s+=$1} END {print s}'], stdin=wc.stdout, stdout=subprocess.PIPE)
+            lines_count = awk.communicate()[0]
+            # print(lines_count.decode("utf-8"))
             reads_count = int(lines_count)/4
             print("Number of reads = {}".format(reads_count))
             if int(metrics_frame[SRR_id_only][0].replace(',', '')) == int(reads_count):
