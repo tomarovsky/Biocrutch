@@ -22,7 +22,7 @@ def main():
             lines_count_run = subprocess.run(lines_count_command,
                                              stdout=subprocess.PIPE,
                                              stderr=subprocess.PIPE,
-                                             universal_newlines=True)
+                                             universal_newlines=True, shell=True)
             lines_count = lines_count_run.stdout.split()[0]
             reads_count = int(lines_count)/4
             print("Number of reads = {}".format(reads_count))
