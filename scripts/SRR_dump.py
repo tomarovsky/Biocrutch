@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 import subprocess
 from Biotoolsoup.Parsers.url_parsers import SRR_download_link
 from Biotoolsoup.Parsers.url_parsers import SRR_metrics
-import os
+
 
 def main():
     for SRR_id in args.input:
@@ -14,7 +14,8 @@ def main():
 
         if args.metrics:
             print("Metrics:")
-            metrics_frame = SRR_metrics(SRR_id.split("_")[0])
+            SRR_id = SRR_id.split("_")[0]
+            metrics_frame = SRR_metrics(SRR_id)
             print(metrics_frame)
             print("Counting reads...")
             lines_count_command = ("wc -l {}".format(SRR_id)).split()
@@ -23,18 +24,19 @@ def main():
                                              stderr=subprocess.PIPE,
                                              universal_newlines=True)
             lines_count = lines_count_run.stdout.split()[0]
-            print("Number of lines = {}".format(lines_count))
-            if (4 * int(metrics_frame[SRR_id][0].replace(',', ''))) == int(lines_count):
+            reads_count = int(lines_count)/4
+            print("Number of reads = {}".format(reads_count))
+            if int(metrics_frame[SRR_id][0].replace(',', '')) == int(reads_count):
                 print("Yes! Reads.fastq downloaded without damage")
             else:
                 print("No. Reads.fastq downloaded with damage")
 
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description="for parsing links and download links using the axel.")
+    parser = ArgumentParser(description="For downloading files.sra, parsing metrics.")
     group_required = parser.add_argument_group('Options')
     group_required.add_argument('-i', '--input', type=str,
-                                nargs='+', help="SRR id or file.fastq if you want metrics")
+                                nargs='+', help="SRR id (or file.fastq if you want metrics)")
     group_required.add_argument('-d', '--download',
                                 action="store_true",
                                 help="downloader SRR id/ids")
