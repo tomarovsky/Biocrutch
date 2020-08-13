@@ -41,7 +41,7 @@ if __name__ == "__main__":
                                 help="downloader SRR id/ids")
     group_required.add_argument('-m', '--metrics',
                                 action="store_true",
-                                help="metrics for SRR_id.fastq")
+                                help="metrics for SRR_id.fastq and read counts for comparison")
     
     args = parser.parse_args()
     main()

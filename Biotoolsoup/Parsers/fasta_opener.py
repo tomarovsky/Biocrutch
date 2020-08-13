@@ -1,26 +1,12 @@
+from Biotoolsoup.Routines.routine_functions import metaopen
 from collections import OrderedDict
 import pandas as pd
-import bz2
-import gzip
+
 
 class Fasta_opener:
     def __init__(self, path):
         self.path = path
         self.lengths = {}
-
-    @staticmethod
-    def metaopen(filename, flags, buffering=None):
-        if not isinstance(filename, str):
-            return filename
-        elif filename[-3:] == ".gz":
-            return gzip.open(filename, flags)
-        elif filename[-4:] == ".bz2":
-            return bz2.open(filename, flags)
-        else:
-            if buffering is not None:
-                return open(filename, flags, buffering=buffering)
-            else:
-                return open(filename, flags)
 
     def parse_sequences(self, buffering=None) -> dict:
         """
@@ -32,7 +18,7 @@ class Fasta_opener:
         data_dict = OrderedDict()
         self.lengths = {}
         header = None
-        f = self.metaopen(self.path, 'rt', buffering)
+        f = metaopen(self.path, 'rt', buffering)
         for line in f:
             if line.startswith('>'):
                 header = line[1:].split(' ')[0]
