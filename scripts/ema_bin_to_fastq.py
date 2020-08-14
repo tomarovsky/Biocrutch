@@ -10,15 +10,9 @@ def main():
             with open("barcodes.txt", 'a') as f:
                 f.write(line[0] + '\n')
             with open(os.path.splitext(file)[0] + "_1.fastq", 'a') as f:
-                f.write(line[1] + '\n')
-                f.write(line[2] + '\n')
-                f.write('+\n')
-                f.write(line[3] + '\n')
+                f.write(line[1] + '\n' + line[2] + '\n' + '+\n' + line[3] + '\n')
             with open(os.path.splitext(file)[0] + "_2.fastq", 'a') as f:
-                f.write(line[1] + '\n')
-                f.write(line[4] + '\n')
-                f.write('+\n')
-                f.write(line[5] + '\n')
+                f.write(line[1] + '\n' + line[4] + '\n' + '+\n' + line[5] + '\n')
 
 
 if __name__ == "__main__":
