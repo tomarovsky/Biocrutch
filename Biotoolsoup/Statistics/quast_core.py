@@ -31,7 +31,7 @@ class Quast_core:
         count = 0
         index_list = self.df[self.df['lengths'] >= min_contig].index
         for i in index_list:
-            count += self.sequences_dict[i].count('G') + self.sequences_dict[i].count('C')
+            count += self.sequences_dict[i].upper().count('G') + self.sequences_dict[i].upper().count('C')
         result = round(count / self.total_length(min_contig) * 100, 2)
         return result
 
