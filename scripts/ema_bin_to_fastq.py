@@ -1,10 +1,11 @@
+from Biotoolsoup.Routines.routine_functions import metaopen
 import argparse
 import os
 
 
 def main():
     for file in args.input:
-        fh = open(file, "r")
+        fh = metaopen(file, "r")
         for line in fh:
             line = line.split()
             with open("barcodes.txt", 'a') as f:
@@ -13,6 +14,7 @@ def main():
                 f.write(line[1] + '\n' + line[2] + '\n' + '+\n' + line[3] + '\n')
             with open(os.path.splitext(file)[0] + "_2.fastq", 'a') as f:
                 f.write(line[1] + '\n' + line[4] + '\n' + '+\n' + line[5] + '\n')
+        fh.close()
 
 
 if __name__ == "__main__":
