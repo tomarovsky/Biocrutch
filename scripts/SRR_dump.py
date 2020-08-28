@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 import subprocess
-from Biotoolsoup.Parsers.url_parsers import SRR_download_link
-from Biotoolsoup.Parsers.url_parsers import SRR_metrics
+from Biocrutch.Parsers.url_parsers import SRR_download_link
+from Biocrutch.Parsers.url_parsers import SRR_metrics
 
 
 def main():

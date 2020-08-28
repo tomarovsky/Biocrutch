@@ -1,4 +1,4 @@
-from Biotoolsoup.Parsers.fasta_opener import Fasta_opener
+from Biocrutch.Parsers.fasta_opener import Fasta_opener
 import pandas as pd
 
 class Quast_core:
