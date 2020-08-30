@@ -5,7 +5,7 @@ import os
 
 def main():
     for file in args.input:
-        fh = metaopen(file, "r")
+        fh = metaopen(file, "r", args.buffering)
         for line in fh:
             line = line.split()
             with open("barcodes.txt", 'a') as f:
@@ -22,6 +22,9 @@ if __name__ == "__main__":
     group_required = parser.add_argument_group('Options')
     group_required.add_argument('-i', '--input', type=str,
                             nargs='+', help="input file ema-bin-xxx")
+    group_required.add_argument('-b', '--buffering',
+                             metavar='INT', type=int, 
+                             default=None, help="Text buffering. Default = None")
     args = parser.parse_args()
     main()
 
