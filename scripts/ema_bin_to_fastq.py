@@ -1,31 +1,24 @@
 from Biocrutch.Routines.routine_functions import metaopen
 import argparse
 from sys import stdin
-import os
 
 
 def main():
     for file in args.input:
         if file == '-':
-            for line in stdin:
-                line = line.split()
-                with open("barcodes.txt", 'a') as f:
-                    f.write(line[0] + '\n')
-                with open("ema-bin-all_1.fastq", 'a') as f:
-                    f.write(line[1] + '\n' + line[2] + '\n' + '+\n' + line[3] + '\n')
-                with open("ema-bin-all_2.fastq", 'a') as f:
-                    f.write(line[1] + '\n' + line[4] + '\n' + '+\n' + line[5] + '\n')
+            with metaopen("barcodes.txt.gz", 'wt') as barcode_fd, metaopen("ema-bin-all_1.fastq.gz", 'wt') as forward_fd, metaopen("ema-bin-all_2.fastq.gz", 'wt') as reverse_fd:
+                for line in stdin:
+                    line = line.split()
+                    barcode_fd.write(line[0] + '\n')
+                    forward_fd.write(line[1] + '\n' + line[2] + '\n' + '+\n' + line[3] + '\n')
+                    reverse_fd.write(line[1] + '\n' + line[4] + '\n' + '+\n' + line[5] + '\n')
         else:
-            fh = metaopen(file, "r", args.buffering)
-            for line in fh:
-                line = line.split()
-                with open("barcodes.txt", 'a') as f:
-                    f.write(line[0] + '\n')
-                with open(os.path.splitext(file)[0] + "_1.fastq", 'a') as f:
-                    f.write(line[1] + '\n' + line[2] + '\n' + '+\n' + line[3] + '\n')
-                with open(os.path.splitext(file)[0] + "_2.fastq", 'a') as f:
-                    f.write(line[1] + '\n' + line[4] + '\n' + '+\n' + line[5] + '\n')
-            fh.close()
+            with metaopen(file, "r", args.buffering) as fd, metaopen("barcodes.txt.gz", 'wt') as barcode_fd, metaopen("ema-bin-all_1.fastq.gz", 'wt') as forward_fd, metaopen("ema-bin-all_2.fastq.gz", 'wt') as reverse_fd:
+                for line in fd:
+                    line = line.split()
+                    barcode_fd.write(line[0] + '\n')
+                    forward_fd.write(line[1] + '\n' + line[2] + '\n' + '+\n' + line[3] + '\n')
+                    reverse_fd.write(line[1] + '\n' + line[4] + '\n' + '+\n' + line[5] + '\n')
 
 
 if __name__ == "__main__":
