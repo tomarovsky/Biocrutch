@@ -5,9 +5,9 @@ import pandas as pd
 
 """Various scripts related to parsing sites"""
 
-def SRR_download_link(SRR_id):
-    """NCBI SRA downloader"""
-    url = "https://trace.ncbi.nlm.nih.gov/Traces/sra/?run={}".format(SRR_id)
+def SRA_download_link(SRA_id):
+    """NCBI SRA data downloader"""
+    url = "https://trace.ncbi.nlm.nih.gov/Traces/sra/?run={}".format(SRA_id)
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'lxml')
     try:
@@ -15,25 +15,25 @@ def SRR_download_link(SRR_id):
             link = tag_a['href']
             return link #first link
     except AttributeError:
-        print("ERROR!!! SRR not found")
+        print("ERROR!!! SRA data not found")
 
-def SRR_metrics(SRR_id):
-    """NCBI SRA metrics checker"""
+def SRA_metrics(SRA_id):
+    """NCBI SRA data metrics checker"""
     dictionary = {}
-    url = "https://www.ncbi.nlm.nih.gov/sra/?term={}".format(SRR_id)
+    url = "https://www.ncbi.nlm.nih.gov/sra/?term={}".format(SRA_id)
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'lxml')
     count = 0
-    for SRR_id in soup.find_all('td', {'align': 'left'}):
+    for SRA_id in soup.find_all('td', {'align': 'left'}):
         count += 3
-        SRR_id = SRR_id.get_text()
+        SRA_id = SRA_id.get_text()
         metrics_lst = []
         metrics = soup.find_all('td', {'align': 'right'})
         for metric in metrics:
             metrics_lst.append(metric.get_text())
         if count == 3:
-            dictionary[SRR_id] = metrics_lst[:3]
+            dictionary[SRA_id] = metrics_lst[:3]
         else:
-            dictionary[SRR_id] = metrics_lst[count - 3 : count]
+            dictionary[SRA_id] = metrics_lst[count - 3 : count]
     df = pd.DataFrame(dictionary)
     return df
