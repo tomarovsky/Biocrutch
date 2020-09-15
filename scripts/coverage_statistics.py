@@ -11,6 +11,26 @@ import pandas as pd
 from sys import stdin
 import argparse
 
+def each_scaffold_stats(scaffold_coverages_dict, l):
+    tmp_lst_to_df = []
+    scaffold_list_of_coverages = sorted(scaffold_coverages_dict[l])
+    if len(scaffold_coverages_dict[l]) is int:
+        index = len(scaffold_coverages_dict[l]) // 2
+        tmp_lst_to_df.append(scaffold_list_of_coverages[index])
+    else:
+        index_1 = int(len(scaffold_coverages_dict[l])/2 - 0.5)
+        value_1 = scaffold_list_of_coverages[index_1]
+        index_2 = int(len(scaffold_coverages_dict[l])/2 - 0.5)
+        value_2 = scaffold_list_of_coverages[index_2]
+        tmp_lst_to_df.append((value_1 + value_2) / 2)
+
+    # average, max, min
+    scaffold_line_counter = len(scaffold_coverages_dict[l])
+    tmp_lst_to_df.append(sum(scaffold_coverages_dict[l])/scaffold_line_counter)
+    tmp_lst_to_df.append(max(scaffold_coverages_dict[l]))
+    tmp_lst_to_df.append(min(scaffold_coverages_dict.pop(l))) #.pop() to clear the dictionary
+    return tmp_lst_to_df
+
 def main():
     #created dataframe for whole genome and scaffolds stats
     df = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
@@ -30,62 +50,19 @@ def main():
         genome_coverage_amount += int(line[2])
 
         # for each scaffold
-        tmp_lst_to_df = []
         scaffold_coverages_dict[line[0]].append(int(line[2]))
-        if len(scaffold_coverages_dict.keys()) > 1:
-            #median
-            scaffold_list_of_coverages = sorted(scaffold_coverages_dict[l])
-            if len(scaffold_coverages_dict[l]) is int:
-                index = len(scaffold_coverages_dict[l]) // 2
-                tmp_lst_to_df.append(scaffold_list_of_coverages[index])
-            else:
-                index_1 = int(len(scaffold_coverages_dict[l])/2 - 0.5)
-                value_1 = scaffold_list_of_coverages[index_1]
-                index_2 = int(len(scaffold_coverages_dict[l])/2 - 0.5)
-                value_2 = scaffold_list_of_coverages[index_2]
-                tmp_lst_to_df.append((value_1 + value_2) / 2)
-
-            # average, max, min
-            df_index = l
-            scaffold_line_counter = len(scaffold_coverages_dict[l])
-
-            tmp_lst_to_df.append(sum(scaffold_coverages_dict[l])/scaffold_line_counter)
-            tmp_lst_to_df.append(max(scaffold_coverages_dict[l]))
-            tmp_lst_to_df.append(min(scaffold_coverages_dict.pop(l))) #.pop() to clear the dictionary
-
-            df.loc[df_index] = tmp_lst_to_df
-            tmp_lst_to_df = [] #to clear the list
+        if len(scaffold_coverages_dict.keys()) > 1: # for each scaffold
+            df.loc[l] = each_scaffold_stats(scaffold_coverages_dict, l)
 
         # # for each stacking window (non-overlapping)
         # if frame_size_counter == args.frame_size:
         #     #median
         #     frame_size_counter = 0
 
-
-
-
         l = line[0]
 
     #for each scaffold
-    scaffold_list_of_coverages = sorted(scaffold_coverages_dict[l])
-    if len(scaffold_coverages_dict[l]) is int:
-        index = int(len(scaffold_coverages_dict[l]) // 2)
-        tmp_lst_to_df.append(scaffold_list_of_coverages[index])
-    else:
-        index_1 = int(len(scaffold_coverages_dict[l])/2 - 0.5)
-        value_1 = scaffold_list_of_coverages[index_1]
-        index_2 = int(len(scaffold_coverages_dict[l])/2 - 0.5)
-        value_2 = scaffold_list_of_coverages[index_2]
-        tmp_lst_to_df.append((value_1 + value_2) / 2)
-
-    df_index = l
-    scaffold_line_counter = len(scaffold_coverages_dict[l])
-
-    tmp_lst_to_df.append(sum(scaffold_coverages_dict[l])/scaffold_line_counter)
-    tmp_lst_to_df.append(max(scaffold_coverages_dict[l]))
-    tmp_lst_to_df.append(min(scaffold_coverages_dict.pop(l))) #.pop() to clear the dictionary
-
-    df.loc[df_index] = tmp_lst_to_df
+    df.loc[l] = each_scaffold_stats(scaffold_coverages_dict, l)
 
     # median for whole genome
     list_of_coverages = sorted(genome_coverages_amounts_dict.keys())
