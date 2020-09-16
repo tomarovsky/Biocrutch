@@ -43,12 +43,21 @@ def frame_stats(coverages_amounts_dict, coverage_amount, line_counter):
     count = 0
 
     for i in list_of_coverages:
-        step = [i] * coverages_amounts_dict[i]
-        for j in step:
-            count += j
-            if count >= half_sum_of_coverage_amount:
-                genome_median = i
-                break
+        count += i * coverages_amounts_dict[i]
+        if count >= half_sum_of_coverage_amount:
+            genome_median = i
+            break
+
+    # or
+
+    # for i in list_of_coverages:
+    #     step = [i] * coverages_amounts_dict[i]
+    #     for j in step:
+    #         count += j
+            # if count >= half_sum_of_coverage_amount:
+            #     genome_median = i
+            #     break
+
 
     return [genome_median,
             round(coverage_amount/line_counter, 2),
@@ -134,8 +143,10 @@ def main():
     print(df_stacking_windows)
 
     if args.output:  # create a report.csv
-        df_whole_and_scaffolds.to_csv(args.output + "_whole_and_scaffolds.csv", encoding='utf-8')
-        df_stacking_windows.to_csv(args.output + "_stacking_windows.csv", encoding='utf-8')
+        df_whole_and_scaffolds.to_csv(
+            args.output + "_whole_and_scaffolds.csv", encoding='utf-8')
+        df_stacking_windows.to_csv(
+            args.output + "_stacking_windows.csv", encoding='utf-8')
 
 
 if __name__ == "__main__":
