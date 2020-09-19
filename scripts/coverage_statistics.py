@@ -58,7 +58,6 @@ def frame_stats(coverages_amounts_dict, coverage_amount, line_counter):
             #     genome_median = i
             #     break
 
-
     return [genome_median,
             round(coverage_amount/line_counter, 2),
             list_of_coverages[-1],
