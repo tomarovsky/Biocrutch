@@ -1,13 +1,13 @@
 # Biocrutch
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Сoncept scripts for bioinformatics.
+## Сoncept scripts for bioinformatics.
 
 ### Content:
 
 - [SRA_toolkit.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/SRA_toolkit.py). The program parses the link from the Sequence Read Archive (SRA) and allows you to download reads in the sra format. The program also checks the integrity of the finished reads by parsing the required metrics of the source files.
 
-- [QuastCore](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/quast_core/main.py). The program is an alternative to the publicly available Quast program. Its main differences are: 
+- [quast_core.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/quast_core.py). The program is an alternative to the publicly available Quast program. Its main differences are: 
     1. adding only the necessary cutoffs.
     2. counting missing N values.
     3. the output of the program is a pandas dataframe used for further analysis.
