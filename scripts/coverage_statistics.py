@@ -42,26 +42,22 @@ def frame_stats(coverages_amounts_dict, coverage_amount, line_counter):
     half_sum_of_coverage_amount = coverage_amount/2
     count = 0
 
-    for i in list_of_coverages:
-        count += i * coverages_amounts_dict[i]
-        if count >= half_sum_of_coverage_amount:
-            genome_median = i
-            break
-
-    # or
-
-    # for i in list_of_coverages:
-    #     step = [i] * coverages_amounts_dict[i]
-    #     for j in step:
-    #         count += j
-            # if count >= half_sum_of_coverage_amount:
-            #     genome_median = i
-            #     break
-
-    return [genome_median,
-            round(coverage_amount/line_counter, 2),
-            list_of_coverages[-1],
-            list_of_coverages[0]]
+    for i in range(len(list_of_coverages)):
+        for j in range(coverages_amounts_dict[list_of_coverages[i]]):
+            count += list_of_coverages[i]
+            if count > half_sum_of_coverage_amount:
+                if j != 0:
+                    genome_median = list_of_coverages[i]
+                    return [genome_median,
+                            round(coverage_amount/line_counter, 2),
+                            list_of_coverages[-1],
+                            list_of_coverages[0]]
+                else:
+                    genome_median = (list_of_coverages[i] + list_of_coverages[i - 1]) / 2
+                    return [genome_median,
+                            round(coverage_amount/line_counter, 2),
+                            list_of_coverages[-1],
+                            list_of_coverages[0]]
 
 
 def main():
@@ -131,11 +127,11 @@ def main():
     df_whole_and_scaffolds.loc['whole_genome'] = frame_stats(
         genome_coverages_amounts_dict, genome_coverage_amount, genome_line_counter)
 
-    df_whole_and_scaffolds[['median', 'max', 'min']] = df_whole_and_scaffolds[[
-        'median', 'max', 'min']].astype(int)
+    df_whole_and_scaffolds[['max', 'min']] = df_whole_and_scaffolds[['max', 'min']].astype(int)
+    df_whole_and_scaffolds['median'] = df_whole_and_scaffolds['median'].astype(str)
     df_whole_and_scaffolds.average = df_whole_and_scaffolds.average.round(2)
-    df_stacking_windows[['median', 'max', 'min']] = df_stacking_windows[[
-        'median', 'max', 'min']].astype(int)
+    df_stacking_windows[['max', 'min']] = df_stacking_windows[['max', 'min']].astype(int)
+    df_stacking_windows['median'] = df_stacking_windows['median'].astype(str)
     df_stacking_windows.average = df_stacking_windows.average.round(2)
 
     print(df_whole_and_scaffolds)
