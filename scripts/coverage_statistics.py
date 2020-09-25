@@ -161,7 +161,7 @@ if __name__ == "__main__":
     group_additional.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
                                   help="input file.bam.gz (don`t use for STDIN)", default=stdin)
     group_additional.add_argument('-f', '--frame-size', type=int,
-                                  help="calculate stats in 100 kbp and 1 Mbp stacking windows", default=5)
+                                  help="calculate stats in 100 kbp and 1 Mbp stacking windows", default=500)
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str,
                                   help='output file prefix')
     args = parser.parse_args()
