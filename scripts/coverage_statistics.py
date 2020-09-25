@@ -17,8 +17,8 @@ def each_scaffold_stats(scaffold_coverages_dict, l):
     tmp_lst_to_df = []
     # median
     scaffold_list_of_coverages = sorted(scaffold_coverages_dict[l])
-    if len(scaffold_coverages_dict[l]) is int:
-        index = len(scaffold_coverages_dict[l]) // 2
+    if len(scaffold_coverages_dict[l]) % 2 != 0:
+        index = int(len(scaffold_coverages_dict[l]) / 2)
         tmp_lst_to_df.append(scaffold_list_of_coverages[index])
     else:
         index_1 = int(len(scaffold_coverages_dict[l])/2 - 0.5)
@@ -36,28 +36,35 @@ def each_scaffold_stats(scaffold_coverages_dict, l):
 
 
 def frame_stats(coverages_amounts_dict, coverage_amount, line_counter):
-    # use to calculate stats for whole genome and stacking windows
+    # use to calculate all stats for whole genome and stacking windows
     # median
-    list_of_coverages = sorted(coverages_amounts_dict.keys())
-    half_sum_of_coverage_amount = coverage_amount/2
+
+    keys_coverages = sorted(coverages_amounts_dict.keys())
+    sum_values_coverages = sum(coverages_amounts_dict.values())
+    half_sum_values_coverages = sum_values_coverages / 2
     count = 0
 
-    for i in range(len(list_of_coverages)):
-        for j in range(coverages_amounts_dict[list_of_coverages[i]]):
-            count += list_of_coverages[i]
-            if count > half_sum_of_coverage_amount:
-                if j != 0:
-                    genome_median = list_of_coverages[i]
-                    return [genome_median,
-                            round(coverage_amount/line_counter, 2),
-                            list_of_coverages[-1],
-                            list_of_coverages[0]]
-                else:
-                    genome_median = (list_of_coverages[i] + list_of_coverages[i - 1]) / 2
-                    return [genome_median,
-                            round(coverage_amount/line_counter, 2),
-                            list_of_coverages[-1],
-                            list_of_coverages[0]]
+    if sum_values_coverages % 2 != 0:
+        for i in range(len(keys_coverages)):
+            count += coverages_amounts_dict[keys_coverages[i]]
+            if count >= half_sum_values_coverages:
+                genome_median = keys_coverages[i]
+                return [genome_median, round(coverage_amount/line_counter, 2),
+                        keys_coverages[-1],
+                        keys_coverages[0]]
+    else:
+        half_sum_values_coverages = int(half_sum_values_coverages)
+        for i in range(len(keys_coverages)):
+            count += coverages_amounts_dict[keys_coverages[i]]
+            if count == half_sum_values_coverages:
+                genome_median = (keys_coverages[i] + keys_coverages[i+1])/2
+                return [genome_median, round(coverage_amount/line_counter, 2),
+                        keys_coverages[-1], keys_coverages[0]]
+            elif count > half_sum_values_coverages:
+                genome_median = keys_coverages[i]
+                return [genome_median, round(coverage_amount/line_counter, 2),
+                        keys_coverages[-1],
+                        keys_coverages[0]]
 
 
 def main():
@@ -127,10 +134,13 @@ def main():
     df_whole_and_scaffolds.loc['whole_genome'] = frame_stats(
         genome_coverages_amounts_dict, genome_coverage_amount, genome_line_counter)
 
-    df_whole_and_scaffolds[['max', 'min']] = df_whole_and_scaffolds[['max', 'min']].astype(int)
-    df_whole_and_scaffolds['median'] = df_whole_and_scaffolds['median'].astype(str)
+    df_whole_and_scaffolds[['max', 'min']
+                           ] = df_whole_and_scaffolds[['max', 'min']].astype(int)
+    df_whole_and_scaffolds['median'] = df_whole_and_scaffolds['median'].astype(
+        str)
     df_whole_and_scaffolds.average = df_whole_and_scaffolds.average.round(2)
-    df_stacking_windows[['max', 'min']] = df_stacking_windows[['max', 'min']].astype(int)
+    df_stacking_windows[['max', 'min']
+                        ] = df_stacking_windows[['max', 'min']].astype(int)
     df_stacking_windows['median'] = df_stacking_windows['median'].astype(str)
     df_stacking_windows.average = df_stacking_windows.average.round(2)
 
@@ -151,7 +161,7 @@ if __name__ == "__main__":
     group_additional.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
                                   help="input file.bam.gz (don`t use for STDIN)", default=stdin)
     group_additional.add_argument('-f', '--frame-size', type=int,
-                                  help="calculate stats in 100 kbp and 1 Mbp stacking windows", default=500)
+                                  help="calculate stats in 100 kbp and 1 Mbp stacking windows", default=5)
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str,
                                   help='output file prefix')
     args = parser.parse_args()
