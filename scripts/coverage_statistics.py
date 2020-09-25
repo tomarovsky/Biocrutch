@@ -67,6 +67,14 @@ def frame_stats(coverages_amounts_dict, coverage_amount, line_counter):
                         keys_coverages[0]]
 
 
+def pretty_printer(dataframe):
+    # print and retyping for values
+    dataframe[['max', 'min']] = dataframe[['max', 'min']].astype(int)
+    dataframe['median'] = dataframe['median'].astype(str)
+    dataframe.average = dataframe.average.round(2)
+    print (dataframe)
+    return dataframe
+
 def main():
     # created dataframe for whole genome and scaffolds stats
     df_whole_and_scaffolds = pd.DataFrame(
@@ -128,24 +136,12 @@ def main():
         l = line[0]
 
     # for each scaffold
-    df_whole_and_scaffolds.loc[l] = each_scaffold_stats(
-        scaffold_coverages_dict, l)
+    df_whole_and_scaffolds.loc[l] = each_scaffold_stats(scaffold_coverages_dict, l)
     # whole genome stats to df
-    df_whole_and_scaffolds.loc['whole_genome'] = frame_stats(
-        genome_coverages_amounts_dict, genome_coverage_amount, genome_line_counter)
+    df_whole_and_scaffolds.loc['whole_genome'] = frame_stats(genome_coverages_amounts_dict, genome_coverage_amount, genome_line_counter)
 
-    df_whole_and_scaffolds[['max', 'min']
-                           ] = df_whole_and_scaffolds[['max', 'min']].astype(int)
-    df_whole_and_scaffolds['median'] = df_whole_and_scaffolds['median'].astype(
-        str)
-    df_whole_and_scaffolds.average = df_whole_and_scaffolds.average.round(2)
-    df_stacking_windows[['max', 'min']
-                        ] = df_stacking_windows[['max', 'min']].astype(int)
-    df_stacking_windows['median'] = df_stacking_windows['median'].astype(str)
-    df_stacking_windows.average = df_stacking_windows.average.round(2)
-
-    print(df_whole_and_scaffolds)
-    print(df_stacking_windows)
+    df_whole_and_scaffolds = pretty_printer(df_whole_and_scaffolds)
+    df_stacking_windows = pretty_printer(df_stacking_windows)
 
     if args.output:  # create a report.csv
         df_whole_and_scaffolds.to_csv(
