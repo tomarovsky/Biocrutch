@@ -7,8 +7,8 @@ Header-less tab-separated input file with 3 columns: scaffold_id, position(1-bas
 '''
 from Biocrutch.Routines.routine_functions import metaopen
 from collections import Counter, OrderedDict, defaultdict
-import pandas as pd
 from sys import stdin
+import pandas as pd
 import argparse
 
 
@@ -38,7 +38,6 @@ def each_scaffold_stats(scaffold_coverages_dict, l):
 def frame_stats(coverages_amounts_dict, coverage_amount, line_counter):
     # use to calculate all stats for whole genome and stacking windows
     # median
-
     keys_coverages = sorted(coverages_amounts_dict.keys())
     sum_values_coverages = sum(coverages_amounts_dict.values())
     half_sum_values_coverages = sum_values_coverages / 2
@@ -74,6 +73,7 @@ def pretty_printer(dataframe):
     dataframe.average = dataframe.average.round(2)
     print (dataframe)
     return dataframe
+
 
 def main():
     # created dataframe for whole genome and scaffolds stats
@@ -135,6 +135,7 @@ def main():
 
         l = line[0]
 
+    # processing residual data after a cycle
     # for each scaffold
     df_whole_and_scaffolds.loc[l] = each_scaffold_stats(scaffold_coverages_dict, l)
     # whole genome stats to df
@@ -144,10 +145,8 @@ def main():
     df_stacking_windows = pretty_printer(df_stacking_windows)
 
     if args.output:  # create a report.csv
-        df_whole_and_scaffolds.to_csv(
-            args.output + "_whole_and_scaffolds.csv", encoding='utf-8')
-        df_stacking_windows.to_csv(
-            args.output + "_stacking_windows.csv", encoding='utf-8')
+        df_whole_and_scaffolds.to_csv(args.output + "_whole_and_scaffolds.csv", encoding='utf-8')
+        df_stacking_windows.to_csv(args.output + "_stacking_windows.csv", encoding='utf-8')
 
 
 if __name__ == "__main__":
