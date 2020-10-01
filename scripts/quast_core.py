@@ -40,10 +40,7 @@ def main():
     if args.print: #print to terminal
         print(df.T.astype(str))
     if args.output: #create a report.csv
-        if args.output == '.':
-            df.to_csv ("report_" + path.splitext(path.basename(file))[0] + ".csv", encoding = 'utf-8')
-        else:
-            df.to_csv (args.output + "report_" + path.splitext(path.basename(file))[0] + ".csv", encoding = 'utf-8')
+        df.to_csv (args.output + ".csv", encoding = 'utf-8')
 
     return df
 
@@ -66,7 +63,7 @@ if __name__ == "__main__":
                              metavar='INT', type=int, nargs='+',
                              default=[50, 75], help=c.HELP_NL_STATISTICS)
     group_additional.add_argument('-o','--output',
-                             metavar='PATH', type=str,
+                             type=str,
                              help=c.HELP_OUTPUT)
     group_additional.add_argument('-p','--print',
                              type=lambda x: (str(x).lower() in ['true', 'yes', '1']),

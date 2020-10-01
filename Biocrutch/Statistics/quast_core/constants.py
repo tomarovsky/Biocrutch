@@ -21,7 +21,7 @@ HELP_GC_CONTENT = ('The parameter sets the values for GC content.'
                'The number of parameters is any.')
 
 # Input/Output
-HELP_OUTPUT = ('Add output report file. The directory must exist.')
+HELP_OUTPUT = ('Add output file prefix. The output file will be created in the current directory.')
 HELP_INPUT = ('Input files. One or more files to run the program.'
               'The script also accepts files with the extension .gz, .bz2')
 
