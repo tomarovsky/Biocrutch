@@ -40,7 +40,10 @@ def main():
     if args.print: #print to terminal
         print(df.T.astype(str))
     if args.output: #create a report.csv
-        df.to_csv (args.output + "report_" + path.splitext(path.basename(file))[0] + ".csv", encoding = 'utf-8')
+        if args.output == '.':
+            df.to_csv ("report_" + path.splitext(path.basename(file))[0] + ".csv", encoding = 'utf-8')
+        else:
+            df.to_csv (args.output + "report_" + path.splitext(path.basename(file))[0] + ".csv", encoding = 'utf-8')
 
     return df
 
