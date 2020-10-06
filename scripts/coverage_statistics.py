@@ -151,7 +151,7 @@ def main():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="script for calculating median, average, maximum and minimum coverage in file.bam. Report to files.csv")
+        description="script for calculating median, average, maximum and minimum coverage in file.tab. Report to files.csv")
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
                                   help="input file.bam.gz (don`t use for STDIN)", default=stdin)
