@@ -14,6 +14,7 @@ import argparse
 
 def each_scaffold_stats(scaffold_coverages_dict, l):
     # use to calculate stats for each scaffold
+    print ('each_scaffold_stats for', l , 'in progress')
     tmp_lst_to_df = []
     # median
     scaffold_list_of_coverages = sorted(scaffold_coverages_dict[l])
@@ -37,6 +38,7 @@ def each_scaffold_stats(scaffold_coverages_dict, l):
 
 def frame_stats(coverages_amounts_dict, coverage_amount, line_counter):
     # use to calculate all stats for whole genome and stacking windows
+    print ('frame_stats in progress')
     # median
     keys_coverages = sorted(coverages_amounts_dict.keys())
     sum_values_coverages = sum(coverages_amounts_dict.values())
