@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from argparse import ArgumentParser
 import subprocess
 from Biocrutch.Parsers.url_parsers import SRA_download_link

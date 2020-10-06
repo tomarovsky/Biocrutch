@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from Biocrutch.Routines.routine_functions import metaopen
 import argparse
 from sys import stdin

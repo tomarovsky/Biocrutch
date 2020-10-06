@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from argparse import ArgumentParser, FileType
 from Biocrutch.Parsers.fasta_opener import Fasta_opener
 from collections import defaultdict
