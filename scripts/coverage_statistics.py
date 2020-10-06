@@ -147,8 +147,10 @@ def main():
     df_stacking_windows = pretty_printer(df_stacking_windows)
 
     if args.output:  # create a report.csv
-        df_whole_and_scaffolds.to_csv(args.output + "_whole_and_scaffolds.csv", encoding='utf-8')
-        df_stacking_windows.to_csv(args.output + "_stacking_windows.csv", encoding='utf-8')
+        # df_whole_and_scaffolds['index1'] = df_whole_and_scaffolds.index
+        # df_stacking_windows['index1'] = df_stacking_windows.index
+        df_whole_and_scaffolds.rename_axis('scaffold').reset_index().to_csv(args.output + "_whole_and_scaffolds.csv", encoding='utf-8', sep='\t')
+        df_stacking_windows.rename_axis('frame').reset_index().to_csv(args.output + "_stacking_windows.csv", encoding='utf-8', sep='\t')
 
 
 if __name__ == "__main__":
