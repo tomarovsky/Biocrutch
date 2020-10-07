@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+__author__ = 'tomarovsky'
 '''
 Script for calculating median, average, maximum and minimum coverage.
 a. calculate stats for whole genome

@@ -1,3 +1,4 @@
+__author__ = 'tomarovsky'
 from Biocrutch.Parsers.fasta_opener import Fasta_opener
 import pandas as pd
 

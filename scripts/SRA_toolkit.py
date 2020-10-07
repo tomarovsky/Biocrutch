@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+__author__ = 'tomarovsky'
 from argparse import ArgumentParser
 import subprocess
 from Biocrutch.Parsers.url_parsers import SRA_download_link

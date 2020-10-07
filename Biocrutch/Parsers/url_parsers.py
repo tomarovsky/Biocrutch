@@ -1,3 +1,4 @@
+__author__ = 'tomarovsky'
 from bs4 import BeautifulSoup
 import requests
 import lxml

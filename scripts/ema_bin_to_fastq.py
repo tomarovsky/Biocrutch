@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+__author__ = 'tomarovsky'
 from Biocrutch.Routines.routine_functions import metaopen
 import argparse
 from sys import stdin

@@ -1,3 +1,4 @@
+__author__ = 'tomarovsky'
 import bz2
 import gzip
 

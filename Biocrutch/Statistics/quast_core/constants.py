@@ -1,3 +1,4 @@
+__author__ = 'tomarovsky'
 # Program descripton
 DESCRIPTION = ('This program annotates sequence.fasta. '
                'Provides various features.')
