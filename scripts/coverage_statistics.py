@@ -87,7 +87,7 @@ def main():
 
     if args.output: # create a report.csv
         df_scaffolds.rename_axis('scaffold').reset_index().to_csv(args.output + "_scaffolds_stats.csv", encoding='utf-8', sep='\t')
-        df_frames.rename_axis('frame').reset_index().to_csv(args.output + "_windows_stats.csv", encoding='utf-8', sep='\t')
+        df_frames.rename_axis('frame').reset_index().to_csv(args.output + '_' + str(args.frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t')
         df_whole_genome.rename_axis('genome').reset_index().to_csv(args.output + "_whole_genome_stats.csv", encoding='utf-8', sep='\t')
 
 
