@@ -38,7 +38,7 @@ def each_scaffold_stats(scaffold_coverages_dict: defaultdict, scaffold_name) -> 
     return tmp_lst_to_df
 
 
-def frame_stats(coverages_amounts_dict, coverage_amount, line_counter) -> list:
+def frame_stats(coverages_amounts_dict: Counter, coverage_amount: int, line_counter: int) -> list:
     # use to calculate all stats for whole genome and stacking windows
     print ('frame_stats in progress')
     # median
