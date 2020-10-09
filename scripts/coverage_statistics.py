@@ -72,9 +72,12 @@ def main():
     overlapping_frame_line_counter = 0
     scaffold_coverages_dict = Counter()
 
+    previous_scaffold_name = None
+
     for line in args.input:
         # for whole genome
         line = line.rstrip().split('\t')
+
         genome_line_counter += 1
         frame_line_counter += 1
         frame_coverages_amounts_dict[int(line[2])] += 1
@@ -85,24 +88,21 @@ def main():
             overlapping_frame_coverages_amounts_dict[int(line[2])] += 1
 
         # for each scaffold
-        try:
-            if previous_scaffold_name != line[0]:
-                df_scaffolds.loc[previous_scaffold_name] = window_stats(scaffold_coverages_dict)
-                scaffold_coverages_dict.clear()
-        except UnboundLocalError:
-            pass
+        if previous_scaffold_name != line[0] and previous_scaffold_name != None:
+            df_scaffolds.loc[previous_scaffold_name] = window_stats(scaffold_coverages_dict)
+            scaffold_coverages_dict.clear()
 
         # for window (non-overlapping)
         if frame_line_counter == args.frame_size:
             frame_id += 1
-            df_frames.loc['frame_'+str(frame_id)] = window_stats(frame_coverages_amounts_dict)
+            df_frames.loc['frame_'+ str(frame_id)] = window_stats(frame_coverages_amounts_dict)
             frame_coverages_amounts_dict.clear()
             frame_line_counter = 0
 
         # for window (overlapping)
         elif overlapping_frame_line_counter == args.frame_size:
             overlapping_frame_id += 1
-            df_frames.loc['frame_'+str(overlapping_frame_id)] = window_stats(overlapping_frame_coverages_amounts_dict)
+            df_frames.loc['frame_'+ str(overlapping_frame_id)] = window_stats(overlapping_frame_coverages_amounts_dict)
             overlapping_frame_coverages_amounts_dict.clear()
             overlapping_frame_line_counter = 0
 
@@ -113,9 +113,12 @@ def main():
     df_whole_genome.loc['whole_genome'] = window_stats(genome_coverages_amounts_dict)
 
     #for print dataframe to terminal
-    df_scaffolds = pretty_printer(df_scaffolds)
-    df_frames = pretty_printer(df_frames)
-    df_whole_genome = pretty_printer(df_whole_genome)
+    # df_scaffolds = pretty_printer(df_scaffolds)
+    # df_frames = pretty_printer(df_frames)
+    # df_whole_genome = pretty_printer(df_whole_genome)
+    print (df_scaffolds)
+    print (df_frames)
+    print (df_whole_genome)
 
     if args.output: # create a report.csv
         df_scaffolds.rename_axis('scaffold').reset_index().to_csv(args.output + "_scaffolds_stats.csv", encoding='utf-8', sep='\t')
