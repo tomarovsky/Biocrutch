@@ -14,31 +14,31 @@ import pandas as pd
 import argparse
 
 
-def each_scaffold_stats(scaffold_coverages_dict, l):
+def each_scaffold_stats(scaffold_coverages_dict: defaultdict, scaffold_name) -> list:
     # use to calculate stats for each scaffold
-    print ('each_scaffold_stats for', l , 'in progress')
+    print ('each_scaffold_stats for', scaffold_name , 'in progress')
     tmp_lst_to_df = []
     # median
-    scaffold_list_of_coverages = sorted(scaffold_coverages_dict[l])
-    if len(scaffold_coverages_dict[l]) % 2 != 0:
-        index = int(len(scaffold_coverages_dict[l]) / 2)
+    scaffold_list_of_coverages = sorted(scaffold_coverages_dict[scaffold_name])
+    if len(scaffold_coverages_dict[scaffold_name]) % 2 != 0:
+        index = int(len(scaffold_coverages_dict[scaffold_name]) / 2)
         tmp_lst_to_df.append(scaffold_list_of_coverages[index])
     else:
-        index_1 = int(len(scaffold_coverages_dict[l])/2 - 0.5)
+        index_1 = int(len(scaffold_coverages_dict[scaffold_name])/2 - 0.5)
         value_1 = scaffold_list_of_coverages[index_1]
-        index_2 = int(len(scaffold_coverages_dict[l])/2 - 0.5)
+        index_2 = int(len(scaffold_coverages_dict[scaffold_name])/2 - 0.5)
         value_2 = scaffold_list_of_coverages[index_2]
         tmp_lst_to_df.append((value_1 + value_2) / 2)
     # average, max, min
-    scaffold_line_counter = len(scaffold_coverages_dict[l])
-    tmp_lst_to_df.append(sum(scaffold_coverages_dict[l])/scaffold_line_counter)
-    tmp_lst_to_df.append(max(scaffold_coverages_dict[l]))
+    scaffold_line_counter = len(scaffold_coverages_dict[scaffold_name])
+    tmp_lst_to_df.append(sum(scaffold_coverages_dict[scaffold_name])/scaffold_line_counter)
+    tmp_lst_to_df.append(max(scaffold_coverages_dict[scaffold_name]))
     # .pop() to clear the dictionary
-    tmp_lst_to_df.append(min(scaffold_coverages_dict.pop(l)))
+    tmp_lst_to_df.append(min(scaffold_coverages_dict.pop(scaffold_name)))
     return tmp_lst_to_df
 
 
-def frame_stats(coverages_amounts_dict, coverage_amount, line_counter):
+def frame_stats(coverages_amounts_dict, coverage_amount, line_counter) -> list:
     # use to calculate all stats for whole genome and stacking windows
     print ('frame_stats in progress')
     # median
@@ -81,10 +81,8 @@ def pretty_printer(dataframe):
 
 def main():
     # created dataframe for whole genome and scaffolds stats
-    df_whole_and_scaffolds = pd.DataFrame(
-        columns=['median', 'average', 'max', 'min'])
-    df_stacking_windows = pd.DataFrame(
-        columns=['median', 'average', 'max', 'min'])
+    df_whole_and_scaffolds = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
+    df_stacking_windows = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
 
     genome_coverages_amounts_dict = Counter()
     genome_coverage_amount = 0
@@ -101,9 +99,10 @@ def main():
 
     for line in args.input:
         # for whole genome
+        line = line.rstrip().split('\t')
+
         genome_line_counter += 1
         frame_line_counter += 1
-        line = line.rstrip().split('\t')
         frame_coverages_amounts_dict[int(line[2])] += 1
         frame_coverage_amount += int(line[2])
         genome_coverages_amounts_dict[int(line[2])] += 1
@@ -116,14 +115,12 @@ def main():
         # for each scaffold
         scaffold_coverages_dict[line[0]].append(int(line[2]))
         if len(scaffold_coverages_dict.keys()) > 1:  # for each scaffold
-            df_whole_and_scaffolds.loc[l] = each_scaffold_stats(
-                scaffold_coverages_dict, l)
+            df_whole_and_scaffolds.loc[scaffold_name] = each_scaffold_stats(scaffold_coverages_dict, scaffold_name)
 
         # for each stacking window (non-overlapping)
         if frame_line_counter == args.frame_size:
             frame_id += 1
-            df_stacking_windows.loc['frame_'+str(frame_id)] = frame_stats(
-                frame_coverages_amounts_dict, frame_coverage_amount, frame_line_counter)
+            df_stacking_windows.loc['frame_'+str(frame_id)] = frame_stats(frame_coverages_amounts_dict, frame_coverage_amount, frame_line_counter)
             frame_coverages_amounts_dict = Counter()
             frame_coverage_amount = 0
             frame_line_counter = 0
@@ -137,11 +134,11 @@ def main():
             overlapping_frame_coverage_amount = 0
             overlapping_frame_line_counter = 0
 
-        l = line[0]
+        scaffold_name = line[0]
 
     # processing residual data after a cycle
     # for each scaffold
-    df_whole_and_scaffolds.loc[l] = each_scaffold_stats(scaffold_coverages_dict, l)
+    df_whole_and_scaffolds.loc[scaffold_name] = each_scaffold_stats(scaffold_coverages_dict, scaffold_name)
     # whole genome stats to df
     df_whole_and_scaffolds.loc['whole_genome'] = frame_stats(genome_coverages_amounts_dict, genome_coverage_amount, genome_line_counter)
 
