@@ -29,31 +29,29 @@ def window_stats(coverages_amounts_dict: Counter) -> list:
             count += coverages_amounts_dict[keys_coverages[i]]
             if count >= half_sum_values_coverages:
                 genome_median = keys_coverages[i]
-                return [genome_median, round(sum_of_coverages/sum(coverages_amounts_dict.values()), 2),
+                metrics = [genome_median, round(sum_of_coverages/sum(coverages_amounts_dict.values()), 2),
                         keys_coverages[-1],
                         keys_coverages[0]]
+                print('window_stats: ', metrics)
+                return metrics
     else:
         half_sum_values_coverages = int(half_sum_values_coverages)
         for i in range(len(keys_coverages)):
             count += coverages_amounts_dict[keys_coverages[i]]
             if count == half_sum_values_coverages:
                 genome_median = (keys_coverages[i] + keys_coverages[i+1])/2
-                return [genome_median, round(sum_of_coverages/sum(coverages_amounts_dict.values()), 2),
+                metrics = [genome_median, round(sum_of_coverages/sum(coverages_amounts_dict.values()), 2),
                         keys_coverages[-1], keys_coverages[0]]
+                print('window_stats: ', metrics)
+                return metrics
             elif count > half_sum_values_coverages:
                 genome_median = keys_coverages[i]
-                return [genome_median, round(sum_of_coverages/sum(coverages_amounts_dict.values()), 2),
+                metrics = [genome_median, round(sum_of_coverages/sum(coverages_amounts_dict.values()), 2),
                         keys_coverages[-1],
                         keys_coverages[0]]
+                print('window_stats: ', metrics)
+                return metrics
 
-
-def pretty_printer(dataframe):
-    # print and retyping for values
-    dataframe[['max', 'min']] = dataframe[['max', 'min']].astype(int)
-    dataframe['median'] = dataframe['median'].astype(str)
-    dataframe.average = dataframe.average.round(3)
-    print (dataframe)
-    return dataframe
 
 
 def main():
@@ -88,7 +86,7 @@ def main():
             frame_coverages_amounts_dict[int(line[2])] += 1
         scaffold_coverages_dict[int(line[2])] += 1
         genome_coverages_amounts_dict[int(line[2])] += 1
-        if genome_line_counter >= int(args.frame_size / 2): # !!!!!!!add args
+        if genome_line_counter >= int(args.frame_size / 2):
             overlapping_frame_line_counter += 1
             overlapping_frame_coverages_amounts_dict[int(line[2])] += 1
 
@@ -120,9 +118,6 @@ def main():
     df_whole_genome.loc['whole_genome'] = window_stats(genome_coverages_amounts_dict)
 
     #for print dataframe to terminal
-    # df_scaffolds = pretty_printer(df_scaffolds)
-    # df_frames = pretty_printer(df_frames)
-    # df_whole_genome = pretty_printer(df_whole_genome)
     print (df_scaffolds)
     print (df_frames)
     print (df_whole_genome)
