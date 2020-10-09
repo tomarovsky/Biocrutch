@@ -8,9 +8,7 @@ def count_window_stats(coverages_amounts_dict: Counter) -> list:
     Works with a Counter from collections packege.
     Output is a list with metrics.
     '''
-    sum_of_coverages = 0
-    for key, value in coverages_amounts_dict.items():
-        sum_of_coverages += key * value
+    sum_of_coverages = sum(key*value for key, value in coverages_amounts_dict.items())
 
     keys_coverages = sorted(coverages_amounts_dict.keys())
     sum_values_coverages = sum(coverages_amounts_dict.values())

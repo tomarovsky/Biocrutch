@@ -37,9 +37,6 @@ def main():
         # for whole genome
         line = line.rstrip().split('\t')
 
-        genome_line_counter += 1
-        scaffold_coverages_dict[int(line[2])] += 1
-        genome_coverages_amounts_dict[int(line[2])] += 1
 
         if genome_line_counter > int(args.frame_size / 2):
             overlapping_frame_line_counter += 1
@@ -74,6 +71,9 @@ def main():
             overlapping_frame_coverages_amounts_dict.clear()
             overlapping_frame_line_counter = 0
 
+        genome_line_counter += 1
+        scaffold_coverages_dict[int(line[2])] += 1
+        genome_coverages_amounts_dict[int(line[2])] += 1
         previous_scaffold_name = line[0]
 
     # processing residual data after a cycle for each scaffold and whole genome
