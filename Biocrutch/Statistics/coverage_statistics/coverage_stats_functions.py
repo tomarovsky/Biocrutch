@@ -1,3 +1,4 @@
+__author__ = 'tomarovsky'
 from collections import Counter
 
 
