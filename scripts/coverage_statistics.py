@@ -51,7 +51,7 @@ def pretty_printer(dataframe):
     # print and retyping for values
     dataframe[['max', 'min']] = dataframe[['max', 'min']].astype(int)
     dataframe['median'] = dataframe['median'].astype(str)
-    dataframe.average = dataframe.average.round(2)
+    dataframe.average = dataframe.average.round(3)
     print (dataframe)
     return dataframe
 
@@ -59,7 +59,7 @@ def pretty_printer(dataframe):
 def main():
     # created dataframe for whole genome and scaffolds stats
     df_scaffolds = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
-    df_frames = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
+    df_frames = pd.DataFrame(columns=['scaffold', 'median', 'average', 'max', 'min'])
     df_whole_genome = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
 
     genome_coverages_amounts_dict = Counter()
@@ -79,8 +79,13 @@ def main():
         line = line.rstrip().split('\t')
 
         genome_line_counter += 1
-        frame_line_counter += 1
-        frame_coverages_amounts_dict[int(line[2])] += 1
+        if previous_scaffold_name == line[0] or previous_scaffold_name == None:
+            frame_line_counter += 1
+            frame_coverages_amounts_dict[int(line[2])] += 1
+        else:
+            frame_line_counter = 1
+            frame_coverages_amounts_dict.clear()
+            frame_coverages_amounts_dict[int(line[2])] += 1
         scaffold_coverages_dict[int(line[2])] += 1
         genome_coverages_amounts_dict[int(line[2])] += 1
         if genome_line_counter >= int(args.frame_size / 2): # !!!!!!!add args
@@ -95,14 +100,16 @@ def main():
         # for window (non-overlapping)
         if frame_line_counter == args.frame_size:
             frame_id += 1
-            df_frames.loc['frame_'+ str(frame_id)] = window_stats(frame_coverages_amounts_dict)
+            metrics = [previous_scaffold_name] + window_stats(frame_coverages_amounts_dict)
+            df_frames.loc['frame_'+ str(frame_id)] = metrics
             frame_coverages_amounts_dict.clear()
             frame_line_counter = 0
 
         # for window (overlapping)
         elif overlapping_frame_line_counter == args.frame_size:
             overlapping_frame_id += 1
-            df_frames.loc['frame_'+ str(overlapping_frame_id)] = window_stats(overlapping_frame_coverages_amounts_dict)
+            metrics = [previous_scaffold_name] + window_stats(overlapping_frame_coverages_amounts_dict)
+            df_frames.loc['frame_'+ str(overlapping_frame_id)] = metrics
             overlapping_frame_coverages_amounts_dict.clear()
             overlapping_frame_line_counter = 0
 
