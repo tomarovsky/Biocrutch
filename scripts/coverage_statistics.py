@@ -8,15 +8,14 @@ c. calculate stats in 100 kbp and 1 Mbp stacking windows
 Header-less tab-separated input file with 3 columns: scaffold_id, position(1-based), coverage.
 '''
 from Biocrutch.Routines.routine_functions import metaopen
-from collections import Counter, OrderedDict, defaultdict
+from collections import Counter
 from sys import stdin
 import pandas as pd
 import argparse
 
 
-def each_scaffold_stats(scaffold_coverages_dict: defaultdict, scaffold_name) -> list:
+def scaffold_stats(scaffold_coverages_dict: defaultdict, scaffold_name: str) -> list:
     # use to calculate stats for each scaffold
-    print ('each_scaffold_stats for', scaffold_name , 'in progress')
     tmp_lst_to_df = []
     # median
     scaffold_list_of_coverages = sorted(scaffold_coverages_dict[scaffold_name])
@@ -38,9 +37,12 @@ def each_scaffold_stats(scaffold_coverages_dict: defaultdict, scaffold_name) -> 
     return tmp_lst_to_df
 
 
-def frame_stats(coverages_amounts_dict: Counter, coverage_amount: int, line_counter: int) -> list:
-    # use to calculate all stats for whole genome and stacking windows
-    print ('frame_stats in progress')
+def frame_stats(coverages_amounts_dict: Counter, line_counter: int) -> list:
+    # use to calculate stats for stacking windows and whole genome
+    sum_of_coverages = 0
+    for key, value in coverages_amounts_dict.items():
+        sum_of_coverages += key * value
+
     # median
     keys_coverages = sorted(coverages_amounts_dict.keys())
     sum_values_coverages = sum(coverages_amounts_dict.values())
@@ -52,7 +54,7 @@ def frame_stats(coverages_amounts_dict: Counter, coverage_amount: int, line_coun
             count += coverages_amounts_dict[keys_coverages[i]]
             if count >= half_sum_values_coverages:
                 genome_median = keys_coverages[i]
-                return [genome_median, round(coverage_amount/line_counter, 2),
+                return [genome_median, round(sum_of_coverages/line_counter, 2),
                         keys_coverages[-1],
                         keys_coverages[0]]
     else:
@@ -61,11 +63,44 @@ def frame_stats(coverages_amounts_dict: Counter, coverage_amount: int, line_coun
             count += coverages_amounts_dict[keys_coverages[i]]
             if count == half_sum_values_coverages:
                 genome_median = (keys_coverages[i] + keys_coverages[i+1])/2
-                return [genome_median, round(coverage_amount/line_counter, 2),
+                return [genome_median, round(sum_of_coverages/line_counter, 2),
                         keys_coverages[-1], keys_coverages[0]]
             elif count > half_sum_values_coverages:
                 genome_median = keys_coverages[i]
-                return [genome_median, round(coverage_amount/line_counter, 2),
+                return [genome_median, round(sum_of_coverages/line_counter, 2),
+                        keys_coverages[-1],
+                        keys_coverages[0]]
+
+
+def window_stats(coverages_amounts_dict: Counter) -> list:
+    sum_of_coverages = 0
+    for key, value in coverages_amounts_dict.items():
+        sum_of_coverages += key * value
+
+    keys_coverages = sorted(coverages_amounts_dict.keys())
+    sum_values_coverages = sum(coverages_amounts_dict.values())
+    half_sum_values_coverages = sum_values_coverages / 2
+    count = 0
+
+    if sum_values_coverages % 2 != 0:
+        for i in range(len(keys_coverages)):
+            count += coverages_amounts_dict[keys_coverages[i]]
+            if count >= half_sum_values_coverages:
+                genome_median = keys_coverages[i]
+                return [genome_median, round(sum_of_coverages/sum(coverages_amounts_dict.values()), 2),
+                        keys_coverages[-1],
+                        keys_coverages[0]]
+    else:
+        half_sum_values_coverages = int(half_sum_values_coverages)
+        for i in range(len(keys_coverages)):
+            count += coverages_amounts_dict[keys_coverages[i]]
+            if count == half_sum_values_coverages:
+                genome_median = (keys_coverages[i] + keys_coverages[i+1])/2
+                return [genome_median, round(sum_of_coverages/sum(coverages_amounts_dict.values()), 2),
+                        keys_coverages[-1], keys_coverages[0]]
+            elif count > half_sum_values_coverages:
+                genome_median = keys_coverages[i]
+                return [genome_median, round(sum_of_coverages/sum(coverages_amounts_dict.values()), 2),
                         keys_coverages[-1],
                         keys_coverages[0]]
 
@@ -115,12 +150,12 @@ def main():
         # for each scaffold
         scaffold_coverages_dict[line[0]].append(int(line[2]))
         if len(scaffold_coverages_dict.keys()) > 1:  # for each scaffold
-            df_whole_and_scaffolds.loc[scaffold_name] = each_scaffold_stats(scaffold_coverages_dict, scaffold_name)
+            df_whole_and_scaffolds.loc[scaffold_name] = scaffold_stats(scaffold_coverages_dict, scaffold_name)
 
         # for each stacking window (non-overlapping)
         if frame_line_counter == args.frame_size:
             frame_id += 1
-            df_stacking_windows.loc['frame_'+str(frame_id)] = frame_stats(frame_coverages_amounts_dict, frame_coverage_amount, frame_line_counter)
+            df_stacking_windows.loc['frame_'+str(frame_id)] = frame_stats(frame_coverages_amounts_dict, frame_line_counter)
             frame_coverages_amounts_dict = Counter()
             frame_coverage_amount = 0
             frame_line_counter = 0
@@ -128,26 +163,22 @@ def main():
         # for each stacking window (overlapping)
         elif overlapping_frame_line_counter == args.frame_size:
             overlapping_frame_id += 1
-            df_stacking_windows.loc['frame_'+str(overlapping_frame_id)] = frame_stats(
-                overlapping_frame_coverages_amounts_dict, overlapping_frame_coverage_amount, overlapping_frame_line_counter)
+            df_stacking_windows.loc['frame_'+str(overlapping_frame_id)] = frame_stats(overlapping_frame_coverages_amounts_dict, overlapping_frame_line_counter)
             overlapping_frame_coverages_amounts_dict = Counter()
             overlapping_frame_coverage_amount = 0
             overlapping_frame_line_counter = 0
 
         scaffold_name = line[0]
 
-    # processing residual data after a cycle
-    # for each scaffold
-    df_whole_and_scaffolds.loc[scaffold_name] = each_scaffold_stats(scaffold_coverages_dict, scaffold_name)
-    # whole genome stats to df
-    df_whole_and_scaffolds.loc['whole_genome'] = frame_stats(genome_coverages_amounts_dict, genome_coverage_amount, genome_line_counter)
+    # processing residual data after a cycle for each scaffold and whole genome
+    df_whole_and_scaffolds.loc[scaffold_name] = scaffold_stats(scaffold_coverages_dict, scaffold_name)
+    df_whole_and_scaffolds.loc['whole_genome'] = frame_stats(genome_coverages_amounts_dict, genome_line_counter)
 
+    #for print dataframe to terminal
     df_whole_and_scaffolds = pretty_printer(df_whole_and_scaffolds)
     df_stacking_windows = pretty_printer(df_stacking_windows)
 
     if args.output:  # create a report.csv
-        # df_whole_and_scaffolds['index1'] = df_whole_and_scaffolds.index
-        # df_stacking_windows['index1'] = df_stacking_windows.index
         df_whole_and_scaffolds.rename_axis('scaffold').reset_index().to_csv(args.output + "_whole_and_scaffolds.csv", encoding='utf-8', sep='\t')
         df_stacking_windows.rename_axis('frame').reset_index().to_csv(args.output + "_stacking_windows.csv", encoding='utf-8', sep='\t')
 
