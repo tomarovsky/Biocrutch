@@ -129,8 +129,7 @@ def main():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="script for calculating median, average, maximum and minimum coverage in file.tab. Report to files.csv")
+    parser = argparse.ArgumentParser(description="script for calculating median, average, maximum and minimum coverage in file.tab. Report to files.csv")
 
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
