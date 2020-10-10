@@ -8,7 +8,7 @@ def count_window_stats(coverages_amounts_dict: Counter) -> list:
     Works with a Counter from collections packege.
     Output is a list with metrics.
     '''
-    sum_of_coverages = sum(int(key)*value for key, value in coverages_amounts_dict.items())
+    sum_of_coverages = sum(key*value for key, value in coverages_amounts_dict.items())
     sum_values_coverages = sum(coverages_amounts_dict.values())
     mean = round(sum_of_coverages/sum_values_coverages, 2)
 
@@ -28,7 +28,7 @@ def count_window_stats(coverages_amounts_dict: Counter) -> list:
         for i in range(len(keys_coverages)):
             count += coverages_amounts_dict[keys_coverages[i]]
             if count == half_sum_values_coverages:
-                median = (int(keys_coverages[i]) + int(keys_coverages[i+1]))/2
+                median = (keys_coverages[i] + keys_coverages[i+1]) / 2
                 metrics = [median, mean, keys_coverages[-1], keys_coverages[0]]
                 print('window_stats: ', metrics)
                 return metrics
