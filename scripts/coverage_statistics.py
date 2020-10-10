@@ -59,7 +59,7 @@ def main():
         if frame_line_counter == args.frame_size:
             frame_id += 1
             metrics = [previous_scaffold_name] + count_window_stats(frame_coverages_amounts_dict)
-            df_frames.loc['frame_'+ str(frame_id)] = metrics
+            df_frames.loc[frame_id] = metrics
             frame_coverages_amounts_dict.clear()
             frame_line_counter = 0
 
@@ -67,7 +67,7 @@ def main():
         elif overlapping_frame_line_counter == args.frame_size:
             overlapping_frame_id += 1
             metrics = [previous_scaffold_name] + count_window_stats(overlapping_frame_coverages_amounts_dict)
-            df_frames.loc['frame_'+ str(overlapping_frame_id)] = metrics
+            df_frames.loc[overlapping_frame_id] = metrics
             overlapping_frame_coverages_amounts_dict.clear()
             overlapping_frame_line_counter = 0
 
