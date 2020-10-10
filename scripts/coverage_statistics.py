@@ -37,7 +37,6 @@ def main():
         # for whole genome
         line = line.rstrip().split('\t')
 
-
         if genome_line_counter > int(args.frame_size / 2):
             overlapping_frame_line_counter += 1
             overlapping_frame_coverages_amounts_dict[int(line[2])] += 1

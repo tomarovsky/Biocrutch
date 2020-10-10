@@ -7,10 +7,6 @@ def count_window_stats(coverages_amounts_dict: Counter) -> list:
     Function for calculating median, average, maximum and minimum coverage.
     Works with a Counter from collections packege.
     Output is a list with metrics.
-    Подсчет медианы можно перефразировать как:
-1. в случае нечетного числа значений - нахождение покрытия на позиции int(N/2)
-2. в случае четного - нахождение покрытия на позиции N/2 - 1 и N/2 и взятие среднего от них
-N - общее число значений. номера позиций(индексы в сортированном списке всех значений) - 0-based (то есть начинаются с нуля)
     '''
     sum_of_coverages = sum(key*value for key, value in coverages_amounts_dict.items())
     sum_values_coverages = sum(coverages_amounts_dict.values())
