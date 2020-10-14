@@ -45,6 +45,7 @@ class GetCoverageStatistics:
             # for each scaffold
             if previous_scaffold_name != line[0] and previous_scaffold_name != None:
                 metrics = CoveragesMetrics(scaffold_coverages_dict)
+                print('scaffolds metrics is being processing')
                 df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
                                                             metrics.average_value(),
                                                             metrics.max_coverage_value(),
@@ -56,6 +57,7 @@ class GetCoverageStatistics:
                 index += 1
                 frame_id += 1
                 metrics = CoveragesMetrics(frame_coverages_amounts_dict)
+                print('non-overlapping windows metrics is being processing')
                 df_nonoverlapping_frames.loc[index] = [previous_scaffold_name, frame_id, metrics.median_value(),
                                                                             metrics.average_value(),
                                                                             metrics.max_coverage_value(),
@@ -68,11 +70,13 @@ class GetCoverageStatistics:
 
         # processing residual data after a cycle for each scaffold and whole genome
         metrics = CoveragesMetrics(scaffold_coverages_dict)
+        print('scaffolds metrics is being processing')
         df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
                                                     metrics.average_value(),
                                                     metrics.max_coverage_value(),
                                                     metrics.min_coverage_value()]
         metrics = CoveragesMetrics(genome_coverages_amounts_dict)
+        print('whole genome metrics is being processing')
         df_whole_genome.loc['whole_genome'] = [metrics.median_value(),
                                                     metrics.average_value(),
                                                     metrics.max_coverage_value(),
@@ -102,6 +106,7 @@ class GetCoverageStatistics:
 
         # processing residual data after a cycle
         metrics = CoveragesMetrics(genome_coverages_amounts_dict)
+        print('whole genome metrics is being processing')
         df_whole_genome.loc['whole_genome'] = [metrics.median_value(),
                                                     metrics.average_value(),
                                                     metrics.max_coverage_value(),
@@ -122,6 +127,7 @@ class GetCoverageStatistics:
             line = line.rstrip().split('\t')
             if previous_scaffold_name != line[0] and previous_scaffold_name != None:
                 metrics = CoveragesMetrics(scaffold_coverages_dict)
+                print('scaffolds metrics is being processing')
                 df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
                                                             metrics.average_value(),
                                                             metrics.max_coverage_value(),
@@ -131,6 +137,7 @@ class GetCoverageStatistics:
             previous_scaffold_name = line[0]
         # processing residual data after a cycle
         metrics = CoveragesMetrics(scaffold_coverages_dict)
+        print('scaffolds metrics is being processing')
         df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
                                                     metrics.average_value(),
                                                     metrics.max_coverage_value(),
@@ -166,6 +173,7 @@ class GetCoverageStatistics:
                 index += 1
                 frame_id += 1
                 metrics = CoveragesMetrics(frame_coverages_amounts_dict)
+                print('non-overlapping windows metrics is being processing')
                 df_nonoverlapping_frames.loc[index] = [previous_scaffold_name, frame_id, metrics.median_value(),
                                                                             metrics.average_value(),
                                                                             metrics.max_coverage_value(),
