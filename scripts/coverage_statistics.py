@@ -16,7 +16,7 @@ import argparse
 
 
 def main():
-    metrics = GetCoverageStatistics(args.input)
+    metrics = GetCoverageStatistics(args.input, args.output)
 
     if args.all_stats:
         metrics.get_all_statistics(args.frame_size)
@@ -40,7 +40,7 @@ if __name__ == "__main__":
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-f', '--frame-size', type=int,
                                   help="calculate stats in 100 kbp and 1 Mbp stacking windows", default=1000000)
-    group_additional.add_argument('-o', '--output', metavar='PATH', type=str,
+    group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
                                   help='output file prefix without frame size')
     group_additional.add_argument('--all-stats', action="store_true", default=False,
                                 help="to calculate statistics for overlapping and non-overlapping windows, scaffolds and whole genome")

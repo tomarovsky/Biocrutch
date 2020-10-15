@@ -6,7 +6,7 @@ import pandas as pd
 
 
 class GetCoverageStatistics:
-    def __init__(self, data, output=False):
+    def __init__(self, data, output):
         self.data = data
         self.output = output
 
@@ -186,7 +186,7 @@ class GetCoverageStatistics:
         print(df_nonoverlapping_frames)
         # create a report.csv
         if self.output:
-            df_nonoverlapping_frames.to_csv(self.output + '_' + str(args.frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)
+            df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)
 
 
     def get_overlapping_windows_stats(self): # in developing
