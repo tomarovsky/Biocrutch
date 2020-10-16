@@ -31,16 +31,16 @@ class GetCoverageStatistics:
             line = line.rstrip().split('\t')
             # for whole genome
             genome_line_counter += 1
-            genome_coverages_amounts_dict[int(line[2])] += 1
+            genome_coverages_amounts_dict[float(line[2])] += 1
 
             if previous_scaffold_name == line[0] or previous_scaffold_name == None:
                 frame_line_counter += 1
-                frame_coverages_amounts_dict[int(line[2])] += 1
+                frame_coverages_amounts_dict[float(line[2])] += 1
             else:
                 frame_id = -1
                 frame_line_counter = 1
                 frame_coverages_amounts_dict.clear()
-                frame_coverages_amounts_dict[int(line[2])] += 1
+                frame_coverages_amounts_dict[float(line[2])] += 1
 
             # for each scaffold
             if previous_scaffold_name != line[0] and previous_scaffold_name != None:
@@ -65,7 +65,7 @@ class GetCoverageStatistics:
                 frame_coverages_amounts_dict.clear()
                 frame_line_counter = 0
 
-            scaffold_coverages_dict[int(line[2])] += 1
+            scaffold_coverages_dict[float(line[2])] += 1
             previous_scaffold_name = line[0]
 
         # processing residual data after a cycle for each scaffold and whole genome
@@ -102,7 +102,7 @@ class GetCoverageStatistics:
         for line in self.data:
             line = line.rstrip().split('\t')
             genome_line_counter += 1
-            genome_coverages_amounts_dict[int(line[2])] += 1
+            genome_coverages_amounts_dict[float(line[2])] += 1
 
         # processing residual data after a cycle
         metrics = CoveragesMetrics(genome_coverages_amounts_dict)
@@ -133,7 +133,7 @@ class GetCoverageStatistics:
                                                             metrics.max_coverage_value(),
                                                             metrics.min_coverage_value()]
                 scaffold_coverages_dict.clear()
-            scaffold_coverages_dict[int(line[2])] += 1
+            scaffold_coverages_dict[float(line[2])] += 1
             previous_scaffold_name = line[0]
         # processing residual data after a cycle
         metrics = CoveragesMetrics(scaffold_coverages_dict)
@@ -162,12 +162,12 @@ class GetCoverageStatistics:
             line = line.rstrip().split('\t')
             if previous_scaffold_name == line[0] or previous_scaffold_name == None:
                 frame_line_counter += 1
-                frame_coverages_amounts_dict[int(line[2])] += 1
+                frame_coverages_amounts_dict[float(line[2])] += 1
             else:
                 frame_id = -1
                 frame_line_counter = 1
                 frame_coverages_amounts_dict.clear()
-                frame_coverages_amounts_dict[int(line[2])] += 1
+                frame_coverages_amounts_dict[float(line[2])] += 1
             # for window (non-overlapping)
             if frame_line_counter == frame_size:
                 index += 1
