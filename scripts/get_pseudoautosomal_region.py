@@ -21,6 +21,8 @@ if __name__ == "__main__":
                                   help="input file.bam.gz (don`t use for STDIN)", default=stdin)
 
     group_additional = parser.add_argument_group('Additional options')
+    group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
+                                  help='output file prefix')
     group_additional.add_argument('-f', '--frame-size', type=int,
                                   help="calculate stats in 100 kbp and 1 Mbp stacking windows", default=100000)
     group_additional.add_argument('--coverage_column_name', type=str,
