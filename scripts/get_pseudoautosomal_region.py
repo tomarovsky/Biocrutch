@@ -17,22 +17,32 @@ def main():
     deviation = args.whole_genome_value / 100 * deviation_percent
     minimum_coverage = args.whole_genome_value - deviation # 25.5
     maximum_coverage = args.whole_genome_value + deviation # 42.5
+
+    coordinates = []
     count_repeat_frames = 0
+    start_coordinate = None
 
     for line in args.input:
         line = line.rstrip().split("\t")
         coverage_value = int(line[args.coverage_column_name])
         if coverage_value > minimum_coverage and coverage_value < maximum_coverage:
             count_repeat_frames += 1
-        else:
+            current_frame_number = int(line[2])
+            if count_repeat_frames > args.repeat_frame_number:
+                start_coordinate = (current_frame_number - args.repeat_frame_number) # * args.frame_size
+        elif start_coordinate is not None:
+            stop_coordinate = (start_coordinate + count_repeat_frames) # * args.frame_size
+            coordinates.append([start_coordinate, stop_coordinate])
             count_repeat_frames = 0
-        print(count_repeat_frames)
+            start_coordinate = None
+
+    print(coordinates)
         
 
 
 
 
-        
+
 
 
 if __name__ == "__main__":
@@ -53,6 +63,8 @@ if __name__ == "__main__":
                                   help="Name of column in coverage file with scaffold name", default="scaffold")
     group_additional.add_argument('-m', '--whole_genome_value', type=int,
                                   help="whole genome median/mean value", default=34)
+    group_additional.add_argument('-r', '--repeat_frame_number', type=int,
+                                  help="number of repeating windows for a given condition", default=3)
 
     args = parser.parse_args()
     main()
