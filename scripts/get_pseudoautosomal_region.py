@@ -9,7 +9,12 @@ from sys import stdin
 import pandas as pd
 import argparse
 
-# function to convert output to BED format. Accepts most likely a dictionary
+def coordinates_list_to_BED(chrom_name: str, coordinates_list: list) -> str:
+    # function to convert output to BED format. Accepts most likely a list [[start, stop], [start, stop]]
+    result = ""
+    for lst in coordinates_list:
+        result += (chrom_name + '\t' + str(lst[0]) + '\t' + str(lst[1]) + '\n')
+    return result
 
 
 def main():
@@ -29,14 +34,17 @@ def main():
             count_repeat_frames += 1
             current_frame_number = int(line[2])
             if count_repeat_frames > args.repeat_frame_number:
-                start_coordinate = (current_frame_number - args.repeat_frame_number) # * args.frame_size
+                start = current_frame_number - args.repeat_frame_number
+                start_coordinate = start * args.frame_size
         elif start_coordinate is not None:
-            stop_coordinate = (start_coordinate + count_repeat_frames) # * args.frame_size
+            stop = start + count_repeat_frames
+            stop_coordinate = stop * args.frame_size
             coordinates.append([start_coordinate, stop_coordinate])
             count_repeat_frames = 0
             start_coordinate = None
 
     print(coordinates)
+    print(coordinates_list_to_BED(args.scaffold_name, coordinates))
         
 
 
