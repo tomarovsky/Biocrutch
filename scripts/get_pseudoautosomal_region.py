@@ -9,8 +9,27 @@ from sys import stdin
 import pandas as pd
 import argparse
 
+def coordinate_filter(coordinates_list: list) -> list:
+    # function for filtering coordinates.
+    # Accepts most likely a list [[start, stop], [start, stop]]
+    start = None
+    stop = None
+    result = []
+    for lst in range(len(coordinates_list)):
+        if lst >= 1:
+            stop = coordinates_list[lst - 1][1]
+            start = coordinates_list[lst][0]
+            distanse = start - stop
+            if distanse > 10:
+                if coordinates_list[lst - 1] not in result:
+                    result.append(coordinates_list[lst - 1])
+                result.append(coordinates_list[lst])
+    return result
+
+
 def coordinates_list_to_BED(chrom_name: str, coordinates_list: list) -> str:
-    # function to convert output to BED format. Accepts most likely a list [[start, stop], [start, stop]]
+    # function to convert coordinates to BED format.
+    # Accepts most likely a list [[start, stop], [start, stop]]
     result = ""
     for lst in coordinates_list:
         result += (chrom_name + '\t' + str(lst[0]) + '\t' + str(lst[1]) + '\n')
@@ -46,13 +65,10 @@ def main():
 
 
     print(coordinates)
+    coord = coordinate_filter(coordinates)
+    print(coordinates_list_to_BED(args.scaffold_name, coord))
+    print('------------')
     print(coordinates_list_to_BED(args.scaffold_name, coordinates))
-        
-
-
-
-
-
 
 
 if __name__ == "__main__":
@@ -68,9 +84,9 @@ if __name__ == "__main__":
     group_additional.add_argument('-f', '--window-size', type=int,
                                   help="the window size used in your data", default=100000)
     group_additional.add_argument('--coverage_column_name', type=int,
-                                  help="Number of column in coverage file with mean/median coverage per window", default=3)
-    group_additional.add_argument('--window_column_name', type=int,
                                   help="Number of column in coverage file with mean/median coverage per window", default=2)
+    group_additional.add_argument('--window_column_name', type=int,
+                                  help="Number of column in coverage file with window number", default=1)
     group_additional.add_argument('-s', '--scaffold-name', type=str,
                                   help="Name of column in coverage file with scaffold name", default="scaffold")
     group_additional.add_argument('-m', '--whole_genome_value', type=int,
