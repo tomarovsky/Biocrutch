@@ -18,32 +18,31 @@ def coordinates_list_to_BED(chrom_name: str, coordinates_list: list) -> str:
 
 
 def main():
-    deviation_percent = 25 # the percent of deviation
-    deviation = args.whole_genome_value / 100 * deviation_percent
+    deviation = args.whole_genome_value / 100 * args.deviation_percent
     minimum_coverage = args.whole_genome_value - deviation # 25.5
     maximum_coverage = args.whole_genome_value + deviation # 42.5
 
     coordinates = []
-    repeat_frame = 0
+    repeat_window = 0
     start_coordinate = None
 
     for line in args.input:
         line = line.rstrip().split("\t")
         coverage_value = float(line[args.coverage_column_name])
-        current_frame = int(line[args.window_column_name])
+        current_window = int(line[args.window_column_name])
         if coverage_value > minimum_coverage and coverage_value < maximum_coverage:
-            repeat_frame += 1
-            if repeat_frame == args.repeat_frame_number and start_coordinate is None:
-                start = current_frame - repeat_frame + 1
-                start_coordinate = start #* args.frame_size
-                repeat_frame = 0
+            repeat_window += 1
+            if repeat_window == args.repeat_window_number and start_coordinate is None:
+                start = current_window - repeat_window + 1
+                start_coordinate = start #* args.window_size
+                repeat_window = 0
         elif start_coordinate is not None:
-            stop = current_frame
-            stop_coordinate = stop #* args.frame_size
+            stop = current_window
+            stop_coordinate = stop #* args.window_size
             coordinates.append([start_coordinate, stop_coordinate])
             start_coordinate = None
         else:
-            repeat_frame = 0
+            repeat_window = 0
 
 
     print(coordinates)
@@ -66,8 +65,8 @@ if __name__ == "__main__":
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
                                   help='output file prefix')
-    group_additional.add_argument('-f', '--frame-size', type=int,
-                                  help="calculate stats in 100 kbp and 1 Mbp stacking windows", default=100000)
+    group_additional.add_argument('-f', '--window-size', type=int,
+                                  help="the window size used in your data", default=100000)
     group_additional.add_argument('--coverage_column_name', type=int,
                                   help="Number of column in coverage file with mean/median coverage per window", default=3)
     group_additional.add_argument('--window_column_name', type=int,
@@ -76,8 +75,10 @@ if __name__ == "__main__":
                                   help="Name of column in coverage file with scaffold name", default="scaffold")
     group_additional.add_argument('-m', '--whole_genome_value', type=int,
                                   help="whole genome median/mean value", default=34)
-    group_additional.add_argument('-r', '--repeat_frame_number', type=int,
+    group_additional.add_argument('-r', '--repeat_window_number', type=int,
                                   help="number of repeating windows for a given condition", default=3)
+    group_additional.add_argument('-d', '--deviation_percent', type=int,
+                                  help="number of repeating windows for a given condition", default=25)
 
     args = parser.parse_args()
     main()
