@@ -24,24 +24,27 @@ def main():
     maximum_coverage = args.whole_genome_value + deviation # 42.5
 
     coordinates = []
-    count_repeat_frames = 0
+    repeat_frame = 0
     start_coordinate = None
 
     for line in args.input:
         line = line.rstrip().split("\t")
-        coverage_value = int(line[args.coverage_column_name])
+        coverage_value = float(line[args.coverage_column_name])
+        current_frame = int(line[args.window_column_name])
         if coverage_value > minimum_coverage and coverage_value < maximum_coverage:
-            count_repeat_frames += 1
-            current_frame_number = int(line[2])
-            if count_repeat_frames > args.repeat_frame_number:
-                start = current_frame_number - args.repeat_frame_number
-                start_coordinate = start * args.frame_size
+            repeat_frame += 1
+            if repeat_frame == args.repeat_frame_number and start_coordinate is None:
+                start = current_frame - repeat_frame + 1
+                start_coordinate = start #* args.frame_size
+                repeat_frame = 0
         elif start_coordinate is not None:
-            stop = start + count_repeat_frames
-            stop_coordinate = stop * args.frame_size
+            stop = current_frame
+            stop_coordinate = stop #* args.frame_size
             coordinates.append([start_coordinate, stop_coordinate])
-            count_repeat_frames = 0
             start_coordinate = None
+        else:
+            repeat_frame = 0
+
 
     print(coordinates)
     print(coordinates_list_to_BED(args.scaffold_name, coordinates))
@@ -67,6 +70,8 @@ if __name__ == "__main__":
                                   help="calculate stats in 100 kbp and 1 Mbp stacking windows", default=100000)
     group_additional.add_argument('--coverage_column_name', type=int,
                                   help="Number of column in coverage file with mean/median coverage per window", default=3)
+    group_additional.add_argument('--window_column_name', type=int,
+                                  help="Number of column in coverage file with mean/median coverage per window", default=2)
     group_additional.add_argument('-s', '--scaffold-name', type=str,
                                   help="Name of column in coverage file with scaffold name", default="scaffold")
     group_additional.add_argument('-m', '--whole_genome_value', type=int,
