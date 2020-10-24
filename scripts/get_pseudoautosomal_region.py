@@ -9,21 +9,30 @@ from sys import stdin
 import pandas as pd
 import argparse
 
-def coordinate_filter(coordinates_list: list) -> list:
+def region_distanse_coordinate_filter(coordinates_list: list) -> list:
     # function for filtering coordinates.
     # Accepts most likely a list [[start, stop], [start, stop]]
-    start = None
-    stop = None
     result = []
+    # wrong
     for lst in range(len(coordinates_list)):
-        if lst >= 1:
-            stop = coordinates_list[lst - 1][1]
-            start = coordinates_list[lst][0]
-            distanse = start - stop
-            if distanse > 10:
-                if coordinates_list[lst - 1] not in result:
-                    result.append(coordinates_list[lst - 1])
-                result.append(coordinates_list[lst])
+        if lst > 0:
+            d_first = coordinates_list[lst - 1][1]
+            d_second = coordinates_list[lst][0]
+            distanse = d_second - d_first
+            if distanse < 10:
+                start = coordinates_list[lst - 1][0]
+                stop = coordinates_list[lst][1]
+                result.append([start, stop])
+    return result
+
+
+def region_length_coordinate_filter(coordinates_list: list, min_distance: int) -> list:
+    # function for filtering regions by their minimum length
+    # Accepts most likely a list [[start, stop], [start, stop]]
+    result = []
+    for lst in coordinates_list:
+        if (lst[1] - lst[0]) >= min_distance:
+            result.append(lst)
     return result
 
 
@@ -65,9 +74,11 @@ def main():
 
 
     print(coordinates)
-    coord = coordinate_filter(coordinates)
-    print(coordinates_list_to_BED(args.scaffold_name, coord))
-    print('------------')
+    print('------------filtering by distanse')
+    print(coordinates_list_to_BED(args.scaffold_name, region_distanse_coordinate_filter(coordinates)))
+    print('------------filtering by region length')
+    print(coordinates_list_to_BED(args.scaffold_name, region_length_coordinate_filter(coordinates, args.min_region_length)))
+    print('------------without filter')
     print(coordinates_list_to_BED(args.scaffold_name, coordinates))
 
 
@@ -95,6 +106,8 @@ if __name__ == "__main__":
                                   help="number of repeating windows for a given condition", default=3)
     group_additional.add_argument('-d', '--deviation_percent', type=int,
                                   help="number of repeating windows for a given condition", default=25)
+    group_additional.add_argument('--min_region_length', type=int,
+                                  help="minimal region length", default=10)
 
     args = parser.parse_args()
     main()
