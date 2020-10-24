@@ -107,7 +107,7 @@ if __name__ == "__main__":
     group_additional.add_argument('-d', '--deviation_percent', type=int,
                                   help="number of repeating windows for a given condition", default=25)
     group_additional.add_argument('--min_region_length', type=int,
-                                  help="minimal region length", default=10)
+                                  help="minimal region length for filtration", default=10)
 
     args = parser.parse_args()
     main()
