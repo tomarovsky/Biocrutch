@@ -10,7 +10,7 @@ import pandas as pd
 import argparse
 
 def region_distanse_coordinate_filter(coordinates_list: list) -> list:
-    # takes list [[start, stop], [start, stop]]
+    # input list like [[start, stop], [start, stop]]
     result = []
     empty_list = True
     s = True
@@ -40,7 +40,7 @@ def region_distanse_coordinate_filter(coordinates_list: list) -> list:
 
 
 def region_length_coordinate_filter(coordinates_list: list, min_region_length: int) -> list:
-    # takes list [[start, stop], [start, stop]]
+    # input list like [[start, stop], [start, stop]]
     result = []
     for lst in coordinates_list:
         if (lst[1] - lst[0]) >= min_region_length:
@@ -84,11 +84,11 @@ def main():
 
 
     print(coordinates)
-    print('------------without filter')
+    print('---without filter')
     print(coordinates_list_to_BED(args.scaffold_name, coordinates))
-    print('------------filtering by distanse')
+    print('---filtering by distanse')
     print(coordinates_list_to_BED(args.scaffold_name, region_distanse_coordinate_filter(coordinates)))
-    print('------------filtering by distanse + region length')
+    print('---filtering by distanse + region length')
     print(coordinates_list_to_BED(args.scaffold_name, region_length_coordinate_filter(region_distanse_coordinate_filter(coordinates), args.min_region_length)))
 
 
