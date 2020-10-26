@@ -39,11 +39,11 @@ def region_distanse_coordinate_filter(coordinates_list: list) -> list:
     return result
 
 
-def region_length_coordinate_filter(coordinates_list: list, min_distance: int) -> list:
+def region_length_coordinate_filter(coordinates_list: list, min_region_length: int) -> list:
     # takes list [[start, stop], [start, stop]]
     result = []
     for lst in coordinates_list:
-        if (lst[1] - lst[0]) >= min_distance:
+        if (lst[1] - lst[0]) >= min_region_length:
             result.append(lst)
     return result
 
@@ -88,6 +88,8 @@ def main():
     print(coordinates_list_to_BED(args.scaffold_name, coordinates))
     print('------------filtering by distanse')
     print(coordinates_list_to_BED(args.scaffold_name, region_distanse_coordinate_filter(coordinates)))
+    print('------------filtering by distanse + region length')
+    print(coordinates_list_to_BED(args.scaffold_name, region_length_coordinate_filter(region_distanse_coordinate_filter(coordinates), args.min_region_length)))
 
 
 if __name__ == "__main__":
@@ -115,7 +117,7 @@ if __name__ == "__main__":
     group_additional.add_argument('-d', '--deviation_percent', type=int,
                                   help="number of repeating windows for a given condition", default=25)
     group_additional.add_argument('--min_region_length', type=int,
-                                  help="minimal region length for filtration", default=10)
+                                  help="minimal region length for filtration", default=15)
 
     args = parser.parse_args()
     main()
