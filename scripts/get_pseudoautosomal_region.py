@@ -10,25 +10,37 @@ import pandas as pd
 import argparse
 
 def region_distanse_coordinate_filter(coordinates_list: list) -> list:
-    # function for filtering coordinates.
-    # Accepts most likely a list [[start, stop], [start, stop]]
+    # takes list [[start, stop], [start, stop]]
     result = []
-    # wrong
+    empty_list = True
+    s = True
+
     for lst in range(len(coordinates_list)):
-        if lst > 0:
-            d_first = coordinates_list[lst - 1][1]
-            d_second = coordinates_list[lst][0]
-            distanse = d_second - d_first
-            if distanse < 10:
+        if empty_list:
+            result.append(coordinates_list[lst])
+            empty_list = False
+            continue
+        d_first = coordinates_list[lst - 1][1]
+        d_second = coordinates_list[lst][0]
+        distanse = d_second - d_first
+        if distanse > 1:
+            result.append(coordinates_list[lst])
+        else:
+            if s == True:
                 start = coordinates_list[lst - 1][0]
-                stop = coordinates_list[lst][1]
+                s = False
+            stop = coordinates_list[lst][1]
+            if result[-1][1] < start:
                 result.append([start, stop])
+                s = True
+            else:
+                del result[-1][-1]
+                result[-1].append(stop)
     return result
 
 
 def region_length_coordinate_filter(coordinates_list: list, min_distance: int) -> list:
-    # function for filtering regions by their minimum length
-    # Accepts most likely a list [[start, stop], [start, stop]]
+    # takes list [[start, stop], [start, stop]]
     result = []
     for lst in coordinates_list:
         if (lst[1] - lst[0]) >= min_distance:
@@ -36,11 +48,10 @@ def region_length_coordinate_filter(coordinates_list: list, min_distance: int) -
     return result
 
 
-def coordinates_list_to_BED(chrom_name: str, coordinates_list: list) -> str:
-    # function to convert coordinates to BED format.
-    # Accepts most likely a list [[start, stop], [start, stop]]
+def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
+    # takes list [[start, stop], [start, stop]]
     result = ""
-    for lst in coordinates_list:
+    for lst in coordinates:
         result += (chrom_name + '\t' + str(lst[0]) + '\t' + str(lst[1]) + '\n')
     return result
 
@@ -54,32 +65,29 @@ def main():
     repeat_window = 0
     start_coordinate = None
 
-    for line in args.input:
-        line = line.rstrip().split("\t")
+    for ln in args.input:
+        line = ln.rstrip().split("\t")
         coverage_value = float(line[args.coverage_column_name])
         current_window = int(line[args.window_column_name])
         if coverage_value > minimum_coverage and coverage_value < maximum_coverage:
             repeat_window += 1
             if repeat_window == args.repeat_window_number and start_coordinate is None:
-                start = current_window - repeat_window + 1
-                start_coordinate = start #* args.window_size
+                start_coordinate = current_window - repeat_window + 1 #* args.window_size
                 repeat_window = 0
-        elif start_coordinate is not None:
-            stop = current_window
-            stop_coordinate = stop #* args.window_size
+        elif start_coordinate is not None and (coverage_value <= minimum_coverage or coverage_value >= maximum_coverage):
+            stop_coordinate = current_window #* args.window_size
             coordinates.append([start_coordinate, stop_coordinate])
             start_coordinate = None
+            repeat_window = 0
         else:
             repeat_window = 0
 
 
     print(coordinates)
-    print('------------filtering by distanse')
-    print(coordinates_list_to_BED(args.scaffold_name, region_distanse_coordinate_filter(coordinates)))
-    print('------------filtering by region length')
-    print(coordinates_list_to_BED(args.scaffold_name, region_length_coordinate_filter(coordinates, args.min_region_length)))
     print('------------without filter')
     print(coordinates_list_to_BED(args.scaffold_name, coordinates))
+    print('------------filtering by distanse')
+    print(coordinates_list_to_BED(args.scaffold_name, region_distanse_coordinate_filter(coordinates)))
 
 
 if __name__ == "__main__":
@@ -94,10 +102,10 @@ if __name__ == "__main__":
                                   help='output file prefix')
     group_additional.add_argument('-f', '--window-size', type=int,
                                   help="the window size used in your data", default=100000)
-    group_additional.add_argument('--coverage_column_name', type=int,
-                                  help="Number of column in coverage file with mean/median coverage per window", default=2)
     group_additional.add_argument('--window_column_name', type=int,
                                   help="Number of column in coverage file with window number", default=1)
+    group_additional.add_argument('--coverage_column_name', type=int,
+                                  help="Number of column in coverage file with mean/median coverage per window", default=2)
     group_additional.add_argument('-s', '--scaffold-name', type=str,
                                   help="Name of column in coverage file with scaffold name", default="scaffold")
     group_additional.add_argument('-m', '--whole_genome_value', type=int,
