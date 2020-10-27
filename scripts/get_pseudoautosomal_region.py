@@ -19,7 +19,7 @@ def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
 
 
 def region_length_coordinate_filter(coordinates_list: list, min_region_length: int) -> list:
-    # input list like [[start, stop], [start, stop]]
+    # input list [[start, stop], [start, stop]]
     result = []
     for lst in coordinates_list:
         if (lst[1] - lst[0]) >= min_region_length:
@@ -28,7 +28,7 @@ def region_length_coordinate_filter(coordinates_list: list, min_region_length: i
 
 
 def region_distanse_coordinate_filter(coordinates_list: list) -> list:
-    # input list like [[start, stop], [start, stop]]
+    # input list [[start, stop], [start, stop]]
     result = []
     empty_list = True
     start_flag = True
@@ -69,7 +69,7 @@ def main():
         line = ln.rstrip().split("\t")
         coverage_value = float(line[args.coverage_column_name])
         current_window = int(line[args.window_column_name])
-        if coverage_value > minimum_coverage and coverage_value < maximum_coverage:
+        if coverage_value > minimum_coverage: #and coverage_value < maximum_coverage:
             repeat_window += 1
             if repeat_window == args.repeat_window_number and start_coordinate is None:
                 start_coordinate = current_window - repeat_window + 1 #* args.window_size
