@@ -4,7 +4,9 @@ __author__ = 'tomarovsky'
 Script for determining the coordinates of the pseudoautosomal region.
 Output of coordinates to BED file.
 '''
+from Biocrutch.Statistics.coverage_statistics.coverage_metrics import CoveragesMetrics
 from Biocrutch.Routines.routine_functions import metaopen
+from collections import Counter
 from sys import stdin
 import pandas as pd
 import argparse
@@ -56,6 +58,20 @@ def region_distanse_coordinate_filter(coordinates_list: list) -> list:
     return result
 
 
+def coordinates_between_regions(coordinates: list) -> list:
+    # input list [[start, stop], [start, stop]]
+    result = []
+    last_element_index = len(coordinates) - 1
+
+    for lst in range(len(coordinates)):
+        start = coordinates[lst][-1]
+        if lst == last_element_index:
+            break
+        stop = coordinates[lst + 1][0]
+        result.append([start, stop])
+    return result
+
+
 def main():
     deviation = args.whole_genome_value / 100 * args.deviation_percent
     minimum_coverage = args.whole_genome_value - deviation # 25.5
@@ -75,7 +91,7 @@ def main():
                 start_coordinate = current_window - repeat_window + 1 #* args.window_size
                 repeat_window = 0
         elif start_coordinate is not None and (coverage_value <= minimum_coverage or coverage_value >= maximum_coverage):
-            stop_coordinate = current_window #* args.window_size
+            stop_coordinate = current_window - 1 #* args.window_size
             coordinates.append([start_coordinate, stop_coordinate])
             start_coordinate = None
             repeat_window = 0
@@ -84,6 +100,35 @@ def main():
 
 
     print(coordinates)
+    between_regions = coordinates_between_regions(coordinates)
+    n = 0
+    between_regions_coverage_dict = Counter()
+    median_between_regions = []
+
+    with open('SRR11286173.w50000_scaf_10_stats.csv', 'r') as data:
+        s = None
+        for ln in data:
+            line = ln.rstrip().split("\t")
+            coverage_value = float(line[args.coverage_column_name])
+            current_window = int(line[args.window_column_name])
+            if current_window == between_regions[n][0]:
+                s = True
+            if s:
+                between_regions_coverage_dict[coverage_value] += 1
+            if current_window == between_regions[n][1]:
+                s = False
+                median_between_regions.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
+                between_regions_coverage_dict.clear()
+                n += 1
+            if n == len(between_regions):
+                break
+    print(median_between_regions)
+
+
+
+    
+    
+    
     print('---without filter')
     print(coordinates_list_to_BED(args.scaffold_name, coordinates))
     print('---filtering by distanse')
