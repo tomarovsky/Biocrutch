@@ -9,33 +9,12 @@ from sys import stdin
 import pandas as pd
 import argparse
 
-def region_distanse_coordinate_filter(coordinates_list: list) -> list:
-    # input list like [[start, stop], [start, stop]]
-    result = []
-    empty_list = True
-    s = True
 
-    for lst in range(len(coordinates_list)):
-        if empty_list:
-            result.append(coordinates_list[lst])
-            empty_list = False
-            continue
-        d_first = coordinates_list[lst - 1][1]
-        d_second = coordinates_list[lst][0]
-        distanse = d_second - d_first
-        if distanse > 1:
-            result.append(coordinates_list[lst])
-        else:
-            if s == True:
-                start = coordinates_list[lst - 1][0]
-                s = False
-            stop = coordinates_list[lst][1]
-            if result[-1][1] < start:
-                result.append([start, stop])
-                s = True
-            else:
-                del result[-1][-1]
-                result[-1].append(stop)
+def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
+    # takes list [[start, stop], [start, stop]]
+    result = ""
+    for lst in coordinates:
+        result += (chrom_name + '\t' + str(lst[0]) + '\t' + str(lst[1]) + '\n')
     return result
 
 
@@ -48,11 +27,32 @@ def region_length_coordinate_filter(coordinates_list: list, min_region_length: i
     return result
 
 
-def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
-    # takes list [[start, stop], [start, stop]]
-    result = ""
-    for lst in coordinates:
-        result += (chrom_name + '\t' + str(lst[0]) + '\t' + str(lst[1]) + '\n')
+def region_distanse_coordinate_filter(coordinates_list: list) -> list:
+    # input list like [[start, stop], [start, stop]]
+    result = []
+    empty_list = True
+    start_flag = True
+    for lst in range(len(coordinates_list)):
+        if empty_list:
+            result.append(coordinates_list[lst])
+            empty_list = False
+            continue
+        d_first = coordinates_list[lst - 1][1]
+        d_second = coordinates_list[lst][0]
+        distanse = d_second - d_first
+        if distanse > 1:
+            result.append(coordinates_list[lst])
+        else:
+            if start_flag == True:
+                start = coordinates_list[lst - 1][0]
+                start_flag = False
+            stop = coordinates_list[lst][1]
+            if result[-1][1] < start:
+                result.append([start, stop])
+                start_flag = True
+            else:
+                del result[-1][-1]
+                result[-1].append(stop)
     return result
 
 
