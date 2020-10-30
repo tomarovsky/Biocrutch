@@ -12,6 +12,40 @@ import pandas as pd
 import argparse
 
 
+def raw_pseudocoordinates(data: str,
+                            whole_genome_value: int,
+                            deviation_percent: int,
+                            coverage_column_name: int,
+                            window_column_name: int,
+                            repeat_window_number: int):
+    deviation = whole_genome_value / 100 * deviation_percent
+    minimum_coverage = whole_genome_value - deviation # 25.5
+    maximum_coverage = whole_genome_value + deviation # 42.5
+
+    coordinates = []
+    repeat_window = 0
+    start_coordinate = None
+
+    with metaopen(data, 'rt') as lines:
+        for ln in lines:
+            line = ln.rstrip().split("\t")
+            coverage_value = float(line[coverage_column_name])
+            current_window = int(line[window_column_name])
+            if coverage_value > minimum_coverage: #and coverage_value < maximum_coverage:
+                repeat_window += 1
+                if repeat_window == repeat_window_number and start_coordinate is None:
+                    start_coordinate = current_window - repeat_window + 1 #* args.window_size
+                    repeat_window = 0
+            elif start_coordinate is not None and (coverage_value <= minimum_coverage or coverage_value >= maximum_coverage):
+                stop_coordinate = current_window - 1 #* args.window_size
+                coordinates.append([start_coordinate, stop_coordinate])
+                start_coordinate = None
+                repeat_window = 0
+            else:
+                repeat_window = 0
+    return coordinates
+
+
 def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
     # takes list [[start, stop], [start, stop]]
     result = ""
@@ -20,7 +54,7 @@ def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
     return result
 
 
-def region_length_coordinate_filter(coordinates_list: list, min_region_length: int) -> list:
+def length_coordinate_filter(coordinates_list: list, min_region_length: int) -> list:
     # input list [[start, stop], [start, stop]]
     result = []
     for lst in coordinates_list:
@@ -29,7 +63,7 @@ def region_length_coordinate_filter(coordinates_list: list, min_region_length: i
     return result
 
 
-def region_distanse_coordinate_filter(coordinates_list: list) -> list:
+def distanse_coordinate_filter(coordinates_list: list) -> list:
     # input list [[start, stop], [start, stop]]
     result = []
     empty_list = True
@@ -72,77 +106,58 @@ def coordinates_between_regions(coordinates: list) -> list:
     return result
 
 
-def main():
-    deviation = args.whole_genome_value / 100 * args.deviation_percent
-    minimum_coverage = args.whole_genome_value - deviation # 25.5
-    maximum_coverage = args.whole_genome_value + deviation # 42.5
-
-    coordinates = []
-    repeat_window = 0
-    start_coordinate = None
-
-    for ln in args.input:
-        line = ln.rstrip().split("\t")
-        coverage_value = float(line[args.coverage_column_name])
-        current_window = int(line[args.window_column_name])
-        if coverage_value > minimum_coverage: #and coverage_value < maximum_coverage:
-            repeat_window += 1
-            if repeat_window == args.repeat_window_number and start_coordinate is None:
-                start_coordinate = current_window - repeat_window + 1 #* args.window_size
-                repeat_window = 0
-        elif start_coordinate is not None and (coverage_value <= minimum_coverage or coverage_value >= maximum_coverage):
-            stop_coordinate = current_window - 1 #* args.window_size
-            coordinates.append([start_coordinate, stop_coordinate])
-            start_coordinate = None
-            repeat_window = 0
-        else:
-            repeat_window = 0
-
-
-    print(coordinates)
-    between_regions = coordinates_between_regions(coordinates)
-    n = 0
+def median_from_between_regions(data: str, between_regions_coordinates: list, coverage_column_name: int, window_column_name: int):
     between_regions_coverage_dict = Counter()
     median_between_regions = []
-
-    with open('SRR11286173.w50000_scaf_10_stats.csv', 'r') as data:
-        s = None
-        for ln in data:
+    n = 0
+    with metaopen(data, 'rt') as lines:
+        flag = None
+        for ln in lines:
             line = ln.rstrip().split("\t")
-            coverage_value = float(line[args.coverage_column_name])
-            current_window = int(line[args.window_column_name])
-            if current_window == between_regions[n][0]:
-                s = True
-            if s:
+            coverage_value = float(line[coverage_column_name])
+            current_window = int(line[window_column_name])
+            if current_window == between_regions_coordinates[n][0]:
+                flag = True
+            if flag:
                 between_regions_coverage_dict[coverage_value] += 1
-            if current_window == between_regions[n][1]:
-                s = False
+            if current_window == between_regions_coordinates[n][1]:
+                flag = False
                 median_between_regions.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
                 between_regions_coverage_dict.clear()
                 n += 1
-            if n == len(between_regions):
+            if n == len(between_regions_coordinates):
                 break
-    print(median_between_regions)
+    return median_between_regions
 
+def main():
+    coordinates = raw_pseudocoordinates(args.input,
+                            args.whole_genome_value,
+                            args.deviation_percent,
+                            args.coverage_column_name,
+                            args.window_column_name,
+                            args.repeat_window_number)
+    print(coordinates)
 
+    between_regions = coordinates_between_regions(coordinates)
+    print(between_regions)
 
-    
-    
-    
+    medians = median_from_between_regions(args.input, between_regions, args.coverage_column_name, args.window_column_name)
+    print(medians)
+
     print('---without filter')
     print(coordinates_list_to_BED(args.scaffold_name, coordinates))
     print('---filtering by distanse')
-    print(coordinates_list_to_BED(args.scaffold_name, region_distanse_coordinate_filter(coordinates)))
+    print(coordinates_list_to_BED(args.scaffold_name, distanse_coordinate_filter(coordinates)))
     print('---filtering by distanse + region length')
-    print(coordinates_list_to_BED(args.scaffold_name, region_length_coordinate_filter(region_distanse_coordinate_filter(coordinates), args.min_region_length)))
+    print(coordinates_list_to_BED(args.scaffold_name, length_coordinate_filter(distanse_coordinate_filter(coordinates), args.min_region_length)))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script for determining the coordinates of the pseudoautosomal region. Output of coordinates to BED file.")
 
     group_required = parser.add_argument_group('Required options')
-    group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
-                                  help="input file.bam.gz (don`t use for STDIN)", default=stdin)
+    group_required.add_argument('-i', '--input', type=str,
+                                  help="input coverage_statistics_output.csv (don`t use for STDIN)", default=stdin)
 
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
