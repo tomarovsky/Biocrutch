@@ -189,33 +189,40 @@ class GetCoverageStatistics:
             df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)
 
 
-    def get_overlapping_windows_stats(self): # in developing
-        # df_frames = pd.DataFrame(columns=['scaffold', 'frame', 'median', 'average', 'max', 'min'])
+    def get_overlapping_windows_stats(self, frame_size): # in developing
+        df_overlapping_frames = pd.DataFrame(columns=['scaffold', 'frame', 'median', 'average', 'max', 'min'])
 
-        # overlapping_frame_id = 0.5
-        # overlapping_frame_coverages_amounts_dict = Counter()
-        # overlapping_frame_line_counter = 0
-        # previous_scaffold_name = None
+        overlapping_frame_coverages_amounts_dict = Counter()
+        overlapping_frame_line_counter = 0
+        frame_line_counter = 0
+        genome_line_counter = 0
+        frame_id = -1
+        index = 0
+        previous_scaffold_name = None
 
-        # for line in args.input:
-        #     genome_line_counter += 1
-        #     line = line.rstrip().split('\t')
+        for line in self.data:
+            genome_line_counter += 1
+            line = line.rstrip().split('\t')
 
-        #     if genome_line_counter > int(args.frame_size / 2):
-        #         overlapping_frame_line_counter += 1
-        #         overlapping_frame_coverages_amounts_dict[line[2]] += 1
+            if genome_line_counter >= int(frame_size / 2):
+                overlapping_frame_line_counter += 1
+                overlapping_frame_coverages_amounts_dict[float(line[2])] += 1
+            # for window (overlapping)
+            if frame_line_counter == frame_size or overlapping_frame_line_counter == frame_size:
+                index += 1
+                frame_id += 1
+                metrics = CoveragesMetrics(overlapping_frame_coverages_amounts_dict)
+                print('non-overlapping windows metrics is being processing')
+                df_overlapping_frames.loc[index] = [previous_scaffold_name, frame_id, metrics.median_value(),
+                                                                            metrics.average_value(),
+                                                                            metrics.max_coverage_value(),
+                                                                            metrics.min_coverage_value()]
+                overlapping_frame_coverages_amounts_dict.clear()
+                frame_line_counter = 0
+            previous_scaffold_name = line[0]
 
-        #     elif overlapping_frame_line_counter == args.frame_size:
-        #         overlapping_frame_id += 1
-        #         metrics = CoveragesMetrics(overlapping_frame_coverages_amounts_dict)
-        #         df_frames.loc[overlapping_frame_id] = [previous_scaffold_name, metrics.median_value(),
-        #                                                 metrics.average_value(),
-        #                                                 metrics.max_coverage_value(),
-        #                                                 metrics.min_coverage_value()]
-        #         overlapping_frame_coverages_amounts_dict.clear()
-        #         overlapping_frame_line_counter = 0
-
-        # in developing :)
-        pass
-
-
+        #for print dataframe to terminal
+        print(df_overlapping_frames)
+        # create a report.csv
+        if self.output:
+            df_overlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)

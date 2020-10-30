@@ -27,7 +27,7 @@ def main():
     if args.nonoverlapping_windows_stats:
         metrics.get_nonoverlapping_windows_stats(args.frame_size)
     if args.overlapping_windows_stats: # in developing
-        pass
+        metrics.get_overlapping_windows_stats(args.frame_size)
 
 
 if __name__ == "__main__":
