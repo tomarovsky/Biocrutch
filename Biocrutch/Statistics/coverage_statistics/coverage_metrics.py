@@ -20,8 +20,11 @@ class CoveragesMetrics:
 
     def average_value(self) -> float:
         sum_of_coverages = sum(key*value for key, value in self.coverages_amounts_dict.items())
-        average = sum_of_coverages/self.sum_values_coverages
-        return round(average, 2)
+        if self.sum_values_coverages:
+            return 0
+        else:
+            average = sum_of_coverages/self.sum_values_coverages
+            return round(average, 2)
 
     def median_value(self) -> int:
         keys_coverages = sorted(self.coverages_amounts_dict.keys())
