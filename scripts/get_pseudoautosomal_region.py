@@ -13,14 +13,14 @@ import argparse
 
 
 def raw_pseudocoordinates(data: str,
-                            whole_genome_value: int,
-                            deviation_percent: int,
-                            coverage_column_name: int,
-                            window_column_name: int,
-                            repeat_window_number: int):
+                          whole_genome_value: int,
+                          deviation_percent: int,
+                          coverage_column_name: int,
+                          window_column_name: int,
+                          repeat_window_number: int):
     deviation = whole_genome_value / 100 * deviation_percent
-    minimum_coverage = whole_genome_value - deviation # 25.5
-    maximum_coverage = whole_genome_value + deviation # 42.5
+    minimum_coverage = whole_genome_value - deviation  # 25.5
+    maximum_coverage = whole_genome_value + deviation  # 42.5
 
     coordinates = []
     repeat_window = 0
@@ -31,13 +31,13 @@ def raw_pseudocoordinates(data: str,
             line = ln.rstrip().split("\t")
             coverage_value = float(line[coverage_column_name])
             current_window = int(line[window_column_name])
-            if coverage_value > minimum_coverage: #and coverage_value < maximum_coverage:
+            if coverage_value > minimum_coverage:  # and coverage_value < maximum_coverage:
                 repeat_window += 1
                 if repeat_window == repeat_window_number and start_coordinate is None:
-                    start_coordinate = current_window - repeat_window + 1 #* args.window_size
+                    start_coordinate = current_window - repeat_window + 1  # * args.window_size
                     repeat_window = 0
             elif start_coordinate is not None and (coverage_value <= minimum_coverage or coverage_value >= maximum_coverage):
-                stop_coordinate = current_window - 1 #* args.window_size
+                stop_coordinate = current_window - 1  # * args.window_size
                 coordinates.append([start_coordinate, stop_coordinate])
                 start_coordinate = None
                 repeat_window = 0
@@ -129,13 +129,14 @@ def median_from_between_regions(data: str, between_regions_coordinates: list, co
                 break
     return median_between_regions
 
+
 def main():
     coordinates = raw_pseudocoordinates(args.input,
-                            args.whole_genome_value,
-                            args.deviation_percent,
-                            args.coverage_column_name,
-                            args.window_column_name,
-                            args.repeat_window_number)
+                                        args.whole_genome_value,
+                                        args.deviation_percent,
+                                        args.coverage_column_name,
+                                        args.window_column_name,
+                                        args.repeat_window_number)
     print(coordinates)
 
     between_regions = coordinates_between_regions(coordinates)
@@ -153,11 +154,12 @@ def main():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Script for determining the coordinates of the pseudoautosomal region. Output of coordinates to BED file.")
+    parser = argparse.ArgumentParser(
+        description="Script for determining the coordinates of the pseudoautosomal region. Output of coordinates to BED file.")
 
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=str,
-                                  help="input coverage_statistics_output.csv (don`t use for STDIN)", default=stdin)
+                                help="input coverage_statistics_output.csv (don`t use for STDIN)", default=stdin)
 
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
@@ -173,9 +175,9 @@ if __name__ == "__main__":
     group_additional.add_argument('-m', '--whole_genome_value', type=int,
                                   help="whole genome median/mean value", default=34)
     group_additional.add_argument('-r', '--repeat_window_number', type=int,
-                                  help="number of repeating windows for a given condition", default=3)
+                                  help="number of repeating windows for a given condition", default=10)
     group_additional.add_argument('-d', '--deviation_percent', type=int,
-                                  help="number of repeating windows for a given condition", default=25)
+                                  help="number of repeating windows for a given condition", default=5)
     group_additional.add_argument('--min_region_length', type=int,
                                   help="minimal region length for filtration", default=15)
 
