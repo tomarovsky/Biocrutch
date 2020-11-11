@@ -12,6 +12,18 @@ import pandas as pd
 import argparse
 
 
+def coordinates_between_regions(coordinates: list, between_regions_list: list) -> list:
+    # input list [[start, stop], [start, stop]]
+    last_element_index = len(coordinates) - 1
+    for lst in range(len(coordinates)):
+        start = coordinates[lst][-1]
+        if lst == last_element_index:
+            break
+        stop = coordinates[lst + 1][0]
+        between_regions_list.append([start, stop])
+    return between_regions_list
+
+
 def raw_pseudocoordinates(data: str,
                           whole_genome_value: int,
                           deviation_percent: int,
@@ -23,14 +35,23 @@ def raw_pseudocoordinates(data: str,
     maximum_coverage = whole_genome_value + deviation  # 42.5
 
     coordinates = []
+    between_regions_list = []
     repeat_window = 0
     start_coordinate = None
 
+    between_regions_coverage_dict = Counter()
+    median_between_regions = []
+    between_region_flag = None
+    
     with metaopen(data, 'rt') as lines:
         for ln in lines:
             line = ln.rstrip().split("\t")
             coverage_value = float(line[coverage_column_name])
             current_window = int(line[window_column_name])
+            
+            if between_region_flag:
+                between_regions_coverage_dict[coverage_value] += 1
+
             if coverage_value > minimum_coverage:  # and coverage_value < maximum_coverage:
                 repeat_window += 1
                 if repeat_window == repeat_window_number and start_coordinate is None:
@@ -39,10 +60,19 @@ def raw_pseudocoordinates(data: str,
             elif start_coordinate is not None and (coverage_value <= minimum_coverage or coverage_value >= maximum_coverage):
                 stop_coordinate = current_window - 1  # * args.window_size
                 coordinates.append([start_coordinate, stop_coordinate])
+                if between_region_flag:
+                    median_between_regions.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
+                    between_regions_coverage_dict.clear()
+                if len(coordinates) > 1:
+                    between_regions_list = coordinates_between_regions(coordinates, between_regions_list) # возможно нужно будет пересоздавать переменную
+                    between_region_flag = True
                 start_coordinate = None
                 repeat_window = 0
             else:
                 repeat_window = 0
+    print(coordinates)
+    print(median_between_regions)
+    
     return coordinates
 
 
@@ -92,44 +122,6 @@ def distanse_coordinate_filter(coordinates_list: list) -> list:
     return result
 
 
-def coordinates_between_regions(coordinates: list) -> list:
-    # input list [[start, stop], [start, stop]]
-    result = []
-    last_element_index = len(coordinates) - 1
-
-    for lst in range(len(coordinates)):
-        start = coordinates[lst][-1]
-        if lst == last_element_index:
-            break
-        stop = coordinates[lst + 1][0]
-        result.append([start, stop])
-    return result
-
-
-def median_from_between_regions(data: str, between_regions_coordinates: list, coverage_column_name: int, window_column_name: int):
-    between_regions_coverage_dict = Counter()
-    median_between_regions = []
-    n = 0
-    with metaopen(data, 'rt') as lines:
-        flag = None
-        for ln in lines:
-            line = ln.rstrip().split("\t")
-            coverage_value = float(line[coverage_column_name])
-            current_window = int(line[window_column_name])
-            if current_window == between_regions_coordinates[n][0]:
-                flag = True
-            if flag:
-                between_regions_coverage_dict[coverage_value] += 1
-            if current_window == between_regions_coordinates[n][1]:
-                flag = False
-                median_between_regions.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
-                between_regions_coverage_dict.clear()
-                n += 1
-            if n == len(between_regions_coordinates):
-                break
-    return median_between_regions
-
-
 def main():
     coordinates = raw_pseudocoordinates(args.input,
                                         args.whole_genome_value,
@@ -137,20 +129,20 @@ def main():
                                         args.coverage_column_name,
                                         args.window_column_name,
                                         args.repeat_window_number)
-    print(coordinates)
+    # print(coordinates)
 
-    between_regions = coordinates_between_regions(coordinates)
-    print(between_regions)
+    # between_regions = coordinates_between_regions(coordinates)
+    # print(between_regions)
 
-    medians = median_from_between_regions(args.input, between_regions, args.coverage_column_name, args.window_column_name)
-    print(medians)
+    # medians = median_from_between_regions(args.input, between_regions, args.coverage_column_name, args.window_column_name)
+    # print(medians)
 
-    print('---without filter')
-    print(coordinates_list_to_BED(args.scaffold_name, coordinates))
-    print('---filtering by distanse')
-    print(coordinates_list_to_BED(args.scaffold_name, distanse_coordinate_filter(coordinates)))
-    print('---filtering by distanse + region length')
-    print(coordinates_list_to_BED(args.scaffold_name, length_coordinate_filter(distanse_coordinate_filter(coordinates), args.min_region_length)))
+    # print('---without filter')
+    # print(coordinates_list_to_BED(args.scaffold_name, coordinates))
+    # print('---filtering by distanse')
+    # print(coordinates_list_to_BED(args.scaffold_name, distanse_coordinate_filter(coordinates)))
+    # print('---filtering by distanse + region length')
+    # print(coordinates_list_to_BED(args.scaffold_name, length_coordinate_filter(distanse_coordinate_filter(coordinates), args.min_region_length)))
 
 
 if __name__ == "__main__":
@@ -175,11 +167,11 @@ if __name__ == "__main__":
     group_additional.add_argument('-m', '--whole_genome_value', type=int,
                                   help="whole genome median/mean value", default=34)
     group_additional.add_argument('-r', '--repeat_window_number', type=int,
-                                  help="number of repeating windows for a given condition", default=10)
+                                  help="number of repeating windows for a given condition", default=1)
     group_additional.add_argument('-d', '--deviation_percent', type=int,
                                   help="number of repeating windows for a given condition", default=5)
     group_additional.add_argument('--min_region_length', type=int,
-                                  help="minimal region length for filtration", default=15)
+                                  help="minimal region length for filtration", default=1)
 
     args = parser.parse_args()
     main()
