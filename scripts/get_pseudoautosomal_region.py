@@ -24,6 +24,7 @@ def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
 
 
 def main():
+    print('---without filter')
     coordinates = Coordinates(args.input, args.whole_genome_value,
                               args.deviation_percent)
     pseudocoordinates = coordinates.pseudocoordinates(args.coverage_column_name,
@@ -58,9 +59,9 @@ if __name__ == "__main__":
     group_additional.add_argument('-m', '--whole_genome_value', type=int,
                                   help="whole genome median/mean value", default=34)
     group_additional.add_argument('-r', '--repeat_window_number', type=int,
-                                  help="number of repeating windows for a given condition", default=5)
+                                  help="number of repeating windows for a given condition", default=10)
     group_additional.add_argument('-d', '--deviation_percent', type=int,
-                                  help="number of repeating windows for a given condition", default=5)
+                                  help="measurement error", default=30)
     group_additional.add_argument('--min_region_length', type=int,
                                   help="minimal region length for filtration", default=15)
 

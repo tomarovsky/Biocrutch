@@ -57,18 +57,16 @@ class Coordinates():
         minimum_coverage = whole_genome_value - (whole_genome_value / 100 * deviation_percent)
         # maximum_coverage = whole_genome_value + (whole_genome_value / 100 * deviation_percent)
         result = []
-        empty_list = True
-        median_index = -1
-        
-        for lst in range(len(coordinates)):
-            if empty_list:
-                result.append(coordinates[lst])
-                empty_list = False
-                continue
-            median_index += 1
-            if median_list[median_index] >= minimum_coverage:  # and coverage_value < maximum_coverage:
-                result.append(coordinates[lst])
-            continue
+        median_flag = True
+        for i in range(len(median_list)):
+            if median_list[i] > minimum_coverage:  # and coverage_value < self.maximum_coverage:
+                if median_flag:
+                    result.append(coordinates[i])
+                if i != (len(median_list) - 1):
+                    result.append(coordinates[i + 1])
+                    median_flag = False
+            else:
+                median_flag = True
         return result
 
 
@@ -113,22 +111,23 @@ class Coordinates():
             median_between_regions.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
             between_regions_coverage_dict.clear()
         
-        print(coordinates)
-        print(median_between_regions)
-        print(self.minimum_coverage)
+        # print(coordinates)
+        # print(median_between_regions)
+        # print(self.minimum_coverage)
         
         # median concat
-        #перепроверить
+        # draft переписать на объединение координат
         result = []
-        m = True
+        median_flag = True
         for i in range(len(median_between_regions)):
+            print(self.minimum_coverage)
             if median_between_regions[i] > self.minimum_coverage:  # and coverage_value < self.maximum_coverage:
-                if m:
+                if median_flag:
                     result.append(coordinates[i])
-                if i != (len(median_between_regions)-1):
-                    result.append(coordinates[i+1])
-                    m = False
+                if i != (len(median_between_regions) - 1):
+                    result.append(coordinates[i + 1])
+                    median_flag = False
             else:
-                m = True
+                median_flag = True
                     
         return result
