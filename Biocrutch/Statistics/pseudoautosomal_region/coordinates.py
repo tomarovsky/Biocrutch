@@ -120,6 +120,7 @@ class Coordinates():
         # median concat
         #перепроверить
         result = []
+        m = True
         for i in range(len(median_between_regions)):
             if median_between_regions[i] > self.minimum_coverage:  # and coverage_value < self.maximum_coverage:
                 if m:
