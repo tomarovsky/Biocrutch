@@ -20,7 +20,7 @@ class CoveragesMetrics:
 
     def average_value(self) -> float:
         sum_of_coverages = sum(key*value for key, value in self.coverages_amounts_dict.items())
-        if self.sum_values_coverages:
+        if self.sum_values_coverages == 0:
             return 0
         else:
             average = sum_of_coverages/self.sum_values_coverages
