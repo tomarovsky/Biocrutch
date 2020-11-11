@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
-                                  help="input file.bam.gz (don`t use for STDIN)", default=stdin)
+                                help="input file.bam.gz (don`t use for STDIN)", default=stdin)
 
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-f', '--frame-size', type=int,
