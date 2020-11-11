@@ -11,6 +11,47 @@ class Coordinates():
     def __init__(self, data):
         self.data = data
 
+    @staticmethod
+    def coordinates_between_regions(coordinates: list, between_regions_list: list) -> list:
+        # input list [[start, stop], [start, stop]]
+        last_element_index = len(coordinates) - 1
+        for lst in range(len(coordinates)):
+            start = coordinates[lst][-1]
+            if lst == last_element_index:
+                break
+            stop = coordinates[lst + 1][0]
+            between_regions_list.append([start, stop])
+        return between_regions_list
+
+    @staticmethod
+    def distanse_coordinate_filter(coordinates_list: list, min_region_length: int) -> list:
+        # input list [[start, stop], [start, stop]]
+        result = []
+        empty_list = True
+        start_flag = True
+        for lst in range(len(coordinates_list)):
+            if empty_list:
+                result.append(coordinates_list[lst])
+                empty_list = False
+                continue
+            d_first = coordinates_list[lst - 1][1]
+            d_second = coordinates_list[lst][0]
+            distanse = d_second - d_first
+            if distanse > min_region_length:
+                result.append(coordinates_list[lst])
+            else:
+                if start_flag == True:
+                    start = coordinates_list[lst - 1][0]
+                    start_flag = False
+                stop = coordinates_list[lst][1]
+                if result[-1][1] < start:
+                    result.append([start, stop])
+                    start_flag = True
+                else:
+                    del result[-1][-1]
+                    result[-1].append(stop)
+        return result
+
     def pseudocoordinates(self,
                           whole_genome_value: int,
                           deviation_percent: int,
@@ -54,48 +95,6 @@ class Coordinates():
                 repeat_window = 0
             else:
                 repeat_window = 0
-        print(coordinates)
+
         print(median_between_regions)
-
         return coordinates
-
-    @staticmethod
-    def coordinates_between_regions(coordinates: list, between_regions_list: list) -> list:
-        # input list [[start, stop], [start, stop]]
-        last_element_index = len(coordinates) - 1
-        for lst in range(len(coordinates)):
-            start = coordinates[lst][-1]
-            if lst == last_element_index:
-                break
-            stop = coordinates[lst + 1][0]
-            between_regions_list.append([start, stop])
-        return between_regions_list
-
-    @staticmethod
-    def distanse_coordinate_filter(coordinates_list: list, min_region_length: int) -> list:
-        # input list [[start, stop], [start, stop]]
-        result = []
-        empty_list = True
-        start_flag = True
-        for lst in range(len(coordinates_list)):
-            if empty_list:
-                result.append(coordinates_list[lst])
-                empty_list = False
-                continue
-            d_first = coordinates_list[lst - 1][1]
-            d_second = coordinates_list[lst][0]
-            distanse = d_second - d_first
-            if distanse > min_region_length:
-                result.append(coordinates_list[lst])
-            else:
-                if start_flag == True:
-                    start = coordinates_list[lst - 1][0]
-                    start_flag = False
-                stop = coordinates_list[lst][1]
-                if result[-1][1] < start:
-                    result.append([start, stop])
-                    start_flag = True
-                else:
-                    del result[-1][-1]
-                    result[-1].append(stop)
-        return result
