@@ -118,16 +118,16 @@ class Coordinates():
         print(self.minimum_coverage)
         
         # median concat
-        #дописать!
+        #перепроверить
         result = []
-        median_index = -1
-        
-        for lst in range(len(coordinates)):
-            if not result:
-                result.append(coordinates[lst])
-                continue
-            median_index += 1
-            if median_between_regions[median_index] >= self.minimum_coverage:  # and coverage_value < self.maximum_coverage:
-                del result[-1][-1]
-                result[-1].append(coordinates[lst][-1])
+        for i in range(len(median_between_regions)):
+            if median_between_regions[i] > self.minimum_coverage:  # and coverage_value < self.maximum_coverage:
+                if m:
+                    result.append(coordinates[i])
+                if i != (len(median_between_regions)-1):
+                    result.append(coordinates[i+1])
+                    m = False
+            else:
+                m = True
+                    
         return result

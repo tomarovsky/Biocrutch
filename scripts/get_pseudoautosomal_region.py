@@ -27,8 +27,8 @@ def main():
     coordinates = Coordinates(args.input, args.whole_genome_value,
                               args.deviation_percent)
     pseudocoordinates = coordinates.pseudocoordinates(args.coverage_column_name,
-                                                                   args.window_column_name,
-                                                                   args.repeat_window_number)
+                                                      args.window_column_name,
+                                                      args.repeat_window_number)
     print('---without filter')
     print(coordinates_list_to_BED(args.scaffold_name, pseudocoordinates))
 
