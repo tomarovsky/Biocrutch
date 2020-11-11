@@ -24,18 +24,16 @@ def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
 
 
 def main():
-    coordinates = Coordinates(args.input).pseudocoordinates(args.whole_genome_value,
-                                               args.deviation_percent,
-                                               args.coverage_column_name,
-                                               args.window_column_name,
-                                               args.repeat_window_number)
+    coordinates = Coordinates(args.input, args.whole_genome_value,
+                              args.deviation_percent)
+    pseudocoordinates = coordinates.pseudocoordinates(args.coverage_column_name,
+                                                                   args.window_column_name,
+                                                                   args.repeat_window_number)
     print('---without filter')
-    print(coordinates_list_to_BED(args.scaffold_name, coordinates))
+    print(coordinates_list_to_BED(args.scaffold_name, pseudocoordinates))
 
     print('---filtering by distanse')
-    print(coordinates_list_to_BED(args.scaffold_name, Coordinates.distanse_coordinate_filter(coordinates, args.min_region_length)))
-    # print('---filtering by distanse + region length')
-    # print(coordinates_list_to_BED(args.scaffold_name, length_coordinate_filter(distanse_coordinate_filter(coordinates), args.min_region_length)))
+    print(coordinates_list_to_BED(args.scaffold_name, Coordinates.distanse_coordinate_filter(pseudocoordinates, args.min_region_length)))
 
 
 if __name__ == "__main__":
