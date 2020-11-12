@@ -20,7 +20,7 @@
 
     Header-less tab-separated input file with 3 columns: scaffold_id, position(1-based), coverage.
 
-- [get_pseudoautosomal_region.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/get_pseudoautosomal_region.py). Script for determining the coordinates of the pseudoautosomal region on the sex chromosome.
+- [get_pseudoautosomal_region.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/get_pseudoautosomal_region.py). A script for determining the coordinates of the pseudo-autosomal region on the sex chromosome. The output is a BED file with the coordinates of the pseudoautosomal region.
 
 - [ema_bin_to_fastq.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/ema_bin_to_fastq.py). Combines Ema output files into reverse, forward and barcode-only file.
 
