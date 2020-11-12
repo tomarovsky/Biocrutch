@@ -27,7 +27,8 @@ def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
 def main():
     print('---raw coordinates---')
     coordinates = Coordinator(args.input, args.whole_genome_value, args.deviation_percent)
-    raw_coordinates = coordinates.get_coordinates(args.coverage_column_name,
+    raw_coordinates = coordinates.get_coordinates(args.window_size,
+                                                  args.coverage_column_name,
                                                   args.window_column_name, 
                                                   args.repeat_window_number)
     print(coordinates.median_between_regions_list)
@@ -46,6 +47,10 @@ def main():
     #                                                  args.min_region_length)
     # print(coordinates_list_to_BED(args.scaffold_name, merge_by_distansce))
 
+    if args.output:
+        outF = open(args.output + ".bed", "w")
+        outF.writelines(coordinates_list_to_BED(args.scaffold_name, merge_by_median))
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Script for determining the coordinates of the pseudoautosomal region. Output of coordinates to BED file.")
@@ -58,13 +63,13 @@ if __name__ == "__main__":
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
                                   help='output file prefix')
     group_additional.add_argument('-f', '--window-size', type=int,
-                                  help="the window size used in your data", default=100000)
+                                  help="the window size used in your data", default=10000)
     group_additional.add_argument('--window_column_name', type=int,
-                                  help="Number of column in coverage file with window number", default=1)
+                                  help="number of column in coverage file with window number", default=1)
     group_additional.add_argument('--coverage_column_name', type=int,
-                                  help="Number of column in coverage file with mean/median coverage per window", default=2)
+                                  help="number of column in coverage file with mean/median coverage per window", default=2)
     group_additional.add_argument('-s', '--scaffold-name', type=str,
-                                  help="Name of column in coverage file with scaffold name", default="scaffold")
+                                  help="name of column in coverage file with scaffold name", default="scaffold")
     group_additional.add_argument('-m', '--whole_genome_value', type=int,
                                   help="whole genome median/mean value", default=34)
     group_additional.add_argument('-r', '--repeat_window_number', type=int,
