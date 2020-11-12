@@ -5,7 +5,8 @@ Script for determining the coordinates of the pseudoautosomal region.
 Output of coordinates to BED file.
 '''
 from Biocrutch.Statistics.coverage_statistics.coverage_metrics import CoveragesMetrics
-from Biocrutch.Statistics.pseudoautosomal_region.coordinates import Coordinates
+from Biocrutch.Statistics.pseudoautosomal_region.coordinator import Coordinator
+from Biocrutch.Statistics.pseudoautosomal_region.filter import Filter
 from Biocrutch.Routines.routine_functions import metaopen
 from collections import Counter
 from sys import stdin
@@ -24,18 +25,26 @@ def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
 
 
 def main():
-    print('---without filter')
-    coordinates = Coordinates(args.input, args.whole_genome_value,
-                              args.deviation_percent)
-    pseudocoordinates = coordinates.pseudocoordinates(args.coverage_column_name,
-                                                      args.window_column_name,
-                                                      args.repeat_window_number)
-    print('---without filter')
-    print(coordinates_list_to_BED(args.scaffold_name, pseudocoordinates))
+    print('---raw coordinates---')
+    coordinates = Coordinator(args.input, args.whole_genome_value, args.deviation_percent)
+    raw_coordinates = coordinates.get_coordinates(args.coverage_column_name,
+                                                  args.window_column_name, 
+                                                  args.repeat_window_number)
+    print(coordinates.median_between_regions_list)
+    print(coordinates.minimum_coverage)
+    print(coordinates_list_to_BED(args.scaffold_name, raw_coordinates))
 
-    print('---filtering by distanse')
-    print(coordinates_list_to_BED(args.scaffold_name, Coordinates.distanse_coordinate_filter(pseudocoordinates, args.min_region_length)))
+    print('-filtration by median')
+    merge_by_median = Filter().concat_by_median(raw_coordinates,
+                                                coordinates.median_between_regions_list,  
+                                                coordinates.minimum_coverage,
+                                                coordinates.maximum_coverage)
+    print(coordinates_list_to_BED(args.scaffold_name, merge_by_median))
 
+    # print('--filtering by distance')
+    # merge_by_distansce = Filter().concat_by_distanse(raw_coordinates,
+    #                                                  args.min_region_length)
+    # print(coordinates_list_to_BED(args.scaffold_name, merge_by_distansce))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -63,7 +72,7 @@ if __name__ == "__main__":
     group_additional.add_argument('-d', '--deviation_percent', type=int,
                                   help="measurement error", default=30)
     group_additional.add_argument('--min_region_length', type=int,
-                                  help="minimal region length for filtration", default=15)
+                                  help="minimal region length for filtration", default=10)
 
     args = parser.parse_args()
     main()
