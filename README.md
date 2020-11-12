@@ -13,12 +13,14 @@
     3. the output of the program is a pandas dataframe used for further analysis.
     4. output to a convenient csv file format.
 
-- [coverage_statistics.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/coverage_statistics.py). Script for calculating median, average, maximum and minimum coverage.
+- [get_coverage_statistics.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/get_coverage_statistics.py). Script for calculating median, average, maximum and minimum coverage.
     1. calculate stats for whole genome
     2. calculate stats for each scaffold
     3. calculate stats in 100 kbp and 1 Mbp stacking windows
 
     Header-less tab-separated input file with 3 columns: scaffold_id, position(1-based), coverage.
+
+- [get_pseudoautosomal_region.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/get_pseudoautosomal_region.py). Script for determining the coordinates of the pseudoautosomal region on the sex chromosome.
 
 - [ema_bin_to_fastq.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/ema_bin_to_fastq.py). Combines Ema output files into reverse, forward and barcode-only file.
 
