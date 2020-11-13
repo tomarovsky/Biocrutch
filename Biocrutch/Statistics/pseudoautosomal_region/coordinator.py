@@ -14,7 +14,6 @@ class Coordinator():
         self.minimum_coverage = whole_genome_value - (whole_genome_value / 100 * deviation_percent)
         self.maximum_coverage = whole_genome_value + (whole_genome_value / 100 * deviation_percent)
         self.median_between_regions_list = []
-        self.coordinates = []
 
     @staticmethod
     def coordinates_between_regions(coordinates: list, between_regions_list: list) -> list:
@@ -34,7 +33,7 @@ class Coordinator():
                     coverage_column_name: int,
                     window_column_name: int,
                     repeat_window_number: int) -> list:
-        self.coordinates = []
+        coordinates = []
         repeat_window = 0
         start_coordinate = None
 
@@ -56,22 +55,22 @@ class Coordinator():
                     repeat_window = 0
             elif start_coordinate is not None and (coverage_value <= self.minimum_coverage or coverage_value >= self.maximum_coverage):
                 stop_coordinate = (current_window - 1) * window_size
-                self.coordinates.append([start_coordinate, stop_coordinate])
+                coordinates.append([start_coordinate, stop_coordinate])
                 if between_region_flag:
                     self.median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
                     between_regions_coverage_dict.clear()
-                if self.coordinates:
+                if coordinates:
                     between_region_flag = True
                 start_coordinate = None
                 repeat_window = 0
             else:
                 repeat_window = 0
-        if self.coordinates[-1][-1] != current_window:
-            self.coordinates.append([(stop_coordinate + 1), current_window])
+        if coordinates[-1][-1] != current_window:
+            coordinates.append([(stop_coordinate + 1), current_window])
         if between_regions_coverage_dict:
             self.median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
             between_regions_coverage_dict.clear()
         
         # print(self.median_between_regions_list)
-        # print(self.coordinates)
-        return self.coordinates
+        # print(coordinates)
+        return coordinates

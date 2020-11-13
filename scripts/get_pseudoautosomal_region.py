@@ -35,7 +35,7 @@ def main():
     print(coordinates.minimum_coverage)
     print(coordinates_list_to_BED(args.scaffold_name, raw_coordinates))
 
-    print('-filtration by median')
+    print('--filtration by median--')
     merge_by_median = Filter().concat_by_median(raw_coordinates,
                                                 coordinates.median_between_regions_list,  
                                                 coordinates.minimum_coverage,
