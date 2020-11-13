@@ -7,7 +7,8 @@ from Biocrutch.Statistics.coverage_statistics.coverage_metrics import CoveragesM
 from Biocrutch.Statistics.pseudoautosomal_region.coordinator import Coordinator
 
 class Filter():
-    def concat_by_distanse(self, coordinates: list, min_region_length: int) -> list:
+    @staticmethod
+    def concat_by_distanse(coordinates: list, min_region_length: int) -> list:
         '''
         input list [[start, stop], [start, stop]]
         merge coordinates that are less than the specified distance
@@ -37,7 +38,8 @@ class Filter():
         return result
 
 
-    def concat_by_median(self, coordinates: list, median_list: list, minimum_coverage, maximum_coverage) -> list:
+    @staticmethod
+    def concat_by_median(coordinates: list, median_list: list, minimum_coverage, maximum_coverage) -> list:
         '''
         merge coordinates if the area between them is with a suitable median
         '''
