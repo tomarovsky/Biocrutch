@@ -192,51 +192,57 @@ class GetCoverageStatistics:
     def get_overlapping_windows_stats(self, frame_size): # in developing
         df_overlapping_frames = pd.DataFrame(columns=['scaffold', 'frame', 'median', 'average', 'max', 'min'])
 
-        frame_coverages_amounts_dict = Counter()
+        nonoverlapping_coverages_dict = Counter()
+        overlapping_coverages_dict = Counter()
         nonoverlapping_frame_line_counter = 0
         overlapping_frame_line_counter = 0
-        genome_line_counter = 0
         frame_id = -1
         index = 0
         previous_scaffold_name = None
+        overlapping_start = frame_size / 2
 
         for line in self.data:
-            genome_line_counter += 1
             line = line.rstrip().split('\t')
-            if previous_scaffold_name == line[0] or previous_scaffold_name is None:
-                nonoverlapping_frame_line_counter += 1
-                frame_coverages_amounts_dict[float(line[2])] += 1
-            else:
+
+            if previous_scaffold_name is not None and previous_scaffold_name != line[0]:
                 frame_id = -1
                 nonoverlapping_frame_line_counter = 1
-                frame_coverages_amounts_dict.clear()
-                frame_coverages_amounts_dict[float(line[2])] += 1
+                overlapping_frame_line_counter = 1
+                overlapping_coverages_dict.clear()
+                nonoverlapping_coverages_dict.clear()
+                nonoverlapping_coverages_dict[float(line[2])] += 1
 
-            if genome_line_counter >= int(frame_size / 2):
+            # for nonoverlapping stats
+            if previous_scaffold_name == line[0] or previous_scaffold_name is None:
+                nonoverlapping_frame_line_counter += 1
+                nonoverlapping_coverages_dict[float(line[2])] += 1
+            # for overlapping stats
+            if previous_scaffold_name == line[0] and nonoverlapping_frame_line_counter > overlapping_start:
                 overlapping_frame_line_counter += 1
-                frame_coverages_amounts_dict[float(line[2])] += 1
-            # for window (overlapping)
+                overlapping_coverages_dict[float(line[2])] += 1
+            
             if nonoverlapping_frame_line_counter == frame_size:
                 index += 1
                 frame_id += 1
-                metrics = CoveragesMetrics(frame_coverages_amounts_dict)
+                metrics = CoveragesMetrics(nonoverlapping_coverages_dict)
                 print('non-overlapping windows metrics is being processing')
                 df_overlapping_frames.loc[index] = [previous_scaffold_name, frame_id, metrics.median_value(),
                                                                             metrics.average_value(),
                                                                             metrics.max_coverage_value(),
                                                                             metrics.min_coverage_value()]
-                frame_coverages_amounts_dict.clear()
+                nonoverlapping_coverages_dict.clear()
                 nonoverlapping_frame_line_counter = 0
             if overlapping_frame_line_counter == frame_size:
+                print(overlapping_coverages_dict)
                 index += 1
                 frame_id += 1
-                metrics = CoveragesMetrics(frame_coverages_amounts_dict)
-                print('non-overlapping windows metrics is being processing')
+                metrics = CoveragesMetrics(overlapping_coverages_dict)
+                print('overlapping windows metrics is being processing')
                 df_overlapping_frames.loc[index] = [previous_scaffold_name, frame_id, metrics.median_value(),
                                                                             metrics.average_value(),
                                                                             metrics.max_coverage_value(),
                                                                             metrics.min_coverage_value()]
-                frame_coverages_amounts_dict.clear()
+                overlapping_coverages_dict.clear()
                 overlapping_frame_line_counter = 0
             previous_scaffold_name = line[0]
 
