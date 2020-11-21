@@ -27,29 +27,31 @@ def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
 def main():
     print('---raw coordinates---')
     coordinates = Coordinator(args.input, args.whole_genome_value, args.deviation_percent)
-    raw_coordinates = coordinates.get_coordinates(args.window_size,
+    coordinates_and_medians_tuple = coordinates.get_coordinates(args.window_size,
                                                   args.coverage_column_name,
                                                   args.window_column_name, 
                                                   args.repeat_window_number)
-    print(coordinates.median_between_regions_list)
-    print(coordinates.minimum_coverage)
-    print(coordinates_list_to_BED(args.scaffold_name, raw_coordinates))
+    coords = coordinates_and_medians_tuple[0]
+    medians = coordinates_and_medians_tuple[1]
+    
+    print(medians)
+    print("Concatenate if the median >", round(coordinates.minimum_coverage, 2))
+    print(coordinates_list_to_BED(args.scaffold_name, coords))
 
     print('--filtration by median--')
-    merge_by_median = Filter.concat_by_median(raw_coordinates,
-                                                coordinates.median_between_regions_list,  
-                                                coordinates.minimum_coverage,
-                                                coordinates.maximum_coverage)
-    print(coordinates_list_to_BED(args.scaffold_name, merge_by_median))
+    coords_merge_by_median = Filter.concat_by_median(coords, # coordinates
+                                              medians, # median list between regions
+                                              coordinates.minimum_coverage,
+                                              coordinates.maximum_coverage)
+    print(coordinates_list_to_BED(args.scaffold_name, coords_merge_by_median))
 
     # print('--filtering by distance')
-    # merge_by_distansce = Filter().concat_by_distanse(raw_coordinates,
-    #                                                  args.min_region_length)
+    # merge_by_distansce = Filter().concat_by_distanse(coords_merge_by_median, args.min_region_length)
     # print(coordinates_list_to_BED(args.scaffold_name, merge_by_distansce))
 
     if args.output:
         outF = open(args.output + ".bed", "w")
-        outF.writelines(coordinates_list_to_BED(args.scaffold_name, merge_by_median))
+        outF.writelines(coordinates_list_to_BED(args.scaffold_name, coords_merge_by_median))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

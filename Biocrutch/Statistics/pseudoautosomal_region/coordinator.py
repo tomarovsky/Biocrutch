@@ -13,9 +13,8 @@ class Coordinator():
         self.whole_genome_value = whole_genome_value
         self.minimum_coverage = whole_genome_value - (whole_genome_value / 100 * deviation_percent)
         self.maximum_coverage = whole_genome_value + (whole_genome_value / 100 * deviation_percent)
-        self.median_between_regions_list = []
 
-    @staticmethod
+    @staticmethod # not used in the script to determine the coordinates of the pseudoautosomal region
     def coordinates_between_regions(coordinates: list, between_regions_list: list) -> list:
         # input list [[start, stop], [start, stop]]
         last_element_index = len(coordinates) - 1
@@ -34,6 +33,7 @@ class Coordinator():
                     window_column_name: int,
                     repeat_window_number: int) -> list:
         coordinates = []
+        median_between_regions_list = []
         repeat_window = 0
         start_coordinate = None
 
@@ -57,7 +57,7 @@ class Coordinator():
                 stop_coordinate = (current_window - 1) * window_size
                 coordinates.append([start_coordinate, stop_coordinate])
                 if between_region_flag:
-                    self.median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
+                    median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
                     between_regions_coverage_dict.clear()
                 if coordinates:
                     between_region_flag = True
@@ -68,9 +68,9 @@ class Coordinator():
         if coordinates[-1][-1] != current_window:
             coordinates.append([(stop_coordinate + 1), current_window])
         if between_regions_coverage_dict:
-            self.median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
+            median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
             between_regions_coverage_dict.clear()
         
-        # print(self.median_between_regions_list)
+        # print(median_between_regions_list)
         # print(coordinates)
-        return coordinates
+        return coordinates, median_between_regions_list
