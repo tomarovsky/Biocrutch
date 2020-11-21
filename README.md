@@ -13,16 +13,16 @@
     3. the output of the program is a pandas dataframe used for further analysis.
     4. output to a convenient csv file format.
 
-- [get_coverage_statistics.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/get_coverage_statistics.py). Script for calculating median, average, maximum and minimum coverage.
+- [coverage_statistics.py](https://github.com/tomarovsky/Biocrutch/blob/master/scripts/genomecov/coverage_statistics.py). Script for calculating median, average, maximum and minimum coverage.
     1. calculate stats for whole genome
     2. calculate stats for each scaffold
     3. calculate stats in 100 kbp and 1 Mbp stacking windows
 
     Header-less tab-separated input file with 3 columns: scaffold_id, position(1-based), coverage.
 
-- [get_pseudoautosomal_region.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/get_pseudoautosomal_region.py). A script for determining the coordinates of the pseudo-autosomal region on the sex chromosome. The output is a BED file with the coordinates of the pseudoautosomal region.
+- [pseudoautosomal_region.py](https://github.com/tomarovsky/Biocrutch/blob/master/scripts/genomecov/pseudoautosomal_region.py). A script for determining the coordinates of the pseudo-autosomal region on the sex chromosome. The output is a BED file with the coordinates of the pseudoautosomal region.
 
-- [ema_bin_to_fastq.py](https://github.com/etozhetoma/Biocrutch/blob/master/scripts/ema_bin_to_fastq.py). Combines Ema output files into reverse, forward and barcode-only file.
+- [ema_bin_to_fastq.py](https://github.com/tomarovsky/Biocrutch/blob/master/scripts/10x/ema_bin_to_fastq.py). Combines Ema output files into reverse, forward and barcode-only file.
 
 To use the Biocrutch package, you need to add the package path to PYTHONPATH.
 
