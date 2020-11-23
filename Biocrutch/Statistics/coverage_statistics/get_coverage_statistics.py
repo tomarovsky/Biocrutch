@@ -264,20 +264,20 @@ class GetCoverageStatistics:
         pause = 0
         
         for ln in range(0, len(data), frame_shift):
-            try:
-                scaffold_name = data[ln - gap_counter].rstrip().split('\t')[0]
-                if first_scaffold_flag:
-                    previous_scaffold_name = scaffold_name
-                    first_scaffold_flag = False
-            except IndexError:
-                break
+            # try:
+            scaffold_name = data[ln - gap_counter].rstrip().split('\t')[0]
+            if first_scaffold_flag:
+                previous_scaffold_name = scaffold_name
+                first_scaffold_flag = False
+            # except IndexError:
+            #     break
             print(scaffold_name)
             if scaffold_name == previous_scaffold_name or previous_scaffold_name is None:
                 for j in range(frame_size):
-                    try:
-                        line = data[ln - gap_counter + j - pause].rstrip().split('\t')
-                    except IndexError:
-                        break
+                    # try:
+                    line = data[ln - gap_counter + j - pause].rstrip().split('\t')
+                    # except IndexError:
+                    #     break
                     if scaffold_name != line[0]:
                         break
                     print(line)
