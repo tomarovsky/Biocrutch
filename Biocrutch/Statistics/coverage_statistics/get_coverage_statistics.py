@@ -259,23 +259,23 @@ class GetCoverageStatistics:
         frame_id = -1 # for numbering from 0
         index = 0
         previous_scaffold_name = None
-        counter = 0
-        lol = True
-        f = 0
+        gap_counter = 0
+        first_scaffold_flag = True
+        pause = 0
         
         for ln in range(0, len(data), frame_shift):
             try:
-                scaffold_name = data[ln - counter].rstrip().split('\t')[0]
-                if lol:
+                scaffold_name = data[ln - gap_counter].rstrip().split('\t')[0]
+                if first_scaffold_flag:
                     previous_scaffold_name = scaffold_name
-                    lol = False
+                    first_scaffold_flag = False
             except IndexError:
                 break
             print(scaffold_name)
             if scaffold_name == previous_scaffold_name or previous_scaffold_name is None:
                 for j in range(frame_size):
                     try:
-                        line = data[ln - counter + j - f].rstrip().split('\t')
+                        line = data[ln - gap_counter + j - pause].rstrip().split('\t')
                     except IndexError:
                         break
                     if scaffold_name != line[0]:
@@ -296,12 +296,12 @@ class GetCoverageStatistics:
                         coverages_dict.clear()
             else:
                 for gap in range(1, frame_size + 1):
-                    scaffold_name = data[ln - counter - gap].rstrip().split('\t')[0]
+                    scaffold_name = data[ln - gap_counter - gap].rstrip().split('\t')[0]
                     print(scaffold_name, previous_scaffold_name)
                     if scaffold_name == previous_scaffold_name:
-                        counter += gap
-                        print(counter)
-                        f = frame_size - 1
+                        gap_counter += gap
+                        print(gap_counter)
+                        pause = frame_size - 1
                         frame_id = -1
                         break
             previous_scaffold_name = data[ln].rstrip().split('\t')[0]
