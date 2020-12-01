@@ -88,10 +88,9 @@ class GetCoverageStatistics:
         print(df_whole_genome)
 
         # create a report.csv
-        if self.output:
-            df_scaffolds.rename_axis('scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv", sep='\t', index = False)
-            df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", sep='\t', index = False)
-            df_whole_genome.rename_axis('genome').reset_index().to_csv(self.output + "_whole_genome_stats.csv", sep='\t', index = False)
+        df_scaffolds.rename_axis('scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv", sep='\t', index = False)
+        df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", sep='\t', index = False)
+        df_whole_genome.rename_axis('genome').reset_index().to_csv(self.output + "_whole_genome_stats.csv", sep='\t', index = False)
 
 
     def get_whole_genome_stats(self):
@@ -114,8 +113,7 @@ class GetCoverageStatistics:
         # for print to terminal
         print(df_whole_genome)
         # create a report.csv
-        if self.output:
-            df_whole_genome.rename_axis('genome').reset_index().to_csv(self.output + "_whole_genome_stats.csv", encoding='utf-8', sep='\t', index = False)
+        df_whole_genome.rename_axis('genome').reset_index().to_csv(self.output + "_whole_genome_stats.csv", encoding='utf-8', sep='\t', index = False)
 
 
     def get_scaffolds_stats(self):
@@ -145,8 +143,7 @@ class GetCoverageStatistics:
         #for print dataframe to terminal
         print(df_scaffolds)
         # create a report.csv
-        if self.output:
-            df_scaffolds.rename_axis('scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv", encoding='utf-8', sep='\t', index = False)
+        df_scaffolds.rename_axis('scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv", encoding='utf-8', sep='\t', index = False)
 
 
     def get_nonoverlapping_windows_stats(self, frame_size):
@@ -185,8 +182,7 @@ class GetCoverageStatistics:
         #for print dataframe to terminal
         print(df_nonoverlapping_frames)
         # create a report.csv
-        if self.output:
-            df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)
+        df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)
 
 
     # def get_overlapping_windows_stats(self, frame_size): # in developing
@@ -266,28 +262,30 @@ class GetCoverageStatistics:
         for ln in range(0, len(data), frame_shift):
             # try:
             scaffold_name = data[ln - gap_counter].rstrip().split('\t')[0]
+            next_scaffold_name = data[ln + frame_size - gap_counter].rstrip().split('\t')[0]
             if first_scaffold_flag:
                 previous_scaffold_name = scaffold_name
                 first_scaffold_flag = False
             # except IndexError:
             #     break
-            print(scaffold_name)
-            if scaffold_name == previous_scaffold_name or previous_scaffold_name is None:
+            print("actual scaffold:", scaffold_name)
+            if scaffold_name == next_scaffold_name or previous_scaffold_name is None:
                 for j in range(frame_size):
                     # try:
-                    line = data[ln - gap_counter + j - pause].rstrip().split('\t')
+                    line = data[ln - gap_counter - pause + j].rstrip().split('\t')
                     # except IndexError:
                     #     break
                     if scaffold_name != line[0]:
+                        print("break! line", j + 1)
                         break
-                    print(line)
+                    print("data line:", line)
                     coverages_dict[float(line[2])] += 1
                     if j == frame_size - 1:
                         index += 1
                         frame_id += 1
                         metrics = CoveragesMetrics(coverages_dict)
-                        print('overlapping windows metrics is being processing')
-                        df_overlapping_frames.loc[index] = [previous_scaffold_name, 
+                        print('windows metrics is being processing')
+                        df_overlapping_frames.loc[index] = [scaffold_name, # ???????????
                                                             frame_id, 
                                                             metrics.median_value(),
                                                             metrics.average_value(),
@@ -295,14 +293,14 @@ class GetCoverageStatistics:
                                                             metrics.min_coverage_value()]
                         coverages_dict.clear()
             else:
-                for gap in range(1, frame_size + 1):
+                for gap in range(frame_size + 1):
                     scaffold_name = data[ln - gap_counter - gap].rstrip().split('\t')[0]
-                    print(scaffold_name, previous_scaffold_name)
+                    print("now and prev:", scaffold_name, previous_scaffold_name)
                     if scaffold_name == previous_scaffold_name:
                         gap_counter += gap
-                        print(gap_counter)
-                        pause = frame_size - 1
+                        print("gap:", gap_counter)
                         frame_id = -1
+                        pause = frame_size - 1
                         break
             previous_scaffold_name = data[ln].rstrip().split('\t')[0]
 
