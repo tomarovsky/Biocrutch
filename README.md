@@ -16,7 +16,7 @@
 - [coverage_statistics.py](https://github.com/tomarovsky/Biocrutch/blob/master/scripts/genomecov/coverage_statistics.py). Script for calculating median, average, maximum and minimum coverage.
     1. calculate stats for whole genome
     2. calculate stats for each scaffold
-    3. calculate stats in 100 kbp and 1 Mbp stacking windows
+    3. calculate stats in stacking windows (overlapping and non-overlapping)
 
     Header-less tab-separated input file with 3 columns: scaffold_id, position(1-based), coverage.
 
