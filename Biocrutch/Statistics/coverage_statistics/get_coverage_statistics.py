@@ -184,7 +184,7 @@ class GetCoverageStatistics:
         # create a report.csv
         df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)
 
-    def get_overlapping_windows_stats(self, frame_size, frame_shift):
+    def get_universal_windows_stats(self, frame_size, frame_shift):
         df_overlapping_frames = pd.DataFrame(columns=['scaffold', 'frame', 'median', 'average', 'max', 'min'])
         data = self.data.readlines()
         coverages_dict = Counter()

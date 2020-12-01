@@ -26,8 +26,8 @@ def main():
         metrics.get_scaffolds_stats()
     if args.nonoverlapping_windows_stats:
         metrics.get_nonoverlapping_windows_stats(args.frame_size)
-    if args.overlapping_windows_stats: # in developing
-        metrics.get_overlapping_windows_stats(args.frame_size, args.frame_shift)
+    if args.universal_windows_stats:
+        metrics.get_universal_windows_stats(args.frame_size, args.frame_shift)
 
 
 if __name__ == "__main__":
@@ -38,22 +38,22 @@ if __name__ == "__main__":
                                 help="input file.bam.gz (don`t use for STDIN)", default=stdin)
 
     group_additional = parser.add_argument_group('Additional options')
-    group_additional.add_argument('-f', '--frame-size', type=int, 
-                                  help="calculate stats in 100 kbp and 1 Mbp stacking windows", default=1000000)
-    group_additional.add_argument('-s', '--frame-shift', type=int,
-                                  help="calculate stats in 100 kbp and 1 Mbp stacking windows", default=1000000)
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
                                   help='output file prefix without frame size')
     group_additional.add_argument('--all-stats', action="store_true", default=False,
-                                  help="to calculate statistics for overlapping and non-overlapping windows, scaffolds and whole genome")
+                                  help="to calculate statistics for non-overlapping windows, scaffolds and whole genome (bad and outdated way)")
+    group_additional.add_argument('-f', '--frame-size', type=int, 
+                                  help="<f> bp windows size (for windows statistics)", default=1000000)
+    group_additional.add_argument('-s', '--frame-shift', type=int,
+                                  help="window shift step (for windows statistics)", default=1000000)
     group_additional.add_argument('--whole-genome-stats', action="store_true", default=False,
                                   help="to calculate statistics for whole genome only")
     group_additional.add_argument('--scaffolds-stats', action="store_true", default=False,
                                   help="to calculate statistics for scaffolds only")
     group_additional.add_argument('--nonoverlapping-windows-stats', action="store_true", default=False,
                                   help="to calculate statistics for non-overlapping windows only")
-    group_additional.add_argument('--overlapping-windows-stats', action="store_true", default=False,
-                                  help="to calculate statistics for overlapping windows only")
+    group_additional.add_argument('--universal-windows-stats', action="store_true", default=False,
+                                  help="universal way to calculate statistics for windows (overlapping and non-overlapping)")
 
     args = parser.parse_args()
     main()
