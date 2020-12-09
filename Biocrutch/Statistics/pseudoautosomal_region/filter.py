@@ -54,8 +54,10 @@ class Filter():
                     median_flag = False
                 stop = coordinates[lst][1]
             else:
-                print(stop)
-                draft_result.append([start, stop])
+                try:
+                    draft_result.append([start, stop])
+                except UnboundLocalError:
+                    pass
                 median_flag = True
             median_index += 1
         if not draft_result:
