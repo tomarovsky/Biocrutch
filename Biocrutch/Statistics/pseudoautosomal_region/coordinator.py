@@ -66,7 +66,7 @@ class Coordinator():
             else:
                 repeat_window = 0
         if coordinates[-1][-1] != current_window:
-            coordinates.append([(stop_coordinate + 1), current_window])
+            coordinates.append([(stop_coordinate + window_size), current_window * window_size])
         if between_regions_coverage_dict:
             median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
             between_regions_coverage_dict.clear()
