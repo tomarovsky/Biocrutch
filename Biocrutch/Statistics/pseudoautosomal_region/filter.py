@@ -47,6 +47,8 @@ class Filter():
         result= []
         median_flag = True
         median_index = 0
+        start = None
+        stop = None
         for lst in range(1, len(coordinates)):
             if median_list[median_index] >= minimum_coverage: # and median_list[median_index] < maximum_coverage:
                 if median_flag == True:
@@ -54,10 +56,8 @@ class Filter():
                     median_flag = False
                 stop = coordinates[lst][1]
             else:
-                try:
+                if start != None and stop != None:
                     draft_result.append([start, stop])
-                except UnboundLocalError:
-                    pass
                 median_flag = True
             median_index += 1
         if not draft_result:
