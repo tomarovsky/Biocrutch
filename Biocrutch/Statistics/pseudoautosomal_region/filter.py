@@ -51,6 +51,7 @@ class Filter():
             if median_list[median_index] >= minimum_coverage: # and median_list[median_index] < maximum_coverage:
                 if median_flag == True:
                     start = coordinates[lst - 1][0]
+                    print(start)
                     median_flag = False
                 stop = coordinates[lst][1]
             else:
