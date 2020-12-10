@@ -38,3 +38,16 @@ def SRA_metrics(SRA_id):
             dictionary[SRA_id] = metrics_lst[count - 3 : count]
     df = pd.DataFrame(dictionary)
     return df
+
+def sourceforge_latest_link_and_version(tool_name):
+    """get version number and download link"""
+    url = "https://sourceforge.net/projects/{}/files/".format(tool_name)
+    r = requests.get(url)
+    soup = BeautifulSoup(r.content, 'lxml')
+    files = soup.find('div', {'id': "files"})
+    sam = files.find('div', {'class' : "btn-set"}).a
+    link = "https://sourceforge.net" + sam.get('href')
+    # print('download link:', link)
+    version_info = sam.find('span', {'class' : 'sub-label'}).get_text()
+    # print('latest tool version:', version_info)
+    return (link, version_info)
