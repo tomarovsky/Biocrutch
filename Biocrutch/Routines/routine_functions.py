@@ -1,7 +1,7 @@
 __author__ = 'tomarovsky'
 import bz2
 import gzip
-
+import shutil
 
 def metaopen(filename, flags, buffering=None):
     '''function for open file, file.gz, file.bz2'''
@@ -16,3 +16,6 @@ def metaopen(filename, flags, buffering=None):
             return open(filename, flags, buffering=buffering)
         else:
             return open(filename, flags)
+        
+def extract_file(filename, extract_path="."):
+    shutil.unpack_archive(filename, extract_path)
