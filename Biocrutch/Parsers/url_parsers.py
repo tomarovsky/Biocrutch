@@ -48,6 +48,7 @@ def sourceforge_latest_link_and_version(tool_name):
     sam = files.find('div', {'class' : "btn-set"}).a
     link = "https://sourceforge.net" + sam.get('href')
     # print('download link:', link)
+    print('ACTUAL INFO: ', sam.get('title').split('/')[-1])
     version_info = sam.find('span', {'class' : 'sub-label'}).get_text()
     # print('latest tool version:', version_info)
     return (link, version_info)

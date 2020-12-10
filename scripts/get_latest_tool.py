@@ -8,20 +8,28 @@ import os
 # test for samtools
 
 def main():
+    # parsing latest version and download link
+    latest_tool_info = sourceforge_latest_link_and_version(args.input)
+    print('LINK:', latest_tool_info[0])
+    version = latest_tool_info[1].split()[0].rsplit('.', 2)[0] # version == dir_name
+    print('VERSION:', version)
+    
+    # check version by availble directory
     current_directory = os.path.abspath(os.curdir)
     os.chdir(args.working_directory + args.input)
     print(os.getcwd())
-    
-    #parsing latest version and download link
-    latest_tool_info = sourceforge_latest_link_and_version(args.input)
-    print('download link:', latest_tool_info[0])
-    print('latest tool version info:', latest_tool_info[1])
-    version = latest_tool_info[1].split()[0].rsplit('.', 2)[0]
-    print('latest tool version', version)
-    
-    # check version
-    #нужно делать на серве
-    
+    if os.path.isdir(version):
+        print("latest tool version is installed!")
+        os.chdir(current_directory) 
+        exit()
+    else:
+        print("latest tool version is NOT installed!")
+        answers = ['y', 'yes']
+        if not input("Are you sure? (y/n): ").lower().strip()[:1] in answers:
+            print('ok. mb later')
+            exit()
+        else:
+            print("Downloading files...")
     
     os.chdir(current_directory) 
 
