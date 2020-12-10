@@ -15,7 +15,10 @@ def main():
     #parsing latest version and download link
     latest_tool_info = sourceforge_latest_link_and_version(args.input)
     print('download link:', latest_tool_info[0])
-    print('latest tool version:', latest_tool_info[1])
+    print('latest tool version info:', latest_tool_info[1])
+    version = latest_tool_info[1].split()[0].rsplit('.', 2)[0]
+    print('latest tool version', version)
+    
     # check version
     #нужно делать на серве
     
