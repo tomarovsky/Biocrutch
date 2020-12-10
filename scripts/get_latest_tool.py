@@ -11,17 +11,19 @@ import os
 def main():
     # parsing latest version and download link
     latest_tool_info = sourceforge_latest_link_and_version(args.tool)
+    print('INFO:', latest_tool_info)
     tool_link = latest_tool_info[0]
     tool_archive_name = latest_tool_info[1].split()[0]
-    version = tool_archive_name.rsplit('.', 2)[0] # version == dir_name
+    tool_directory = tool_archive_name.rsplit('.', 2)[0]
+    version = tool_directory.split('-')[-1]
     print('LINK:', tool_link)
-    print('VERSION:', version)
-    
+    print('VERSION:', tool_directory) # to print the tool name too
+
     # check version by available directory
-    current_directory = os.path.abspath(os.curdir)
+    current_directory = os.getcwd()
     os.chdir(args.working_directory + args.tool)
     print(os.getcwd())
-    if os.path.isdir(version):
+    if os.path.isdir(tool_directory):
         print("latest tool version is installed!")
         os.chdir(current_directory) 
         exit()
@@ -37,11 +39,11 @@ def main():
             print("The tool files have been downloaded. Unpacking ...")
             extract_file(tool_archive_name)
             print('Installation...')
-            os.chdir(version)
-            print(os.path.abspath(os.curdir))
-            os.system('./configure && make')
-            print('Check:')
-            os.system('./samtools --version')
+            os.chdir(tool_directory)
+            print(os.getcwd())
+            # os.system('./configure && make')
+            # print('Check:')
+            # os.system('./samtools --version')
             
             # create modulefile
             print("Creating a module...")
@@ -60,7 +62,7 @@ def main():
                                    'set\tmodroot\t/usr/share/Modules',
                                    'set\ttopdir\t/home/tools/{tool}/{tool}-$version',
                                    'prepend-path\tPATH\t$topdir']
-            with open("/home/tools/modulefiles/{tool}/{tool}-{version}".format(tool=args.tool, version=version), "w") as modulefile:
+            with open("/home/tools/modulefiles/{tool}-{version}".format(tool=args.tool, version=version), "w") as modulefile:
                 modulefile.write("\n".join(modulefile_template).format(tool=args.tool, version=version))
             print('Successfully installed')
             print('Use: module load {tool}/{tool}-{version}'.format(tool=args.tool, version=version))
