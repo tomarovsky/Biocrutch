@@ -15,7 +15,10 @@ def main():
     tool_link = latest_tool_info[0]
     tool_archive_name = latest_tool_info[1].split()[0]
     tool_directory = tool_archive_name.rsplit('.', 2)[0]
-    version = tool_directory.split('-')[-1]
+    if '-' in tool_directory:
+        version = tool_directory.split('-')[-1]
+    elif '_' in tool_directory:
+        version == tool_directory.split('_')[-1]
     print('LINK:', tool_link)
     print('VERSION:', tool_directory) # to print the tool name too
 
@@ -35,16 +38,18 @@ def main():
             print("module load gcc/gcc-6.3")
             os.system('module load gcc/gcc-6.3')
             print("Downloading files...")
-            # os.system("wget --trust-server-names " + tool_link)
+            os.system("wget --trust-server-names " + tool_link)
             print("The tool files have been downloaded. Unpacking ...")
             extract_file(tool_archive_name)
             print('Installation...')
             os.chdir(tool_directory)
             print(os.getcwd())
-            # os.system('./configure && make')
-            # print('Check:')
-            # os.system('./samtools --version')
-            
+            os.system(args.install_command)
+            print('Check:')
+            os.system('./{} --version'.format(args.tool))
+            os.chdir("..")
+            os.remove(tool_archive_name)
+
             # create modulefile
             print("Creating a module...")
             modulefile_template = ['#%Module1.0#####################################################################',
@@ -60,12 +65,14 @@ def main():
                                    'module load gcc/gcc-6.3',
                                    'set\tversion\t{version}',
                                    'set\tmodroot\t/usr/share/Modules',
-                                   'set\ttopdir\t/home/tools/{tool}/{tool}-$version',
+                                   'set\ttopdir\t/home/tools/{tool}/{tool_directory}',
                                    'prepend-path\tPATH\t$topdir']
-            with open("/home/tools/modulefiles/{tool}-{version}".format(tool=args.tool, version=version), "w") as modulefile:
-                modulefile.write("\n".join(modulefile_template).format(tool=args.tool, version=version))
+            if not os.path.exists("/home/tools/modulefiles/{tool}".format(tool=args.tool)):
+                os.mkdir("/home/tools/modulefiles/{tool}".format(tool=args.tool))
+            with open("/home/tools/modulefiles/{tool}/{tool_directory}".format(tool=args.tool, version=version, tool_directory=tool_directory), "w") as modulefile:
+                modulefile.write("\n".join(modulefile_template).format(tool=args.tool, version=version, tool_directory=tool_directory))
             print('Successfully installed')
-            print('Use: module load {tool}/{tool}-{version}'.format(tool=args.tool, version=version))
+            print('Use: module load {tool}/{tool_directory}'.format(tool=args.tool, tool_directory=tool_directory))
 
     os.chdir(current_directory)
     exit()
@@ -77,6 +84,8 @@ if __name__ == "__main__":
     group_additional.add_argument('-t', '--tool', type=str, 
                                   default="samtools", help="tool available at sourceforge.net")
     group_additional.add_argument('-d', '--working-directory', type=str,
-                                  default="/home/tools/")
+                                  default="/home/tools/", help="directory type of ./tool/tool-<version>")
+    group_additional.add_argument('-c', '--install-command', type=str,
+                                  default="./configure && make", help="The default for installing samtools. You can use different installation scripts for specific tools. For example: 'make', 'make && make install' or others.")
     args = parser.parse_args()
     main()
