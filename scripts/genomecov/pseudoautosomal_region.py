@@ -50,7 +50,7 @@ def main():
     # print(coordinates_list_to_BED(args.scaffold_name, merge_by_distansce))
 
     if args.output:
-        outF = open(args.output + ".bed", "w")
+        outF = open(args.output + "_pseudoreg.bed", "w")
         outF.writelines(coordinates_list_to_BED(args.scaffold_name, coords_merge_by_median))
 
 if __name__ == "__main__":
