@@ -26,7 +26,7 @@ def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
 
 def main():
     print('---raw coordinates---')
-    coordinates = Coordinator(args.input, args.whole_genome_value, args.deviation_percent)
+    coordinates = Coordinator(args.input, float(args.whole_genome_value), args.deviation_percent)
     coordinates_and_medians_tuple = coordinates.get_coordinates(args.window_size,
                                                   args.coverage_column_name,
                                                   args.window_column_name, 
