@@ -16,21 +16,21 @@ class Fasta_opener:
           buffering: buffer text value
         """
         print("parse_sequences started")
-        data_dict = OrderedDict()
+        data = OrderedDict()
         self.lengths = {}
         header = None
         f = metaopen(self.path, 'rt', buffering)
         for line in f:
             if line.startswith('>'):
                 header = line[1:].split(' ')[0]
-                data_dict[header] = []
+                data[header] = []
             else:
-                data_dict[header].append(line[:-1])
+                data[header].append(line.rstrip())
         f.close()
-        for name in data_dict:
-            data_dict[name] = ''.join(data_dict[name])
-            self.lengths[name] = len(data_dict[name])
-        return data_dict
+        for name in data:
+            data[name] = ''.join(data[name])
+            self.lengths[name] = len(data[name])
+        return data
 
     def lengths_to_frame(self):
         """lengths to pandas dataframe"""
