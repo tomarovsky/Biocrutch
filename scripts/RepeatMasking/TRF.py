@@ -40,7 +40,7 @@ def main():
                             ';cons_seq=' + cons_seq +
                             ';repeat_seq=' + repeat_seq + '\n']
                 count += 1
-                outfile.write(gff_line)
+                outfile.write('\t'.join(gff_line))
 
 
 if __name__ == "__main__":
