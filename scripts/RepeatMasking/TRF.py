@@ -13,12 +13,11 @@ def main():
     
     with metaopen(args.input, "r", buffering=args.buffering) as data:
         count = 0
-        lines = list(line for line in (l.rstrip() for l in data) if line)
-        for l in lines:
+        for l in data:
             line = l.strip().split(" ")
-            if l.startswith('Sequence:'):
+            if l.startswith('Sequence:'): # information about authors and parameters is not processed
                 seq_name = line[1]
-            elif line[0][0].isdigit():
+            elif l[0].isdigit():
                 [start, stop, period, copies, consensus_size, 
                  perc_match, perc_indels, align_score, 
                  perc_A, perc_C, perc_G, perc_T, 
