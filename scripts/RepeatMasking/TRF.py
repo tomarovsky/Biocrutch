@@ -8,7 +8,10 @@ def main():
     if args.input == stdin:
         outprefix = "trf.dat"
     else:
-        outprefix = ('.').join(args.input.split('.')[:-1])
+        if args.output:
+            outprefix = args.output
+        else:
+            outprefix = ('.').join(args.input.split('.')[:-1])
     outfile = metaopen (outprefix + ".gff", "w")
     
     with metaopen(args.input, "r", buffering=args.buffering) as data:
@@ -50,5 +53,7 @@ if __name__ == "__main__":
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-b', '--buffering', type=int, 
                                   default=None, help="Text buffering. Default = None")
+    group_additional.add_argument('-o', '--output', type=str,
+                                  help="output file prefix")
     args = parser.parse_args()
     main()
