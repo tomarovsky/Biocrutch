@@ -13,7 +13,7 @@ def main():
         else:
             outprefix = ('.').join(args.input.split('.')[:-1])
     outfile = metaopen (outprefix + ".gff", "w")
-    
+    print ("repeatmasker.out to GFF converter...")
     with metaopen(args.input, "r", buffering=args.buffering) as data:
         count = 0
         for l in data:
