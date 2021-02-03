@@ -20,13 +20,13 @@ def main():
             if l.startswith(">"):
                 line = l.strip().split("|")
                 seq_name = line[1]
-                info = "_".join(line[2].split())
+                # info = "_".join(line[2].split())
             else:
                 line = l.strip().split(" ")
                 start, stop = line[0], line[2]
                 gff_line = [seq_name, 'WindowMasker', 'repeat',
                             start, stop, '.', '.', '.',
-                            'ID='+ str(count) + ';INFO=' + info + '\n'] # INFO is just information from a FASTA file
+                            'ID='+ str(count) + '\n'] # INFO is just information from a FASTA file "+ ';INFO=' + info + '\n'"
                 count += 1
                 outfile.write('\t'.join(gff_line))
 
