@@ -23,7 +23,7 @@ def main():
                 # info = "_".join(line[2].split())
             else:
                 line = l.strip().split(" ")
-                start, stop = line[0], line[2]
+                start, stop = str(int(line[0]) + 1), line[2]
                 gff_line = [seq_name, 'WindowMasker', 'repeat',
                             start, stop, '.', '.', '.',
                             'ID='+ str(count) + '\n'] # INFO is just information from a FASTA file "+ ';INFO=' + info + '\n'"
