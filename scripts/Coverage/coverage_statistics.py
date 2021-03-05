@@ -18,8 +18,6 @@ import argparse
 def main():
     metrics = GetCoverageStatistics(args.input, args.output)
 
-    if args.all_stats:
-        metrics.get_all_statistics(args.frame_size)
     if args.whole_genome_stats:
         metrics.get_whole_genome_stats()
     if args.scaffolds_stats:
@@ -40,8 +38,6 @@ if __name__ == "__main__":
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
                                   help='output file prefix without frame size')
-    group_additional.add_argument('--all-stats', action="store_true", default=False,
-                                  help="to calculate statistics for non-overlapping windows, scaffolds and whole genome (bad and outdated way)")
     group_additional.add_argument('-f', '--frame-size', type=int, 
                                   help="<f> bp windows size (for windows statistics)", default=1000000)
     group_additional.add_argument('--frame-shift', type=int,
