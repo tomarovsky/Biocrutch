@@ -16,7 +16,7 @@ import argparse
 
 
 def main():
-    metrics = GetCoverageStatistics(args.input, args.output)
+    metrics = GetCoverageStatistics(args.input, args.output, args.tool_name)
 
     if args.whole_genome_stats:
         metrics.get_whole_genome_stats()
@@ -29,7 +29,7 @@ def main():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="script for calculating median, average, maximum and minimum coverage in file.tab. Report to files.csv")
+    parser = argparse.ArgumentParser(description="script for calculating median, average, maximum and minimum coverage in genomecov.tab.gz or mosdepth.bed.gz. Report to files.csv")
 
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
@@ -38,6 +38,8 @@ if __name__ == "__main__":
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
                                   help='output file prefix without frame size')
+    group_additional.add_argument('-t', '--tool-name', type=str, default="mosdepth",
+                                  help="tool name parameter (you can use 'mosdepth' or 'genomecov')") 
     group_additional.add_argument('-f', '--frame-size', type=int, 
                                   help="<f> bp windows size (for windows statistics)", default=1000000)
     group_additional.add_argument('--frame-shift', type=int,

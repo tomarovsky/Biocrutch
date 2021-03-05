@@ -6,12 +6,18 @@ import pandas as pd
 
 
 class GetCoverageStatistics:
-    def __init__(self, data, output):
+    def __init__(self, data, output, tool_name):
         self.data = data
         self.output = output
-
+        self.tool_name = tool_name
+        
 
     def get_whole_genome_stats(self):
+        if self.tool_name == "genomecov":
+            column_index = 2
+        elif self.tool_name == "mosdepth":
+            column_index = 3
+
         df_whole_genome = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
         genome_coverages_amounts_dict = Counter()
         genome_line_counter = 0
@@ -19,7 +25,7 @@ class GetCoverageStatistics:
         for line in self.data:
             line = line.rstrip().split('\t')
             genome_line_counter += 1
-            genome_coverages_amounts_dict[float(line[2])] += 1
+            genome_coverages_amounts_dict[float(line[column_index])] += 1
 
         # processing residual data after a cycle
         metrics = CoveragesMetrics(genome_coverages_amounts_dict)
@@ -35,6 +41,11 @@ class GetCoverageStatistics:
 
 
     def get_scaffolds_stats(self):
+        if self.tool_name == "genomecov":
+            column_index = 2
+        elif self.tool_name == "mosdepth":
+            column_index = 3
+
         df_scaffolds = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
         scaffold_coverages_dict = Counter()
         previous_scaffold_name = None
@@ -49,7 +60,7 @@ class GetCoverageStatistics:
                                                             metrics.max_coverage_value(),
                                                             metrics.min_coverage_value()]
                 scaffold_coverages_dict.clear()
-            scaffold_coverages_dict[float(line[2])] += 1
+            scaffold_coverages_dict[float(line[column_index])] += 1
             previous_scaffold_name = line[0]
         # processing residual data after a cycle
         metrics = CoveragesMetrics(scaffold_coverages_dict)
@@ -65,6 +76,11 @@ class GetCoverageStatistics:
 
 
     def get_nonoverlapping_windows_stats(self, frame_size):
+        if self.tool_name == "genomecov":
+            column_index = 2
+        elif self.tool_name == "mosdepth":
+            column_index = 3
+
         df_nonoverlapping_frames = pd.DataFrame(columns=['scaffold', 'frame', 'median', 'average', 'max', 'min'])
 
         frame_coverages_amounts_dict = Counter()
@@ -77,12 +93,12 @@ class GetCoverageStatistics:
             line = line.rstrip().split('\t')
             if previous_scaffold_name == line[0] or previous_scaffold_name is None:
                 frame_line_counter += 1
-                frame_coverages_amounts_dict[float(line[2])] += 1
+                frame_coverages_amounts_dict[float(line[column_index])] += 1
             else:
                 frame_id = -1
                 frame_line_counter = 1
                 frame_coverages_amounts_dict.clear()
-                frame_coverages_amounts_dict[float(line[2])] += 1
+                frame_coverages_amounts_dict[float(line[column_index])] += 1
             # for window (non-overlapping)
             if frame_line_counter == frame_size:
                 index += 1
@@ -103,6 +119,11 @@ class GetCoverageStatistics:
         df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)
 
     def get_universal_windows_stats(self, frame_size, frame_shift):
+        if self.tool_name == "genomecov":
+            column_index = 2
+        elif self.tool_name == "mosdepth":
+            column_index = 3
+
         df_overlapping_frames = pd.DataFrame(columns=['scaffold', 'frame', 'median', 'average', 'max', 'min'])
         data = self.data.readlines()
         coverages_dict = Counter()
@@ -134,7 +155,7 @@ class GetCoverageStatistics:
                     for j in range(frame_size):
                         line = data[ln + gap_counter + j].rstrip().split('\t')
                         # print("data line:", line)
-                        coverages_dict[float(line[2])] += 1
+                        coverages_dict[float(line[column_index])] += 1
                         if j == frame_size - 1:
                             index += 1
                             frame_id += 1
