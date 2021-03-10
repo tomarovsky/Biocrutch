@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 __author__ = 'tomarovsky'
-from Biocrutch.Statistics.coverage_statistics.CoveragesMetrics import CoveragesMetrics
+from Biocrutch.Statistics.coverage_statistics.CoverageMetrics import CoveragesMetrics
 from collections import Counter
 import pandas as pd
 

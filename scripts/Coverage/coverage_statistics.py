@@ -10,13 +10,14 @@ Header-less tab-separated input file with 3 columns: scaffold_id, position(1-bas
 from Biocrutch.Statistics.coverage_statistics.GenomecovCoverageStatistics import GenomecovCoverageStatistics
 from Biocrutch.Statistics.coverage_statistics.MosdepthCoverageStatistics import MosdepthCoverageStatistics
 from Biocrutch.Statistics.coverage_statistics.CoverageMetrics import CoveragesMetrics
+from Biocrutch.Routines.routine_functions import metaopen
 from sys import stdin
 import pandas as pd
 import argparse
 
 
 def main():
-    if args.tool_name == "mosdepths":
+    if args.tool_name == "mosdepth":
         metrics = MosdepthCoverageStatistics(args.input, args.output, args.tool_name)
     elif args.tool_name == "genomecov":
         metrics = GenomecovCoverageStatistics(args.input, args.output, args.tool_name)
@@ -27,7 +28,7 @@ def main():
         metrics.get_scaffolds_stats()
     if args.nonoverlapping_windows_stats:
         metrics.get_nonoverlapping_windows_stats(args.frame_size)
-    if args.universal_windows_stats:
+    if args.universal_windows_stats: # in development for mosdepth
         metrics.get_universal_windows_stats(args.frame_size, args.frame_shift)
 
 
