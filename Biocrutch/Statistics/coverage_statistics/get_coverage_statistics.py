@@ -87,9 +87,9 @@ class GetCoverageStatistics:
             #for print dataframe to terminal
             print(df_scaffolds)
             # create a report.csv
-            df_scaffolds.rename_axis('scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv", encoding='utf-8', sep='\t', index = False)
+            df_scaffolds.rename_axis('scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv",
+                                                                      encoding='utf-8', sep='\t', index = False)
 
-            
         elif self.tool_name == "mosdepth":
             df_scaffolds = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
             scaffold_coverages_dict = Counter()
@@ -122,46 +122,138 @@ class GetCoverageStatistics:
 
     def get_nonoverlapping_windows_stats(self, frame_size):
         if self.tool_name == "genomecov":
-            column_index = 2
+            df_nonoverlapping_frames = pd.DataFrame(columns=['scaffold', 'frame', 'median', 'average', 'max', 'min'])
+
+            frame_coverages_amounts_dict = Counter()
+            frame_line_counter = 0
+            frame_id = -1
+            index = 0
+            previous_scaffold_name = None
+
+            for line in self.data:
+                line = line.rstrip().split('\t')
+                if previous_scaffold_name == line[0] or previous_scaffold_name is None:
+                    frame_line_counter += 1
+                    frame_coverages_amounts_dict[float(line[2])] += 1
+                else:
+                    frame_id = -1
+                    frame_line_counter = 1
+                    frame_coverages_amounts_dict.clear()
+                    frame_coverages_amounts_dict[float(line[2])] += 1
+                # for window (non-overlapping)
+                if frame_line_counter == frame_size:
+                    index += 1
+                    frame_id += 1
+                    metrics = CoveragesMetrics(frame_coverages_amounts_dict)
+                    print('non-overlapping windows metrics is being processing')
+                    df_nonoverlapping_frames.loc[index] = [previous_scaffold_name, frame_id, metrics.median_value(),
+                                                                                metrics.average_value(),
+                                                                                metrics.max_coverage_value(),
+                                                                                metrics.min_coverage_value()]
+                    frame_coverages_amounts_dict.clear()
+                    frame_line_counter = 0
+                previous_scaffold_name = line[0]
+
+            #for print dataframe to terminal
+            print(df_nonoverlapping_frames)
+            # create a report.csv
+            df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)
+
         elif self.tool_name == "mosdepth":
-            column_index = 3
+            df_nonoverlapping_frames = pd.DataFrame(columns=['scaffold', 'frame', 'median', 'average', 'max', 'min'])
 
-        df_nonoverlapping_frames = pd.DataFrame(columns=['scaffold', 'frame', 'median', 'average', 'max', 'min'])
+            frame_coverages_amounts_dict = Counter()
+            tmp_dict = Counter()
+            frame_line_counter = 0
+            frame_id = -1
+            index = 0
+            previous_scaffold_name = None
 
-        frame_coverages_amounts_dict = Counter()
-        frame_line_counter = 0
-        frame_id = -1
-        index = 0
-        previous_scaffold_name = None
+            for line in self.data:
+                line = line.rstrip().split('\t')
 
-        for line in self.data:
-            line = line.rstrip().split('\t')
-            if previous_scaffold_name == line[0] or previous_scaffold_name is None:
-                frame_line_counter += 1
-                frame_coverages_amounts_dict[float(line[column_index])] += 1
-            else:
-                frame_id = -1
-                frame_line_counter = 1
-                frame_coverages_amounts_dict.clear()
-                frame_coverages_amounts_dict[float(line[column_index])] += 1
-            # for window (non-overlapping)
-            if frame_line_counter == frame_size:
-                index += 1
-                frame_id += 1
-                metrics = CoveragesMetrics(frame_coverages_amounts_dict)
-                print('non-overlapping windows metrics is being processing')
-                df_nonoverlapping_frames.loc[index] = [previous_scaffold_name, frame_id, metrics.median_value(),
-                                                                            metrics.average_value(),
-                                                                            metrics.max_coverage_value(),
-                                                                            metrics.min_coverage_value()]
-                frame_coverages_amounts_dict.clear()
-                frame_line_counter = 0
-            previous_scaffold_name = line[0]
+                if previous_scaffold_name == line[0] or previous_scaffold_name is None:
+                    frame_line_counter += (int(line[2]) - int(line[1]))
+                    mem = (int(line[2]) - int(line[1])) # облить!
+                    if frame_line_counter <= frame_size:
+                        tmp_dict[float(line[3])] += mem
+                    else:
+                        fs = frame_size - sum(tmp_dict.values())
+                        tmp_dict[float(line[3])] += fs
+                        frame_line_counter = mem - fs
+                else: # if another scaffold name
+                    frame_id = -1
+                    frame_line_counter = (int(line[2]) - int(line[1]))
+                    frame_coverages_amounts_dict.clear()
+                    
+                while frame_line_counter >= frame_size:
+                    if tmp_dict: # проверить кол-во значений
+                        frame_coverages_amounts_dict = tmp_dict
+                        index += 1
+                        frame_id += 1
+                        metrics = CoveragesMetrics(frame_coverages_amounts_dict)
+                        print('non-overlapping windows metrics is being processing')
+                        df_nonoverlapping_frames.loc[index] = [previous_scaffold_name, 
+                                                               frame_id,
+                                                               metrics.median_value(),
+                                                               metrics.average_value(),
+                                                               metrics.max_coverage_value(),
+                                                               metrics.min_coverage_value()]
+                        frame_coverages_amounts_dict.clear()
+                    else:
+                        frame_coverages_amounts_dict[float(line[3])] += frame_size
+                        index += 1
+                        frame_id += 1
+                        metrics = CoveragesMetrics(frame_coverages_amounts_dict)
+                        print('non-overlapping windows metrics is being processing')
+                        df_nonoverlapping_frames.loc[index] = [previous_scaffold_name, 
+                                                               frame_id,
+                                                               metrics.median_value(),
+                                                               metrics.average_value(),
+                                                               metrics.max_coverage_value(),
+                                                               metrics.min_coverage_value()]
+                        if (frame_line_counter - frame_size) >= frame_size:
+                            frame_coverages_amounts_dict.clear()
+                        else:
+                            tmp_dict[float(line[3])] += (frame_line_counter - frame_size)
+                            frame_line_counter = 0
+                            break
+                        frame_line_counter -= frame_size
+                previous_scaffold_name = line[0]
 
-        #for print dataframe to terminal
-        print(df_nonoverlapping_frames)
-        # create a report.csv
-        df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)
+            #for print dataframe to terminal
+            print(df_nonoverlapping_frames)
+
+
+            # if previous_scaffold_name == line[0] or previous_scaffold_name is None:
+            #     frame_line_counter += (int(line[2]) - int(line[1]))
+            #     modulo = frame_line_counter % frame_size
+            #     frame_coverages_amounts_dict[float(line[3])] += (int(line[2]) - int(line[1]))
+            # else: # if another scaffold name
+            #     frame_id = -1
+            #     frame_line_counter = (int(line[2]) - int(line[1]))
+            #     frame_coverages_amounts_dict.clear()
+            #     frame_coverages_amounts_dict[float(line[3])] += (int(line[2]) - int(line[1]))
+            # # for window (non-overlapping)
+            # if frame_line_counter == frame_size:
+            #     index += 1
+            #     frame_id += 1
+            #     metrics = CoveragesMetrics(frame_coverages_amounts_dict)
+            #     print('non-overlapping windows metrics is being processing')
+            #     df_nonoverlapping_frames.loc[index] = [previous_scaffold_name, 
+            #                                            frame_id,
+            #                                            metrics.median_value(),
+            #                                            metrics.average_value(),
+            #                                            metrics.max_coverage_value(),
+            #                                            metrics.min_coverage_value()]
+            #     frame_coverages_amounts_dict.clear()
+            #     frame_line_counter = modulo
+            # previous_scaffold_name = line[0]
+
+            # #for print dataframe to terminal
+            # print(df_nonoverlapping_frames)
+            # # create a report.csv
+            # # df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv", encoding='utf-8', sep='\t', index = False)
 
     def get_universal_windows_stats(self, frame_size, frame_shift):
         if self.tool_name == "genomecov":
