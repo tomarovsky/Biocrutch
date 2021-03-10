@@ -61,37 +61,63 @@ class GetCoverageStatistics:
 
     def get_scaffolds_stats(self):
         if self.tool_name == "genomecov":
-            column_index = 2
+            df_scaffolds = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
+            scaffold_coverages_dict = Counter()
+            previous_scaffold_name = None
+
+            for line in self.data:
+                line = line.rstrip().split('\t')
+                if previous_scaffold_name != line[0] and previous_scaffold_name != None:
+                    metrics = CoveragesMetrics(scaffold_coverages_dict)
+                    print('scaffolds metrics is being processing')
+                    df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
+                                                                metrics.average_value(),
+                                                                metrics.max_coverage_value(),
+                                                                metrics.min_coverage_value()]
+                    scaffold_coverages_dict.clear()
+                scaffold_coverages_dict[float(line[2])] += 1
+                previous_scaffold_name = line[0]
+            # processing residual data after a cycle
+            metrics = CoveragesMetrics(scaffold_coverages_dict)
+            print('scaffolds metrics is being processing')
+            df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
+                                                        metrics.average_value(),
+                                                        metrics.max_coverage_value(),
+                                                        metrics.min_coverage_value()]
+            #for print dataframe to terminal
+            print(df_scaffolds)
+            # create a report.csv
+            df_scaffolds.rename_axis('scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv", encoding='utf-8', sep='\t', index = False)
+
+            
         elif self.tool_name == "mosdepth":
-            column_index = 3
+            df_scaffolds = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
+            scaffold_coverages_dict = Counter()
+            previous_scaffold_name = None
 
-        df_scaffolds = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
-        scaffold_coverages_dict = Counter()
-        previous_scaffold_name = None
-
-        for line in self.data:
-            line = line.rstrip().split('\t')
-            if previous_scaffold_name != line[0] and previous_scaffold_name != None:
-                metrics = CoveragesMetrics(scaffold_coverages_dict)
-                print('scaffolds metrics is being processing')
-                df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
-                                                            metrics.average_value(),
-                                                            metrics.max_coverage_value(),
-                                                            metrics.min_coverage_value()]
-                scaffold_coverages_dict.clear()
-            scaffold_coverages_dict[float(line[column_index])] += 1
-            previous_scaffold_name = line[0]
-        # processing residual data after a cycle
-        metrics = CoveragesMetrics(scaffold_coverages_dict)
-        print('scaffolds metrics is being processing')
-        df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
-                                                    metrics.average_value(),
-                                                    metrics.max_coverage_value(),
-                                                    metrics.min_coverage_value()]
-        #for print dataframe to terminal
-        print(df_scaffolds)
-        # create a report.csv
-        df_scaffolds.rename_axis('scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv", encoding='utf-8', sep='\t', index = False)
+            for line in self.data:
+                line = line.rstrip().split('\t')
+                if previous_scaffold_name != line[0] and previous_scaffold_name != None:
+                    metrics = CoveragesMetrics(scaffold_coverages_dict)
+                    print('scaffolds metrics is being processing')
+                    df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
+                                                                metrics.average_value(),
+                                                                metrics.max_coverage_value(),
+                                                                metrics.min_coverage_value()]
+                    scaffold_coverages_dict.clear()
+                scaffold_coverages_dict[float(line[3])] += (int(line[2]) - int(line[1]))
+                previous_scaffold_name = line[0]
+            # processing residual data after a cycle
+            metrics = CoveragesMetrics(scaffold_coverages_dict)
+            print('scaffolds metrics is being processing')
+            df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
+                                                        metrics.average_value(),
+                                                        metrics.max_coverage_value(),
+                                                        metrics.min_coverage_value()]
+            #for print dataframe to terminal
+            print(df_scaffolds)
+            # create a report.csv
+            df_scaffolds.rename_axis('scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv", encoding='utf-8', sep='\t', index = False)
 
 
     def get_nonoverlapping_windows_stats(self, frame_size):
