@@ -14,30 +14,49 @@ class GetCoverageStatistics:
 
     def get_whole_genome_stats(self):
         if self.tool_name == "genomecov":
-            column_index = 2
+            df_whole_genome = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
+            genome_coverages_amounts_dict = Counter()
+            genome_line_counter = 0
+
+            for line in self.data:
+                line = line.rstrip().split('\t')
+                genome_line_counter += 1
+                genome_coverages_amounts_dict[float(line[2])] += 1
+
+            # processing residual data after a cycle
+            metrics = CoveragesMetrics(genome_coverages_amounts_dict)
+            print('whole genome metrics is being processing')
+            df_whole_genome.loc['whole_genome'] = [metrics.median_value(),
+                                                   metrics.average_value(),
+                                                   metrics.max_coverage_value(),
+                                                   metrics.min_coverage_value()]
+            # for print to terminal
+            print(df_whole_genome)
+            # create a report.csv
+            df_whole_genome.rename_axis('genome').reset_index().to_csv(self.output + "_whole_genome_stats.csv",
+                                                                       encoding='utf-8', sep='\t', index = False)
+        
+        
         elif self.tool_name == "mosdepth":
-            column_index = 3
+            df_whole_genome = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
+            genome_coverages_amounts_dict = Counter()
 
-        df_whole_genome = pd.DataFrame(columns=['median', 'average', 'max', 'min'])
-        genome_coverages_amounts_dict = Counter()
-        genome_line_counter = 0
+            for line in self.data:
+                line = line.rstrip().split('\t')
+                genome_coverages_amounts_dict[float(line[3])] += (int(line[2]) - int(line[1]))
 
-        for line in self.data:
-            line = line.rstrip().split('\t')
-            genome_line_counter += 1
-            genome_coverages_amounts_dict[float(line[column_index])] += 1
-
-        # processing residual data after a cycle
-        metrics = CoveragesMetrics(genome_coverages_amounts_dict)
-        print('whole genome metrics is being processing')
-        df_whole_genome.loc['whole_genome'] = [metrics.median_value(),
-                                                    metrics.average_value(),
-                                                    metrics.max_coverage_value(),
-                                                    metrics.min_coverage_value()]
-        # for print to terminal
-        print(df_whole_genome)
-        # create a report.csv
-        df_whole_genome.rename_axis('genome').reset_index().to_csv(self.output + "_whole_genome_stats.csv", encoding='utf-8', sep='\t', index = False)
+            # processing residual data after a cycle
+            metrics = CoveragesMetrics(genome_coverages_amounts_dict)
+            print('whole genome metrics is being processing')
+            df_whole_genome.loc['whole_genome'] = [metrics.median_value(),
+                                                        metrics.average_value(),
+                                                        metrics.max_coverage_value(),
+                                                        metrics.min_coverage_value()]
+            # for print to terminal
+            print(df_whole_genome)
+            # create a report.csv
+            df_whole_genome.rename_axis('genome').reset_index().to_csv(self.output + "_whole_genome_stats.csv",
+                                                                       encoding='utf-8', sep='\t', index = False)
 
 
     def get_scaffolds_stats(self):
