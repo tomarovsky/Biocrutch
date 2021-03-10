@@ -7,17 +7,20 @@ b. calculate stats for each scaffold
 c. calculate stats in 100 kbp and 1 Mbp stacking windows
 Header-less tab-separated input file with 3 columns: scaffold_id, position(1-based), coverage.
 '''
-from Biocrutch.Statistics.coverage_statistics.get_coverage_statistics import GetCoverageStatistics
-from Biocrutch.Statistics.coverage_statistics.coverage_metrics import CoveragesMetrics
-from Biocrutch.Routines.routine_functions import metaopen
+from Biocrutch.Statistics.coverage_statistics.GenomecovCoverageStatistics import GenomecovCoverageStatistics
+from Biocrutch.Statistics.coverage_statistics.MosdepthCoverageStatistics import MosdepthCoverageStatistics
+from Biocrutch.Statistics.coverage_statistics.CoverageMetrics import CoveragesMetrics
 from sys import stdin
 import pandas as pd
 import argparse
 
 
 def main():
-    metrics = GetCoverageStatistics(args.input, args.output, args.tool_name)
-
+    if args.tool_name == "mosdepths":
+        metrics = MosdepthCoverageStatistics(args.input, args.output, args.tool_name)
+    elif args.tool_name == "genomecov":
+        metrics = GenomecovCoverageStatistics(args.input, args.output, args.tool_name)
+    
     if args.whole_genome_stats:
         metrics.get_whole_genome_stats()
     if args.scaffolds_stats:
