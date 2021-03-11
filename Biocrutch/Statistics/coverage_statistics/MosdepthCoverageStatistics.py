@@ -22,7 +22,7 @@ class MosdepthCoverageStatistics:
 
         # processing residual data after a cycle
         metrics = CoveragesMetrics(genome_coverages_amounts_dict)
-        print('whole genome metrics is being processing')
+        # print('whole genome metrics is being processing')
         df_whole_genome.loc['whole_genome'] = [metrics.median_value(),
                                                     metrics.average_value(),
                                                     metrics.max_coverage_value(),
@@ -43,7 +43,7 @@ class MosdepthCoverageStatistics:
             line = line.rstrip().split('\t')
             if previous_scaffold_name != line[0] and previous_scaffold_name != None:
                 metrics = CoveragesMetrics(scaffold_coverages_dict)
-                print('scaffolds metrics is being processing')
+                # print('scaffolds metrics is being processing')
                 df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
                                                             metrics.average_value(),
                                                             metrics.max_coverage_value(),
@@ -53,7 +53,7 @@ class MosdepthCoverageStatistics:
             previous_scaffold_name = line[0]
         # processing residual data after a cycle
         metrics = CoveragesMetrics(scaffold_coverages_dict)
-        print('scaffolds metrics is being processing')
+        # print('scaffolds metrics is being processing')
         df_scaffolds.loc[previous_scaffold_name] = [metrics.median_value(),
                                                     metrics.average_value(),
                                                     metrics.max_coverage_value(),
@@ -76,7 +76,7 @@ class MosdepthCoverageStatistics:
         for ln in self.data:
             line = ln.rstrip().split('\t')
             for _ in range(int(line[2]) - int(line[1])):
-                print(int(line[3]))
+                # print(int(line[3]))
                 if previous_scaffold_name == line[0] or previous_scaffold_name is None:
                     frame_line_counter += 1
                     frame_coverages_amounts_dict[float(line[3])] += 1
@@ -90,7 +90,7 @@ class MosdepthCoverageStatistics:
                     index += 1
                     frame_id += 1
                     metrics = CoveragesMetrics(frame_coverages_amounts_dict)
-                    print('non-overlapping windows metrics is being processing')
+                    # print('non-overlapping windows metrics is being processing')
                     df_nonoverlapping_frames.loc[index] = [previous_scaffold_name, frame_id, metrics.median_value(),
                                                                                 metrics.average_value(),
                                                                                 metrics.max_coverage_value(),
