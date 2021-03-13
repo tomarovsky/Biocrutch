@@ -19,3 +19,10 @@ def metaopen(filename, flags, buffering=None):
         
 def extract_file(filename, extract_path="."):
     shutil.unpack_archive(filename, extract_path)
+    
+def metaoutput(outfile, extension):
+    if extension[0] != ".":
+        extension = "." + extension
+    if not outfile.endswith(extension):
+        outfile = metaopen (outfile + "extension", "wt")
+    return outfile

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 __author__ = 'tomarovsky'
-from Biocrutch.Routines.routine_functions import metaopen
+from Biocrutch.Routines.routine_functions import metaopen, metaoutput
 import argparse
 from sys import stdin
 
@@ -12,7 +12,8 @@ def main():
             outprefix = args.output
         else:
             outprefix = ('.').join(args.input.split('.')[:-1])
-    outfile = metaopen (outprefix + ".gff.gz", "wt")
+    outfile = metaopen (outprefix, "wt")
+    outfile = metaoutput(outfile, ".gff.gz")
     print ("DAT to GFF converter...")
     with metaopen(args.input, "r", buffering=args.buffering) as data:
         count = 0

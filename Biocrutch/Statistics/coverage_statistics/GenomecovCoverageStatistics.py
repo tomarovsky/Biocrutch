@@ -8,7 +8,7 @@ import pandas as pd
 class GenomecovCoverageStatistics:
     def __init__(self, data, output, tool_name):
         self.data = data
-        self.output = output
+        self.output = output # if not output.endswith(".csv") else output[-4:]
         self.tool_name = tool_name
         
 
