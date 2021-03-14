@@ -4,7 +4,7 @@ __author__ = 'tomarovsky'
 Script for determining the coordinates of the pseudoautosomal region.
 Output of coordinates to BED file.
 '''
-from Biocrutch.Statistics.coverage_statistics.coverage_metrics import CoveragesMetrics
+from Biocrutch.Statistics.coverage_statistics.CoverageMetrics import CoveragesMetrics
 from Biocrutch.Statistics.pseudoautosomal_region.coordinator import Coordinator
 from Biocrutch.Statistics.pseudoautosomal_region.filter import Filter
 from Biocrutch.Routines.routine_functions import metaopen
