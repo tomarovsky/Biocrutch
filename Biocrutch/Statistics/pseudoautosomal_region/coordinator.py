@@ -3,7 +3,7 @@ __author__ = 'tomarovsky'
 '''
 Class for determining the coordinates of the pseudoautosomal region.
 '''
-from Biocrutch.Statistics.coverage_statistics.coverage_metrics import CoveragesMetrics
+from Biocrutch.Statistics.coverage_statistics.CoverageMetrics import CoveragesMetrics
 from collections import Counter
 
 
