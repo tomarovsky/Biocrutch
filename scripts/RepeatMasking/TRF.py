@@ -12,8 +12,8 @@ def main():
             outprefix = args.output
         else:
             outprefix = ('.').join(args.input.split('.')[:-1])
+    outprefix = metaoutput(outprefix, ".gff.gz")
     outfile = metaopen (outprefix, "wt")
-    outfile = metaoutput(outfile, ".gff.gz")
     print ("DAT to GFF converter...")
     with metaopen(args.input, "r", buffering=args.buffering) as data:
         count = 0
