@@ -24,5 +24,5 @@ def metaoutput(outfile, extension):
     if extension[0] != ".":
         extension = "." + extension
     if not outfile.endswith(extension):
-        outfile = metaopen (outfile + "extension", "wt")
+        outfile = metaopen(outfile + extension, "wt")
     return outfile
