@@ -12,7 +12,7 @@ from sys import stdin
 
 
 def main():
-    outfile = metaopen(metaoutput(args.output, ".bed.gz"), "wt")
+    outfile = metaopen(metaoutput(args.output, ".mask.bed.gz"), "wt")
     scaffold_name = None
     previous_scaffold_name = None
     global_start = None
