@@ -30,24 +30,25 @@ def main():
                     continue
                 else:
                     start = line[1]
-                    # print (stop, start)
                     if stop == start:
                         stop = line[2]
                     else:
-                        outline = "\t".join([scaffold_name, global_start, stop])
+                        outline = "\t".join([scaffold_name, global_start, stop]) + "\n"
                         outfile.write(outline)
                         global_start = line[1]
                         stop = line[2]
                         # print (outline)
         else:
             if previous_scaffold_name is not None:
-                outline = "\t".join([previous_scaffold_name, global_start, stop])
+                outline = "\t".join([previous_scaffold_name, global_start, stop]) + "\n"
+                outfile.write(outline)
                 # print (outline)
             global_start = line[1]
             stop = line[2]
             start = None
         previous_scaffold_name = line[0]
-    outline = "\t".join([previous_scaffold_name, global_start, stop])
+    outline = "\t".join([previous_scaffold_name, global_start, stop]) + "\n"
+    outfile.write(outline)
     # print (outline)
 
 
@@ -56,7 +57,7 @@ if __name__ == "__main__":
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
                                 help="input coverage_statistics_output.csv (don`t use for STDIN)", default=stdin)
-    group_required.add_argument('-w', '--whole-median', type=int,
+    group_required.add_argument('-w', '--whole-median', type=float,
                                 help="whole median value")
     group_required.add_argument('-o', '--output', type=str,
                                 help="output file prefix")
