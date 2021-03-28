@@ -13,43 +13,28 @@ from sys import stdin
 
 def main():
     outfile = metaopen(metaoutput(args.output, ".mask.bed.gz"), "wt")
-    scaffold_name = None
-    previous_scaffold_name = None
-    global_start = None
-    start = None
-    stop = None
+    for line in args.input:
+        scaffold_name, start, stop, coverage_value = args.input.readline().strip().split()
+        coverage_value = int(coverage_value)
+        if (coverage_value > (2.5 * args.whole_median)) or coverage_value < (0.5 * args.whole_median):
+            break
 
     for i in args.input:
         line = i.strip().split()
-        scaffold_name = line[0]
-        if scaffold_name == previous_scaffold_name or scaffold_name is None:
-            if int(line[3]) > (2.5 * args.whole_median) or int(line[3]) < (0.5 * args.whole_median):
-                if global_start is None:
-                    global_start = line[1]
+        line[3] = int(line[3])
+        if (line[3] > (2.5 * args.whole_median)) or (line[3] < (0.5 * args.whole_median)):
+            if line[0] == scaffold_name:
+                if stop == line[1]:
                     stop = line[2]
                     continue
                 else:
+                    outfile.write("\t".join([scaffold_name, start, stop]) + "\n")
                     start = line[1]
-                    if stop == start:
-                        stop = line[2]
-                    else:
-                        outline = "\t".join([scaffold_name, global_start, stop]) + "\n"
-                        outfile.write(outline)
-                        global_start = line[1]
-                        stop = line[2]
-                        # print (outline)
-        else:
-            if previous_scaffold_name is not None:
-                outline = "\t".join([previous_scaffold_name, global_start, stop]) + "\n"
-                outfile.write(outline)
-                # print (outline)
-            global_start = line[1]
-            stop = line[2]
-            start = None
-        previous_scaffold_name = line[0]
-    outline = "\t".join([previous_scaffold_name, global_start, stop]) + "\n"
-    outfile.write(outline)
-    # print (outline)
+                    stop = line[2]
+            else:
+                outfile.write("\t".join([scaffold_name, start, stop]) + "\n")
+                scaffold_name, start, stop = line[:3]
+    outfile.write("\t".join([scaffold_name, start, stop]) + "\n")
 
 
 if __name__ == "__main__":
