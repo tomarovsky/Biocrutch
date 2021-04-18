@@ -35,7 +35,7 @@ def main():
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="For downloading SRA data and parsing metrics.")
-    group_required = parser.add_argument_group('Options')
+    group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=str,
                                 nargs='+', help="SRA id (or file.fastq if you want metrics)")
     group_required.add_argument('-d', '--download',

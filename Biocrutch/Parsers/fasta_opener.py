@@ -32,6 +32,22 @@ class Fasta_opener:
             self.lengths[name] = len(data[name])
         return data
 
+    def parse_sequences_without_join(self, buffering=None) -> dict:
+        print("parse_sequences started")
+        data = OrderedDict()
+        header = None
+        f = metaopen(self.path, 'rt', buffering)
+        for line in f:
+            if line.startswith('>'):
+                header = line
+                data[header] = []
+            else:
+                data[header].append(line)
+        f.close()
+        for name in data:
+            data[name] = ''.join(data[name])
+        return data
+
     def lengths_to_frame(self):
         """lengths to pandas dataframe"""
         print("lengths_to_frame started")
