@@ -5,60 +5,65 @@ from argparse import ArgumentParser
 def main():
     result = []
 
-    with open(args.input[0], "r") as f:
-        for i in f:
-            if len(i) > 2:
-                axis_x, axis_y = float(i.split()[0]), float(i.split()[1])
-                tmp = [axis_x, axis_y, "", "", ""]
-                result.append(tmp)
-            else:
-                result.append("")
+    if len(args.input) == 4:
+        with open(args.input[0], "r") as f:
+            for i in f:
+                if len(i) > 2:
+                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
+                    tmp = [axis_x, axis_y, "", "", ""]
+                    result.append(tmp)
+                else:
+                    result.append("")
+        with open(args.input[1], "r") as f:
+            for i in f:
+                if len(i) > 2:
+                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
+                    tmp = [axis_x, "", axis_y, "", ""]
+                    result.append(tmp)
+                else:
+                    result.append("")
+        with open(args.input[2], "r") as f:
+            for i in f:
+                if len(i) > 2:
+                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
+                    tmp = [axis_x, "", "", axis_y, ""]
+                    result.append(tmp)
+                else:
+                    result.append("")
+        with open(args.input[3], "r") as f:
+            for i in f:
+                if len(i) > 2:
+                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
+                    tmp = [axis_x, "", "", "", axis_y]
+                    result.append(tmp)
+                else:
+                    result.append("")
+    elif len(args.input) == 2:
+        with open(args.input[0], "r") as f:
+            for i in f:
+                if len(i) > 2:
+                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
+                    tmp = [axis_x, axis_y, "", "", ""]
+                    result.append(tmp)
+                else:
+                    result.append("")
+        with open(args.input[1], "r") as f:
+            for i in f:
+                if len(i) > 2:
+                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
+                    tmp = [axis_x, "", "", axis_y, ""]
+                    result.append(tmp)
+                else:
+                    result.append("")
 
-    with open(args.input[1], "r") as f:
-        for i in f:
-            if len(i) > 2:
-                axis_x, axis_y = float(i.split()[0]), float(i.split()[1])
-                tmp = [axis_x, "", axis_y, "", ""]
-                result.append(tmp)
-            else:
-                result.append("")
-
-    with open(args.input[2], "r") as f:
-        for i in f:
-            if len(i) > 2:
-                axis_x, axis_y = float(i.split()[0]), float(i.split()[1])
-                tmp = [axis_x, "", "", axis_y, ""]
-                result.append(tmp)
-            else:
-                result.append("")
-            
-    with open(args.input[3], "r") as f:
-        for i in f:
-            if len(i) > 2:
-                axis_x, axis_y = float(i.split()[0]), float(i.split()[1])
-                tmp = [axis_x, "", "", "", axis_y]
-                result.append(tmp)
-            else:
-                result.append("")
-
-    flag = False
     with open(args.output, "a") as res:
         for i in result:
-            if len(i)> 1:
-                if i[0] != 0.0:
-                    line = "\t".join(map(str, i)).replace(".", ",")
-                    # print(line)
-                    res.write(line)
-                    res.write("\n")
-                    flag = None
-                else:
-                    if flag != False:
-                        res.write("\n")
-                        flag = True
-                    line = "\t".join(map(str, i)).replace(".", ",")
-                    # print(line)
-                    res.write(line)
-                    res.write("\n")
+            line = "\t".join(i)
+            # print(line)
+            res.write(line)
+            res.write("\n")
+
+
 
 
 if __name__ == "__main__":
