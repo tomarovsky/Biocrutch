@@ -5,56 +5,29 @@ from argparse import ArgumentParser
 def main():
     result = []
 
-    if len(args.input) == 4:
-        with open(args.input[0], "r") as f:
-            for i in f:
-                if len(i) > 2:
-                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
-                    tmp = [axis_x, axis_y, "", "", ""]
+    number_of_files = len(args.input)
+
+    c = 1
+    flag = False
+    for i in range(0, number_of_files):
+        with open(args.input[i], "r") as f:
+            for line in f:
+                if len(line) > 2:
+                    axis_x, axis_y = line.split()[0].replace(".", ","), line.split()[1].replace(".", ",")
+                    tmp = [axis_x] + [""] * 10
+                   
+                    if i < number_of_files/2:
+                        tmp[i + 1] = axis_y
+                        print(tmp)
+                    else:
+                        tmp[int(5 + c)] = axis_y
+                        flag = True
+                        print(tmp)
                     result.append(tmp)
                 else:
                     result.append("")
-        with open(args.input[1], "r") as f:
-            for i in f:
-                if len(i) > 2:
-                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
-                    tmp = [axis_x, "", axis_y, "", ""]
-                    result.append(tmp)
-                else:
-                    result.append("")
-        with open(args.input[2], "r") as f:
-            for i in f:
-                if len(i) > 2:
-                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
-                    tmp = [axis_x, "", "", axis_y, ""]
-                    result.append(tmp)
-                else:
-                    result.append("")
-        with open(args.input[3], "r") as f:
-            for i in f:
-                if len(i) > 2:
-                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
-                    tmp = [axis_x, "", "", "", axis_y]
-                    result.append(tmp)
-                else:
-                    result.append("")
-    elif len(args.input) == 2:
-        with open(args.input[0], "r") as f:
-            for i in f:
-                if len(i) > 2:
-                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
-                    tmp = [axis_x, axis_y, "", "", ""]
-                    result.append(tmp)
-                else:
-                    result.append("")
-        with open(args.input[1], "r") as f:
-            for i in f:
-                if len(i) > 2:
-                    axis_x, axis_y = i.split()[0].replace(".", ","), i.split()[1].replace(".", ",")
-                    tmp = [axis_x, "", "", axis_y, ""]
-                    result.append(tmp)
-                else:
-                    result.append("")
+        if flag == True:
+            c += 1
 
     with open(args.output, "a") as res:
         for i in result:
