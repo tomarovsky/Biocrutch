@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 
 def main():
     result = []
-
+    max_number_of_files = 30
     number_of_files = len(args.input)
 
     c = 1
@@ -14,13 +14,12 @@ def main():
             for line in f:
                 if len(line) > 2:
                     axis_x, axis_y = line.split()[0].replace(".", ","), line.split()[1].replace(".", ",")
-                    tmp = [axis_x] + [""] * 10
-                   
+                    tmp = [axis_x] + [""] * max_number_of_files
                     if i < number_of_files/2:
                         tmp[i + 1] = axis_y
                         print(tmp)
                     else:
-                        tmp[int(5 + c)] = axis_y
+                        tmp[int(max_number_of_files/2 + c)] = axis_y
                         flag = True
                         print(tmp)
                     result.append(tmp)
@@ -35,8 +34,6 @@ def main():
             # print(line)
             res.write(line)
             res.write("\n")
-
-
 
 
 if __name__ == "__main__":
