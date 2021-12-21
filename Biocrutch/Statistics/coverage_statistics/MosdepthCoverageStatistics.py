@@ -30,7 +30,7 @@ class MosdepthCoverageStatistics:
         # for print to terminal
         print(df_whole_genome)
         # create a report.csv
-        df_whole_genome.rename_axis('genome').reset_index().to_csv(self.output + "_whole_genome_stats.csv",
+        df_whole_genome.rename_axis('#genome').reset_index().to_csv(self.output + "_whole_genome_stats.csv",
                                                                    encoding='utf-8', sep='\t', index = False)
 
 
@@ -61,12 +61,12 @@ class MosdepthCoverageStatistics:
         #for print dataframe to terminal
         print(df_scaffolds)
         # create a report.csv
-        df_scaffolds.rename_axis('scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv",
+        df_scaffolds.rename_axis('#scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv",
                                                                   encoding='utf-8', sep='\t', index = False)
 
 
     def get_nonoverlapping_windows_stats(self, frame_size):
-        df_nonoverlapping_frames = pd.DataFrame(columns=['scaffold', 'frame', 'median', 'average', 'max', 'min'])
+        df_nonoverlapping_frames = pd.DataFrame(columns=['#scaffold', 'frame', 'median', 'average', 'max', 'min'])
 
         frame_coverages_amounts_dict = Counter()
         frame_line_counter = 0
