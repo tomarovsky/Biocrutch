@@ -48,7 +48,7 @@ def draw_plot(input_file, output_prefix, metric, separator="\t", min_x=None, max
 
 
 def main():
-    draw_plot(args.input_file, args.output_prefix, args.tool, separator=args.separator, extensions=args.extensions,
+    draw_plot(args.input_file, args.output_prefix, args.metric, separator=args.separator, extensions=args.extensions,
               min_x=args.min_x, max_x=args.max_x, min_y=args.min_y, max_y=args.max_y, xlabel=args.xlabel, ylabel=args.ylabel,
               title=args.title, width=args.width, height=args.height, markersize=args.markersize, ylogbase=args.ylogbase,
               type=args.type, grid=args.grid, close_plot=args.close_plot)
