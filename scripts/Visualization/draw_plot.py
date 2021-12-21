@@ -56,7 +56,7 @@ def main():
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description="FASTA filtering by ids from tabular file")
+    parser = ArgumentParser(description="coverage visualization from genomecov.tab.gz or mosdepth.tab.gz file")
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input-file', type=str, help="mosdepth.bed.gz file")
     group_required.add_argument('-o', '--output-prefix', type=str, help="output prefix")
