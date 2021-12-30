@@ -7,7 +7,7 @@ plt.ioff()
 from argparse import ArgumentParser
 
 
-def draw_plot(input_file, output_prefix, metric, separator="\t", min_x=None, max_x=None, min_y=None,
+def draw_plot_by_window_stats(input_file, output_prefix, metric, separator="\t", min_x=None, max_x=None, min_y=None,
               max_y=None, extensions=["png", "svg"], xlabel=None, ylabel=None,title=None, width=6, height=6,
               markersize=2, ylogbase=10, type="plot", grid=False, close_plot=True):
 
@@ -48,7 +48,7 @@ def draw_plot(input_file, output_prefix, metric, separator="\t", min_x=None, max
 
 
 def main():
-    draw_plot(args.input_file, args.output_prefix, args.metric, separator=args.separator, extensions=args.extensions,
+    draw_plot_by_window_stats(args.input_file, args.output_prefix, args.metric, separator=args.separator, extensions=args.extensions,
               min_x=args.min_x, max_x=args.max_x, min_y=args.min_y, max_y=args.max_y, xlabel=args.xlabel, ylabel=args.ylabel,
               title=args.title, width=args.width, height=args.height, markersize=args.markersize, ylogbase=args.ylogbase,
               type=args.type, grid=args.grid, close_plot=args.close_plot)
