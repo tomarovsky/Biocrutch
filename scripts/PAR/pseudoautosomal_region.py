@@ -1,26 +1,23 @@
 #!/usr/bin/env python3
 __author__ = 'tomarovsky'
-'''
-Script for determining the coordinates of the pseudoautosomal region.
-Output of coordinates to BED file.
-'''
+
 from Biocrutch.Statistics.coverage_statistics.CoverageMetrics import CoveragesMetrics
-from Biocrutch.Statistics.pseudoautosomal_region.coordinator import Coordinator
-from Biocrutch.Statistics.pseudoautosomal_region.filter import Filter
+from Biocrutch.Statistics.PAR.coordinator import Coordinator
+from Biocrutch.Statistics.PAR.filter import Filter
 from Biocrutch.Routines.routine_functions import metaopen
 from collections import Counter
 from sys import stdin
 import argparse
 
 
-def coordinates_list_to_BED(chrom_name: str, coordinates: list) -> str:
-    '''
+def coordinates_list_to_BED(scaffold_name: str, coordinates: list) -> str:
+    """
     function to create BED format from a list of coordinates
     takes list [[start, stop], [start, stop]]
-    '''
+    """
     result = ""
     for lst in coordinates:
-        result += (chrom_name + '\t' + str(lst[0]) + '\t' + str(lst[1]) + '\n')
+        result += (scaffold_name + '\t' + str(lst[0]) + '\t' + str(lst[1]) + '\n')
     return result
 
 
@@ -31,31 +28,31 @@ def main():
                                                   args.coverage_column_name,
                                                   args.window_column_name, 
                                                   args.repeat_window_number)
-    coords = coordinates_and_medians_tuple[0]
+    coordinates = coordinates_and_medians_tuple[0]
     medians = coordinates_and_medians_tuple[1]
     
     print(medians)
     print("Concatenate if the median >", round(coordinates.minimum_coverage, 2))
-    print(coordinates_list_to_BED(args.scaffold_name, coords))
+    print(coordinates_list_to_BED(args.scaffold_name, coordinates))
 
     print('--filtration by median--')
-    coords_merge_by_median = Filter.concat_by_median(coords, # coordinates
+    coordinates_merge_by_median = Filter.concat_by_median(coordinates, # coordinates
                                               medians, # median list between regions
                                               coordinates.minimum_coverage,
                                               coordinates.maximum_coverage)
-    print(coordinates_list_to_BED(args.scaffold_name, coords_merge_by_median))
+    print(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
 
     # print('--filtering by distance')
-    # merge_by_distansce = Filter().concat_by_distanse(coords_merge_by_median, args.min_region_length)
+    # merge_by_distansce = Filter.concat_by_distanse(coordinates_merge_by_median, args.min_region_length)
     # print(coordinates_list_to_BED(args.scaffold_name, merge_by_distansce))
 
     if args.output:
         outF = open(args.output + "_pseudoreg.bed", "w")
-        outF.writelines(coordinates_list_to_BED(args.scaffold_name, coords_merge_by_median))
+        outF.writelines(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Script for determining the coordinates of the pseudoautosomal region. Output of coordinates to BED file.")
+        description="Script for determining the coordinates of the PAR. Output of coordinates to BED file")
 
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
@@ -80,6 +77,5 @@ if __name__ == "__main__":
                                   help="measurement error", default=30)
     group_additional.add_argument('--min_region_length', type=int,
                                   help="minimal region length for filtration", default=10)
-
     args = parser.parse_args()
     main()

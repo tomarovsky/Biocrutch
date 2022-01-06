@@ -7,7 +7,7 @@ from Biocrutch.Statistics.coverage_statistics.CoverageMetrics import CoveragesMe
 from collections import Counter
 
 
-class Coordinator():
+class Coordinator:
     def __init__(self, data, whole_genome_value, deviation_percent):
         self.data = data
         self.whole_genome_value = whole_genome_value

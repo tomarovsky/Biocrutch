@@ -4,15 +4,15 @@ __author__ = 'tomarovsky'
 Class for determining the coordinates of the pseudoautosomal region.
 '''
 from Biocrutch.Statistics.coverage_statistics.CoverageMetrics import CoveragesMetrics
-from Biocrutch.Statistics.pseudoautosomal_region.coordinator import Coordinator
+from Biocrutch.Statistics.PAR.coordinator import Coordinator
 
-class Filter():
+class Filter:
     @staticmethod
     def concat_by_distanse(coordinates: list, min_region_length: int) -> list:
-        '''
+        """
         input list [[start, stop], [start, stop]]
         merge coordinates that are less than the specified distance
-        '''
+        """
         result = []
         start_flag = True
         for lst in range(len(coordinates)):
@@ -21,11 +21,11 @@ class Filter():
                 continue
             d_first = coordinates[lst - 1][1]
             d_second = coordinates[lst][0]
-            distanse = d_second - d_first
-            if distanse > min_region_length:
+            distance = d_second - d_first
+            if distance > min_region_length:
                 result.append(coordinates[lst])
             else:
-                if start_flag == True:
+                if start_flag:
                     start = coordinates[lst - 1][0]
                     start_flag = False
                 stop = coordinates[lst][1]
@@ -40,9 +40,9 @@ class Filter():
 
     @staticmethod
     def concat_by_median(coordinates: list, median_list: list, minimum_coverage, maximum_coverage) -> list:
-        '''
+        """
         merge coordinates if the area between them is with a suitable median
-        '''
+        """
         draft_result = []
         result= []
         median_flag = True
@@ -51,12 +51,12 @@ class Filter():
         stop = None
         for lst in range(1, len(coordinates)):
             if median_list[median_index] >= minimum_coverage: # and median_list[median_index] < maximum_coverage:
-                if median_flag == True:
+                if median_flag:
                     start = coordinates[lst - 1][0]
                     median_flag = False
                 stop = coordinates[lst][1]
             else:
-                if start != None and stop != None:
+                if start is not None and stop is not None:
                     draft_result.append([start, stop])
                 median_flag = True
             median_index += 1
