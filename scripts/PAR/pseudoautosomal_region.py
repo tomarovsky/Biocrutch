@@ -43,7 +43,7 @@ def main():
     print(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
 
     if args.distance_filtration: # it is not necessary (default is False)
-        print('--filtering by distance')
+        print('---- filtering by distance ----')
         coordinates_merge_by_distance = Filter.concat_by_distanse(coordinates_merge_by_median, args.min_region_length)
         print(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance))
 
