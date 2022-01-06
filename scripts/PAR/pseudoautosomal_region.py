@@ -30,19 +30,19 @@ def main():
     coordinates_list = coordinates_and_medians[0]
     medians_list = coordinates_and_medians[1]
 
-    print('---- Medians between regions ---- \n', medians_list)
+    print('---- Medians between regions ---- \n', medians_list, sep="")
     print("Concatenate if the median >", round(coordinates.minimum_coverage, 2))
-    print('---- Raw coordinates ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_list))
+    print('---- Raw coordinates ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_list), sep="")
 
     coordinates_merge_by_median = Filter.concat_by_median(coordinates_list, # coordinates list
                                               medians_list, # median list between regions
                                               coordinates.minimum_coverage,
                                               coordinates.maximum_coverage)
-    print('---- Filtration by median ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
+    print('---- Filtration by median ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median), sep="")
 
     if args.distance_filtration: # it is not necessary (default is False)
         coordinates_merge_by_distance = Filter.concat_by_distanse(coordinates_merge_by_median, args.min_region_length)
-        print('---- Filtering by distance ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance))
+        print('---- Filtering by distance ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance), sep="")
 
     if args.output:
         outfile = open(args.output + "_pseudoreg.bed", "w")
