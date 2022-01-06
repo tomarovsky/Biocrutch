@@ -22,7 +22,7 @@ def coordinates_list_to_BED(scaffold_name: str, coordinates: list) -> str:
 
 
 def main():
-    print('---raw coordinates---')
+    print('---- raw coordinates ----')
     coordinates = Coordinator(args.input, float(args.whole_genome_value), args.deviation_percent)
     coordinates_and_medians = coordinates.get_coordinates(args.window_size,
                                                   args.coverage_column_name,
@@ -35,20 +35,21 @@ def main():
     print("Concatenate if the median >", round(coordinates.minimum_coverage, 2))
     print(coordinates_list_to_BED(args.scaffold_name, coordinates_list))
 
-    print('--filtration by median--')
+    print('---- filtration by median ----')
     coordinates_merge_by_median = Filter.concat_by_median(coordinates_list, # coordinates list
                                               medians_list, # median list between regions
                                               coordinates.minimum_coverage,
                                               coordinates.maximum_coverage)
     print(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
 
-    # print('--filtering by distance')
-    # merge_by_distansce = Filter.concat_by_distanse(coordinates_merge_by_median, args.min_region_length)
-    # print(coordinates_list_to_BED(args.scaffold_name, merge_by_distansce))
+    if args.distance-filtration: # it is not necessary (default is False)
+        print('--filtering by distance')
+        coordinates_merge_by_distance = Filter.concat_by_distanse(coordinates_merge_by_median, args.min_region_length)
+        print(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance))
 
     if args.output:
-        outF = open(args.output + "_pseudoreg.bed", "w")
-        outF.writelines(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
+        outfile = open(args.output + "_pseudoreg.bed", "w")
+        outfile.writelines(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -75,7 +76,8 @@ if __name__ == "__main__":
                                   help="number of repeating windows for a given condition", default=10)
     group_additional.add_argument('--min_region_length', type=int,
                                   help="minimal region length for filtration", default=10)
-    # group_additional.add_argument('-d', '--deviation_percent', type=int,
-    #                               help="measurement error", default=30)
+    group_additional.add_argument('--distance-filtration', help="filtration by distance activation (it is not necessary)", default=False)
+    group_additional.add_argument('-d', '--deviation_percent', type=int,
+                                  help="measurement error", default=30)
     args = parser.parse_args()
     main()
