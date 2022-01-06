@@ -22,7 +22,6 @@ def coordinates_list_to_BED(scaffold_name: str, coordinates: list) -> str:
 
 
 def main():
-    print('---- raw coordinates ----')
     coordinates = Coordinator(args.input, float(args.whole_genome_value), args.deviation_percent)
     coordinates_and_medians = coordinates.get_coordinates(args.window_size,
                                                   args.coverage_column_name,
@@ -30,22 +29,20 @@ def main():
                                                   args.repeat_window_number)
     coordinates_list = coordinates_and_medians[0]
     medians_list = coordinates_and_medians[1]
-    
-    print(medians_list)
-    print("Concatenate if the median >", round(coordinates.minimum_coverage, 2))
-    print(coordinates_list_to_BED(args.scaffold_name, coordinates_list))
 
-    print('---- filtration by median ----')
+    print('---- Medians between regions ---- \n', medians_list)
+    print("Concatenate if the median >", round(coordinates.minimum_coverage, 2))
+    print('---- Raw coordinates ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_list))
+
     coordinates_merge_by_median = Filter.concat_by_median(coordinates_list, # coordinates list
                                               medians_list, # median list between regions
                                               coordinates.minimum_coverage,
                                               coordinates.maximum_coverage)
-    print(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
+    print('---- Filtration by median ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
 
     if args.distance_filtration: # it is not necessary (default is False)
-        print('---- filtering by distance ----')
         coordinates_merge_by_distance = Filter.concat_by_distanse(coordinates_merge_by_median, args.min_region_length)
-        print(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance))
+        print('---- Filtering by distance ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance))
 
     if args.output:
         outfile = open(args.output + "_pseudoreg.bed", "w")
