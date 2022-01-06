@@ -31,12 +31,12 @@ def main():
     coordinates_list = coordinates_and_medians[0]
     medians_list = coordinates_and_medians[1]
     
-    print(medians)
+    print(medians_list)
     print("Concatenate if the median >", round(coordinates.minimum_coverage, 2))
     print(coordinates_list_to_BED(args.scaffold_name, coordinates_list))
 
     print('--filtration by median--')
-    coordinates_merge_by_median = Filter.concat_by_median(coordinates_list, # coordinates
+    coordinates_merge_by_median = Filter.concat_by_median(coordinates_list, # coordinates list
                                               medians_list, # median list between regions
                                               coordinates.minimum_coverage,
                                               coordinates.maximum_coverage)
