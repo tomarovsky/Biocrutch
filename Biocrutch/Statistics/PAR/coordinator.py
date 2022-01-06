@@ -53,7 +53,7 @@ class Coordinator:
                 if repeat_window == repeat_window_number and start_coordinate is None:
                     start_coordinate = (current_window - repeat_window + 1) * window_size
                     repeat_window = 0
-            elif start_coordinate is not None and coverage_value <= self.minimum_coverage: #(coverage_value <= self.minimum_coverage or coverage_value >= self.maximum_coverage):
+            elif start_coordinate is not None and coverage_value <= self.minimum_coverage:
                 stop_coordinate = current_window * window_size
                 coordinates.append([start_coordinate, stop_coordinate])
                 if between_region_flag:
