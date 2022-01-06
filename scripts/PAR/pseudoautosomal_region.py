@@ -76,7 +76,8 @@ if __name__ == "__main__":
                                   help="number of repeating windows for a given condition", default=10)
     group_additional.add_argument('--min_region_length', type=int,
                                   help="minimal region length for filtration", default=10)
-    group_additional.add_argument('--distance-filtration', help="filtration by distance activation (it is not necessary)", default=False)
+    group_additional.add_argument('--distance-filtration', action="store_true",
+                                  help="filtration by distance activation (it is not necessary)", default=False)
     group_additional.add_argument('-d', '--deviation_percent', type=int,
                                   help="measurement error", default=30)
     args = parser.parse_args()
