@@ -66,7 +66,7 @@ if __name__ == "__main__":
     group_additional.add_argument('--coverage_column_name', type=int,
                                   help="number of column in coverage file with mean/median coverage per window", default=2)
     group_additional.add_argument('-s', '--scaffold-name', type=str,
-                                  help="name of column in coverage file with scaffold name", default="scaffold")
+                                  help="name of column in coverage file with scaffold name", default="ChrX")
     group_additional.add_argument('-m', '--whole_genome_value', type=str,
                                   help="whole genome median/mean value", default=34)
     group_additional.add_argument('-r', '--repeat_window_number', type=int,
