@@ -39,7 +39,9 @@ class Coordinator:
 
         between_regions_coverage_dict = Counter()
         between_region_flag = None
-
+        print("self.whole_genome_value: ", self.whole_genome_value)
+        print("self.minimum_coverage: ", self.minimum_coverage)
+        print("self.maximum_coverage: ", self.maximum_coverage)
         for ln in self.data:
             line = ln.rstrip().split("\t")
             coverage_value = float(line[coverage_column_name])
