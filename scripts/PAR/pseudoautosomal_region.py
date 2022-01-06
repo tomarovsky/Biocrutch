@@ -24,20 +24,20 @@ def coordinates_list_to_BED(scaffold_name: str, coordinates: list) -> str:
 def main():
     print('---raw coordinates---')
     coordinates = Coordinator(args.input, float(args.whole_genome_value), args.deviation_percent)
-    coordinates_and_medians_tuple = coordinates.get_coordinates(args.window_size,
+    coordinates_and_medians = coordinates.get_coordinates(args.window_size,
                                                   args.coverage_column_name,
                                                   args.window_column_name, 
                                                   args.repeat_window_number)
-    coordinates = coordinates_and_medians_tuple[0]
-    medians = coordinates_and_medians_tuple[1]
+    coordinates_list = coordinates_and_medians[0]
+    medians_list = coordinates_and_medians[1]
     
     print(medians)
     print("Concatenate if the median >", round(coordinates.minimum_coverage, 2))
-    print(coordinates_list_to_BED(args.scaffold_name, coordinates))
+    print(coordinates_list_to_BED(args.scaffold_name, coordinates_list))
 
     print('--filtration by median--')
-    coordinates_merge_by_median = Filter.concat_by_median(coordinates, # coordinates
-                                              medians, # median list between regions
+    coordinates_merge_by_median = Filter.concat_by_median(coordinates_list, # coordinates
+                                              medians_list, # median list between regions
                                               coordinates.minimum_coverage,
                                               coordinates.maximum_coverage)
     print(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
