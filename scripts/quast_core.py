@@ -8,6 +8,7 @@ import Biocrutch.Statistics.quast_core.constants as c
 import pandas as pd
 from os import path
 
+
 def main():
     df = pd.DataFrame()
     data_dict = defaultdict(list)
