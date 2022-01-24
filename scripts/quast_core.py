@@ -52,12 +52,12 @@ if __name__ == "__main__":
     parser = ArgumentParser(description=c.DESCRIPTION)
 
     group_required = parser.add_argument_group('Required options')
-    group_required.add_argument('-i', '--input', type=str, 
+    group_required.add_argument('-i', '--input', type=str,
                              nargs='+', required=True, help=c.HELP_INPUT)
 
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-b', '--buffering',
-                             metavar='INT', type=int, 
+                             metavar='INT', type=int,
                              default=None, help=c.HELP_BUFFERING)
     group_additional.add_argument('-m', '--min-contig',
                              metavar='INT', type=int, nargs='+',
