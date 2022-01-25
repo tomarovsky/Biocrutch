@@ -13,7 +13,6 @@ def main():
             # axel - tool for download SRA from the link
             download_SRA_bash_command = ("axel -n 50 {}".format(link)).split()
             subprocess.call(download_SRA_bash_command)
-
         if args.metrics:
             print("Metrics:")
             SRA_id_only = SRA_id.split("_")[0]
