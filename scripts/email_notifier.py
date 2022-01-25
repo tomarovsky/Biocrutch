@@ -18,7 +18,6 @@ def main():
     s.sendmail(me, [you], msg.as_string())
     s.quit()
 
-
 if __name__ == "__main__":
     parser = ArgumentParser(description="for sending messages")
     group_required = parser.add_argument_group('Required options')

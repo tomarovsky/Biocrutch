@@ -38,12 +38,9 @@ if __name__ == "__main__":
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=str,
                                 nargs='+', help="SRA id (or file.fastq if you want metrics)")
-    group_required.add_argument('-d', '--download',
-                                action="store_true",
+    group_required.add_argument('-d', '--download', action="store_true",
                                 help="downloader SRA id/ids")
-    group_required.add_argument('-m', '--metrics',
-                                action="store_true",
+    group_required.add_argument('-m', '--metrics', action="store_true",
                                 help="metrics for SRA_id.fastq and read counts for comparison")
-
     args = parser.parse_args()
     main()
