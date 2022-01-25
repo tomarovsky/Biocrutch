@@ -10,7 +10,7 @@ def main():
     for SRA_id in args.input:
         if args.download:
             link = SRA_download_link(SRA_id)
-            #axel - tool for download SRA from the link
+            # axel - tool for download SRA from the link
             download_SRA_bash_command = ("axel -n 50 {}".format(link)).split()
             subprocess.call(download_SRA_bash_command)
 
@@ -44,6 +44,6 @@ if __name__ == "__main__":
     group_required.add_argument('-m', '--metrics',
                                 action="store_true",
                                 help="metrics for SRA_id.fastq and read counts for comparison")
-    
+
     args = parser.parse_args()
     main()
