@@ -4,6 +4,7 @@ import smtplib
 from email.mime.text import MIMEText
 from argparse import ArgumentParser
 
+
 LABEL = 'Message from server'
 
 def main():
@@ -17,6 +18,7 @@ def main():
     s = smtplib.SMTP(smtp_server)
     s.sendmail(me, [you], msg.as_string())
     s.quit()
+
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="for sending messages")
