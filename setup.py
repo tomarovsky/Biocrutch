@@ -15,4 +15,5 @@ setup(name='Biocrutch',
       author='Andrey Tomarovsky',
       author_email='andrey.tomarovsky@gmail.com',
       install_requires=dependencies,
-      long_description=open(os.path.join(os.path.dirname(__file__), 'README.md')).read(),)
+      long_description=open(os.path.join(os.path.dirname(__file__), 'README.md')).read(),
+      scripts=scripts)
