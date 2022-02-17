@@ -7,7 +7,8 @@ from setuptools import setup, find_packages
 dependencies = ['scipy', 'numpy', 'pandas', 'matplotlib', 'matplotlib-venn',
                 'venn', 'biopython', 'xmltodict', 'statsmodels', "ete3",
                 "bcbio-gff", 'lxml', 'bs4', 'six']
-
+scripts = os.listdir("scripts/")
+scripts = ["scripts/%s" % script for script in scripts]
 setup(name='Biocrutch',
       version='0.1',
       packages=find_packages(),
