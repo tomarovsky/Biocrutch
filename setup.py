@@ -1,16 +1,12 @@
 __author__ = 'tomarovsky'
 
 import os
-import sys
 from setuptools import setup, find_packages
 
 def get_list_of_files(list_of_dirs_and_files, expression=None, recursive=True):
     file_list = []
-
     for entry in [list_of_dirs_and_files] if isinstance(list_of_dirs_and_files, str) else list_of_dirs_and_files:
-
         if os.path.isdir(entry):
-
             files_in_dir = ["%s%s" % (entry if entry[-1] == "/" else (entry+"/"), filename)
                             for filename in sorted(filter(expression, os.listdir(entry))
                                                    if expression else os.listdir(entry))]
@@ -26,6 +22,7 @@ def get_list_of_files(list_of_dirs_and_files, expression=None, recursive=True):
             file_list.append(os.path.abspath(entry))
         else:
             print("%s does not exist" % entry)
+    print(file_list)
     return file_list
 
 dependencies = ['scipy', 'numpy', 'pandas', 'matplotlib', 'matplotlib-venn',
