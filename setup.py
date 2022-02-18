@@ -4,9 +4,8 @@ import os
 from pathlib import Path
 from setuptools import setup, find_packages
 
-dependencies = ['scipy', 'numpy', 'pandas', 'matplotlib', 'matplotlib-venn',
-                'venn', 'biopython', 'xmltodict', 'statsmodels', "ete3",
-                "bcbio-gff", 'lxml', 'bs4', 'six']
+dependencies = ['scipy', 'numpy', 'pandas', 'matplotlib', 'biopython',
+                'lxml', 'beautifulsoup4', 'requests']
 
 setup(name='Biocrutch',
       version='0.1',
