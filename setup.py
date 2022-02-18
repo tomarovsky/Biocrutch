@@ -2,11 +2,31 @@ __author__ = 'tomarovsky'
 
 import os
 import sys
-from pathlib import Path
 from setuptools import setup, find_packages
 
-def get_list_of_files(list_of_dirs_and_files):
-    return sorted(Path(list_of_dirs_and_files).rglob("*.py"))
+def get_list_of_files(list_of_dirs_and_files, expression=None, recursive=True):
+    file_list = []
+
+    for entry in [list_of_dirs_and_files] if isinstance(list_of_dirs_and_files, str) else list_of_dirs_and_files:
+
+        if os.path.isdir(entry):
+
+            files_in_dir = ["%s%s" % (entry if entry[-1] == "/" else (entry+"/"), filename)
+                            for filename in sorted(filter(expression, os.listdir(entry))
+                                                   if expression else os.listdir(entry))]
+            if recursive:
+                for filename in files_in_dir:
+                    if os.path.isdir(filename):
+                        file_list += get_list_of_files([filename], expression=expression, recursive=True)
+                    else:
+                        file_list.append(filename)
+            else:
+                file_list += files_in_dir
+        elif os.path.exists(entry):
+            file_list.append(os.path.abspath(entry))
+        else:
+            print("%s does not exist" % entry)
+    return file_list
 
 dependencies = ['scipy', 'numpy', 'pandas', 'matplotlib', 'matplotlib-venn',
                 'venn', 'biopython', 'xmltodict', 'statsmodels', "ete3",
