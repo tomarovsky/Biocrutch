@@ -28,7 +28,7 @@ class MosdepthCoverageStatistics:
                                                     metrics.max_coverage_value(),
                                                     metrics.min_coverage_value()]
         # for print to terminal
-        print(df_whole_genome)
+        # print(df_whole_genome)
         # create a report.csv
         df_whole_genome.rename_axis('#genome').reset_index().to_csv(self.output + "_whole_genome_stats.csv",
                                                                    encoding='utf-8', sep='\t', index = False)
@@ -59,7 +59,7 @@ class MosdepthCoverageStatistics:
                                                     metrics.max_coverage_value(),
                                                     metrics.min_coverage_value()]
         #for print dataframe to terminal
-        print(df_scaffolds)
+        # print(df_scaffolds)
         # create a report.csv
         df_scaffolds.rename_axis('#scaffold').reset_index().to_csv(self.output + "_scaffolds_stats.csv",
                                                                   encoding='utf-8', sep='\t', index = False)
@@ -100,7 +100,7 @@ class MosdepthCoverageStatistics:
                 previous_scaffold_name = line[0]
 
         #for print dataframe to terminal
-        print(df_nonoverlapping_frames)
+        # print(df_nonoverlapping_frames)
         # create a report.csv
         df_nonoverlapping_frames.to_csv(self.output + '_' + str(frame_size) + "_windows_stats.csv",
                                         encoding='utf-8', sep='\t', index = False)
