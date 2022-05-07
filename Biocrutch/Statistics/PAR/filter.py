@@ -43,7 +43,7 @@ class Filter:
         """
         merge coordinates if the area between them is with a suitable median
         """
-        if median_list: # if len(median_list) == 0
+        if len(median_list) == 0:
             return coordinates
 
         result= []
@@ -67,7 +67,7 @@ class Filter:
         if start is not None and stop is not None:
             result.append([start, stop])
 
-        if result: # if len(result) == 0
+        if len(result) == 0:
             if start is None and stop is None:
                 lengths = []
                 for lst in coordinates:
