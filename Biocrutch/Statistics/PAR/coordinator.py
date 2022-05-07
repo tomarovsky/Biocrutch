@@ -49,6 +49,7 @@ class Coordinator:
                 between_regions_coverage_dict[coverage_value] += 1
 
             if coverage_value > self.minimum_coverage:  # and coverage_value < self.maximum_coverage:
+                print("if1: ", coverage_value, ">", self.minimum_coverage)
                 repeat_window += 1
                 if repeat_window == repeat_window_number and start_coordinate is None:
                     start_coordinate = (current_window - repeat_window + 1) * window_size
