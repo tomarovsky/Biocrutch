@@ -74,8 +74,7 @@ class Filter:
                     region_length = int(lst[1]) - int(lst[0])
                     lengths.append(region_length)
                 longest_region = coordinates[lengths.index(max(lengths))]
-                print(longest_region)
-                return longest_region
+                result.append(longest_region)
 
         return result
 
