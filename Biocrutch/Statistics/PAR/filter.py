@@ -43,7 +43,7 @@ class Filter:
         """
         merge coordinates if the area between them is with a suitable median
         """
-        if len(median_list) == 0:
+        if not median_list: #len(median_list) == 0
             return coordinates
 
         result= []
@@ -67,14 +67,13 @@ class Filter:
         if start is not None and stop is not None:
             result.append([start, stop])
 
-        if len(result) == 0:
-            if start is None and stop is None:
-                lengths = []
-                for lst in coordinates:
-                    region_length = int(lst[1]) - int(lst[0])
-                    lengths.append(region_length)
-                longest_region = coordinates[lengths.index(max(lengths))]
-                result.append(longest_region)
+        if not result: #len(result) == 0 and start is None and stop is None:
+            lengths = []
+            for lst in coordinates:
+                region_length = int(lst[1]) - int(lst[0])
+                lengths.append(region_length)
+            longest_region = coordinates[lengths.index(max(lengths))]
+            result.append(longest_region)
 
         return result
 
