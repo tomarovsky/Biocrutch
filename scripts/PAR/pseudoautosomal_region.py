@@ -25,7 +25,7 @@ def main():
     coordinates = Coordinator(args.input, float(args.whole_genome_value), args.deviation_percent)
     coordinates_and_medians = coordinates.get_coordinates(args.window_size,
                                                   args.coverage_column_name,
-                                                  args.window_column_name, 
+                                                  args.window_column_name,
                                                   args.repeat_window_number)
     coordinates_list = coordinates_and_medians[0]
     medians_list = coordinates_and_medians[1]
