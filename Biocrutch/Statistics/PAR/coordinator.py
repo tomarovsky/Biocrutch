@@ -55,7 +55,7 @@ class Coordinator:
                     start_coordinate = (current_window - repeat_window + 1) * window_size
                     repeat_window = 0
             elif start_coordinate is not None and coverage_value <= self.minimum_coverage:
-                stop_coordinate = (current_window - 1) * window_size
+                stop_coordinate = current_window * window_size
                 coordinates.append([start_coordinate, stop_coordinate])
                 if between_region_flag:
                     median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
@@ -64,8 +64,10 @@ class Coordinator:
                     between_region_flag = True
                 start_coordinate = None
                 repeat_window = 0
+                print("in cycle:", start_coordinate, stop_coordinate)
             else:
                 repeat_window = 0
+        print("out of cycle:", start_coordinate, stop_coordinate)
         if coordinates[-1][-1] != current_window:
             coordinates.append([(stop_coordinate + window_size), current_window * window_size])
         if between_regions_coverage_dict:
