@@ -49,7 +49,7 @@ class Coordinator:
                 between_regions_coverage_dict[coverage_value] += 1
 
             if coverage_value > self.minimum_coverage:  # and coverage_value < self.maximum_coverage:
-                print("if1: ", current_window, coverage_value, ">", self.minimum_coverage, "|", start_coordinate)
+                # print("if: ", current_window, coverage_value, ">", self.minimum_coverage, "|", start_coordinate)
                 repeat_window += 1
                 if repeat_window == repeat_window_number and start_coordinate is None:
                     start_coordinate = (current_window - repeat_window + 1) * window_size
@@ -64,23 +64,17 @@ class Coordinator:
                     between_region_flag = True
                 start_coordinate = None
                 repeat_window = 0
-                print("in cycle:", start_coordinate, stop_coordinate, )
+                # print("in cycle:", start_coordinate, stop_coordinate)
             else:
                 repeat_window = 0
-        print("out of cycle:", start_coordinate, stop_coordinate)
+        # print("out of cycle:", start_coordinate, stop_coordinate)
 
-        if start_coordinate is not None:
+        if start_coordinate is not None and between_region_flag:
             stop_coordinate = current_window * window_size
             coordinates.append([start_coordinate, stop_coordinate])
-            if between_region_flag:
-                median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
-                between_regions_coverage_dict.clear()
-        print("out of cycle2:", start_coordinate, stop_coordinate)
-        # if coordinates[-1][-1] != current_window:
-        #     coordinates.append([(stop_coordinate + window_size), current_window * window_size])
-        if between_regions_coverage_dict:
             median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
             between_regions_coverage_dict.clear()
+        # print("final:", start_coordinate, stop_coordinate)
 
         # print(median_between_regions_list)
         # print(coordinates)
