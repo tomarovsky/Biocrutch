@@ -68,7 +68,7 @@ class Coordinator:
             else:
                 repeat_window = 0
         print("out of cycle:", start_coordinate, stop_coordinate, between_region_flag)
-        print(median_between_regions_list)
+        print(between_regions_coverage_dict)
 
         # if start_coordinate is not None:
         #     stop_coordinate = current_window * window_size
