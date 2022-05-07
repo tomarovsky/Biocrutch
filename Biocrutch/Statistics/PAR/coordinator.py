@@ -64,10 +64,16 @@ class Coordinator:
                     between_region_flag = True
                 start_coordinate = None
                 repeat_window = 0
-                print("in cycle:", start_coordinate, stop_coordinate)
+                print("in cycle:", start_coordinate, stop_coordinate, )
             else:
                 repeat_window = 0
-        print("out of cycle:", start_coordinate, stop_coordinate)
+        print("out of cycle:", start_coordinate, stop_coordinate, between_region_flag)
+        print(median_between_regions_list)
+
+        # if start_coordinate is not None:
+        #     stop_coordinate = current_window * window_size
+        #     coordinates.append([start_coordinate, stop_coordinate])
+
         if coordinates[-1][-1] != current_window:
             coordinates.append([(stop_coordinate + window_size), current_window * window_size])
         if between_regions_coverage_dict:
