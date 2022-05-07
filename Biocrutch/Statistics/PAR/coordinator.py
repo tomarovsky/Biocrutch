@@ -67,15 +67,17 @@ class Coordinator:
                 print("in cycle:", start_coordinate, stop_coordinate, )
             else:
                 repeat_window = 0
-        print("out of cycle:", start_coordinate, stop_coordinate, between_region_flag)
-        print(between_regions_coverage_dict)
+        print("out of cycle:", start_coordinate, stop_coordinate)
 
-        # if start_coordinate is not None:
-        #     stop_coordinate = current_window * window_size
-        #     coordinates.append([start_coordinate, stop_coordinate])
-
-        if coordinates[-1][-1] != current_window:
-            coordinates.append([(stop_coordinate + window_size), current_window * window_size])
+        if start_coordinate is not None:
+            stop_coordinate = current_window * window_size
+            coordinates.append([start_coordinate, stop_coordinate])
+            if between_region_flag:
+                median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
+                between_regions_coverage_dict.clear()
+        print("out of cycle2:", start_coordinate, stop_coordinate)
+        # if coordinates[-1][-1] != current_window:
+        #     coordinates.append([(stop_coordinate + window_size), current_window * window_size])
         if between_regions_coverage_dict:
             median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
             between_regions_coverage_dict.clear()
