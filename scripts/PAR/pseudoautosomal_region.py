@@ -68,7 +68,7 @@ if __name__ == "__main__":
     group_additional.add_argument('-s', '--scaffold-name', type=str,
                                   help="name of column in coverage file with scaffold name", default="ChrX")
     group_additional.add_argument('-m', '--whole_genome_value', type=str,
-                                  help="whole genome median/mean value", default=34)
+                                  help="whole genome median/mean value")
     group_additional.add_argument('-r', '--repeat_window_number', type=int,
                                   help="number of repeating windows for a given condition", default=10)
     group_additional.add_argument('--min_region_length', type=int,
