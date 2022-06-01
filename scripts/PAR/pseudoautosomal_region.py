@@ -22,7 +22,7 @@ def coordinates_list_to_BED(scaffold_name: str, coordinates: list) -> str:
 
 
 def main():
-    coordinates = Coordinator(args.input, float(args.whole_genome_value), args.deviation_percent)
+    coordinates = Coordinator(args.input, float(args.whole_genome_value), args.deviation_percent, args.region_gap_size)
     coordinates_and_medians = coordinates.get_coordinates(args.window_size,
                                                   args.coverage_column_name,
                                                   args.window_column_name,
@@ -40,10 +40,6 @@ def main():
                                               coordinates.maximum_coverage)
     print('---- Filtration by median ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median), sep="")
 
-    if args.distance_filtration: # it is not necessary (default is False)
-        coordinates_merge_by_distance = Filter.concat_by_distanse(coordinates_merge_by_median, args.min_region_length)
-        print('---- Filtering by distance ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance), sep="")
-
     if args.output:
         outfile = open(args.output + "_pseudoreg.bed", "w")
         outfile.writelines(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
@@ -60,7 +56,7 @@ if __name__ == "__main__":
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
                                   help='output file prefix')
     group_additional.add_argument('-f', '--window-size', type=int,
-                                  help="the window size used in your data", default=10000)
+                                  help="the window size used in your data")
     group_additional.add_argument('--window_column_name', type=int,
                                   help="number of column in coverage file with window number", default=1)
     group_additional.add_argument('--coverage_column_name', type=int,
@@ -71,10 +67,8 @@ if __name__ == "__main__":
                                   help="whole genome median/mean value")
     group_additional.add_argument('-r', '--repeat_window_number', type=int,
                                   help="number of repeating windows for a given condition", default=10)
-    group_additional.add_argument('--min_region_length', type=int,
-                                  help="minimal region length for filtration", default=10)
-    group_additional.add_argument('--distance-filtration', action="store_true",
-                                  help="filtration by distance activation (it is not necessary)", default=False)
+    group_additional.add_argument('-g', '--region_gap_size', type=int,
+                                  help="minimum allowable gap between regions for their merging (windows)", default=5)
     group_additional.add_argument('-d', '--deviation_percent', type=int,
                                   help="measurement error", default=30)
     args = parser.parse_args()

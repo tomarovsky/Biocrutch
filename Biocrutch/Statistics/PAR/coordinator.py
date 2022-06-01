@@ -8,74 +8,62 @@ from collections import Counter
 
 
 class Coordinator:
-    def __init__(self, data, whole_genome_value, deviation_percent):
+    def __init__(self, data, whole_genome_value, region_gap_size, deviation_percent):
         self.data = data
         self.whole_genome_value = whole_genome_value
+        self.region_gap_size = region_gap_size
         self.minimum_coverage = whole_genome_value - (whole_genome_value / 100 * deviation_percent)
         self.maximum_coverage = whole_genome_value + (whole_genome_value / 100 * deviation_percent)
 
-    @staticmethod # not used in the script to determine the coordinates of the pseudoautosomal region
-    def coordinates_between_regions(coordinates: list, between_regions_list: list) -> list:
-        # input list [[start, stop], [start, stop]]
-        last_element_index = len(coordinates) - 1
-        for lst in range(len(coordinates)):
-            start = coordinates[lst][-1]
-            if lst == last_element_index:
-                break
-            stop = coordinates[lst + 1][0]
-            between_regions_list.append([start, stop])
-        return between_regions_list
-
-
-    def get_coordinates(self,
-                    window_size,
+    def get_coordinates(self, window_size,
                     coverage_column_name: int,
                     window_column_name: int,
                     repeat_window_number: int) -> list:
+
         coordinates = []
+        coverages_between_regions = []
+        between_regions_flag = False
         median_between_regions_list = []
         repeat_window = 0
         start_coordinate = None
 
-        between_regions_coverage_dict = Counter()
-        between_region_flag = None
-
-        for ln in self.data:
-            line = ln.rstrip().split("\t")
+        for line in self.data:
+            line = line.rstrip().split("\t")
             coverage_value = float(line[coverage_column_name])
             current_window = int(line[window_column_name])
 
-            if between_region_flag:
-                between_regions_coverage_dict[coverage_value] += 1
+            if between_regions_flag:
+                coverages_between_regions.append(coverage_value)
 
-            if coverage_value > self.minimum_coverage:  # and coverage_value < self.maximum_coverage:
-                # print("if: ", current_window, coverage_value, ">", self.minimum_coverage, "|", start_coordinate)
+            if coverage_value >= self.minimum_coverage:
                 repeat_window += 1
                 if repeat_window == repeat_window_number and start_coordinate is None:
                     start_coordinate = (current_window - repeat_window + 1) * window_size
-                    repeat_window = 0
-            elif start_coordinate is not None and coverage_value <= self.minimum_coverage:
+                    if between_regions_flag:
+                        coverages_between_regions = coverages_between_regions[:-repeat_window]
+                        if len(coverages_between_regions) >= self.region_gap_size:
+                            # the median of the section between regions, which is less than region_gap_size, is considered acceptable
+                            between_regions_coverage_dict = Counter()
+                            for i in coverages_between_regions:
+                                between_regions_coverage_dict[i] += 1
+                            median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
+                            between_regions_coverage_dict.clear()
+                            coverages_between_regions = []
+                        else:
+                            # if the distance between regions < minimum_coverage, then we consider the admissible median.
+                            median_between_regions_list.append(self.minimum_coverage)
+                        between_regions_flag = False
+            elif coverage_value < self.minimum_coverage and start_coordinate is not None:
                 stop_coordinate = current_window * window_size
                 coordinates.append([start_coordinate, stop_coordinate])
-                if between_region_flag:
-                    median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
-                    between_regions_coverage_dict.clear()
-                if coordinates:
-                    between_region_flag = True
+                between_regions_flag = True
                 start_coordinate = None
                 repeat_window = 0
-                # print("in cycle:", start_coordinate, stop_coordinate)
             else:
                 repeat_window = 0
-        # print("out of cycle:", start_coordinate, stop_coordinate)
 
-        if start_coordinate is not None and between_region_flag:
+        if start_coordinate is not None:
             stop_coordinate = current_window * window_size
             coordinates.append([start_coordinate, stop_coordinate])
-            median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
-            between_regions_coverage_dict.clear()
-        # print("final:", start_coordinate, stop_coordinate)
 
-        # print(median_between_regions_list)
-        # print(coordinates)
         return coordinates, median_between_regions_list
