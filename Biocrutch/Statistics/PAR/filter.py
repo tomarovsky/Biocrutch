@@ -8,7 +8,7 @@ from Biocrutch.Statistics.PAR.coordinator import Coordinator
 
 class Filter:
     @staticmethod
-    def concat_by_distanse(coordinates: list, min_region_length: int) -> list: # not used
+    def concat_by_distance(coordinates: list, min_region_length: int) -> list: # not used
         """
         input list [[start, stop], [start, stop]]
         merge coordinates that are less than the specified distance

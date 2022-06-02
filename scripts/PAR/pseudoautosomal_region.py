@@ -40,9 +40,13 @@ def main():
                                               coordinates.maximum_coverage)
     print('---- Filtration by median ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median), sep="")
 
+    coordinates_merge_by_distance = Filter.concat_by_distance(coordinates, args.min_region_length)
+
+    print('---- Filtration by distance ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance), sep="")
+
     if args.output:
         outfile = open(args.output + "_pseudoreg.bed", "w")
-        outfile.writelines(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median))
+        outfile.writelines(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -68,7 +72,9 @@ if __name__ == "__main__":
     group_additional.add_argument('-r', '--repeat_window_number', type=int,
                                   help="number of repeating windows for a given condition", default=10)
     group_additional.add_argument('-g', '--region_gap_size', type=int,
-                                  help="minimum allowable gap between regions for their merging (windows)", default=5)
+                                  help="minimum allowable gap between regions for their merging (windows)", default=1)
+    group_additional.add_argument('-l', '--min_region_length', type=int,
+                                  help="minimum distance between regions for their merging (windows)", default=5)
     group_additional.add_argument('-d', '--deviation_percent', type=int,
                                   help="measurement error", default=30)
     args = parser.parse_args()

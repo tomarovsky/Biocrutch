@@ -40,7 +40,7 @@ class Coordinator:
                 if repeat_window == repeat_window_number and start_coordinate is None:
                     start_coordinate = (current_window - repeat_window + 1) * window_size
                     if between_regions_flag:
-                        # coverages_between_regions = coverages_between_regions[:-repeat_window]
+                        coverages_between_regions = coverages_between_regions[:-repeat_window]
                         if len(coverages_between_regions) >= self.region_gap_size:
                             # the median of the section between regions, which is less than region_gap_size, is considered acceptable
                             between_regions_coverage_dict = Counter()
