@@ -22,7 +22,7 @@ def coordinates_list_to_BED(scaffold_name: str, coordinates: list) -> str:
 
 
 def main():
-    coordinates = Coordinator(args.input, args.whole_genome_value, args.region_gap_size, args.deviation_percent)
+    coordinates = Coordinator(args.input, float(args.whole_genome_value), args.region_gap_size, args.deviation_percent)
     coordinates_and_medians = coordinates.get_coordinates(args.window_size,
                                                   args.coverage_column_name,
                                                   args.window_column_name,
@@ -66,7 +66,7 @@ if __name__ == "__main__":
                                   help="number of column in coverage file with mean/median coverage per window", default=2)
     group_additional.add_argument('-s', '--scaffold-name', type=str,
                                   help="name of column in coverage file with scaffold name", default="ChrX")
-    group_additional.add_argument('-m', '--whole_genome_value', type=int,
+    group_additional.add_argument('-m', '--whole_genome_value', type=str,
                                   help="whole genome median/mean value")
     group_additional.add_argument('-r', '--repeat_window_number', type=int,
                                   help="number of repeating windows for a given condition", default=10)
