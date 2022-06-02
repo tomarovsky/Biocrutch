@@ -12,6 +12,7 @@ class Coordinator:
         self.data = data
         self.whole_genome_value = whole_genome_value
         self.region_gap_size = region_gap_size
+        self.deviation_percent = deviation_percent
         self.minimum_coverage = whole_genome_value - (whole_genome_value / 100 * deviation_percent)
         self.maximum_coverage = whole_genome_value + (whole_genome_value / 100 * deviation_percent)
 
@@ -40,17 +41,17 @@ class Coordinator:
                 if repeat_window == repeat_window_number and start_coordinate is None:
                     start_coordinate = (current_window - repeat_window + 1) * window_size
                     if between_regions_flag:
-                        if self.region_gap_size != 0:
-                            coverages_between_regions = coverages_between_regions[:-repeat_window]
-                        if len(coverages_between_regions) > self.region_gap_size:
-                            between_regions_coverage_dict = Counter()
-                            for i in coverages_between_regions:
-                                between_regions_coverage_dict[i] += 1
-                            median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
-                            between_regions_coverage_dict.clear()
-                            coverages_between_regions = []
-                        else:
-                            median_between_regions_list.append(self.minimum_coverage)
+                        if self.region_gap_size > 0:
+                            coverages_between_regions = coverages_between_regions[:-repeat_window + 1]
+                        # if len(coverages_between_regions) >= self.region_gap_size:
+                        between_regions_coverage_dict = Counter()
+                        for i in coverages_between_regions:
+                            between_regions_coverage_dict[i] += 1
+                        median_between_regions_list.append(CoveragesMetrics(between_regions_coverage_dict).median_value())
+                        between_regions_coverage_dict.clear()
+                        coverages_between_regions = []
+                        # else:
+                        #     median_between_regions_list.append(self.minimum_coverage)
                         between_regions_flag = False
             elif coverage_value < self.minimum_coverage and start_coordinate is not None:
                 stop_coordinate = current_window * window_size

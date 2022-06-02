@@ -22,7 +22,7 @@ def coordinates_list_to_BED(scaffold_name: str, coordinates: list) -> str:
 
 
 def main():
-    coordinates = Coordinator(args.input, float(args.whole_genome_value), args.deviation_percent, args.region_gap_size)
+    coordinates = Coordinator(args.input, args.whole_genome_value, args.region_gap_size, args.deviation_percent)
     coordinates_and_medians = coordinates.get_coordinates(args.window_size,
                                                   args.coverage_column_name,
                                                   args.window_column_name,
@@ -31,7 +31,7 @@ def main():
     medians_list = coordinates_and_medians[1]
 
     print('---- Medians between regions ---- \n', medians_list, sep="")
-    print("Concatenate if the median >=", round(coordinates.minimum_coverage, 2))
+    print("Concatenate if the median >=", coordinates.minimum_coverage)
     print('---- Raw coordinates ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_list), sep="")
 
     coordinates_merge_by_median = Filter.concat_by_median(coordinates_list, # coordinates list
@@ -55,7 +55,6 @@ if __name__ == "__main__":
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
                                 help="input coverage_statistics_output.csv (don`t use for STDIN)", default=stdin)
-
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
                                   help='output file prefix')
@@ -67,7 +66,7 @@ if __name__ == "__main__":
                                   help="number of column in coverage file with mean/median coverage per window", default=2)
     group_additional.add_argument('-s', '--scaffold-name', type=str,
                                   help="name of column in coverage file with scaffold name", default="ChrX")
-    group_additional.add_argument('-m', '--whole_genome_value', type=str,
+    group_additional.add_argument('-m', '--whole_genome_value', type=int,
                                   help="whole genome median/mean value")
     group_additional.add_argument('-r', '--repeat_window_number', type=int,
                                   help="number of repeating windows for a given condition", default=10)
@@ -76,7 +75,6 @@ if __name__ == "__main__":
     group_additional.add_argument('-l', '--min_region_length', type=int,
                                   help="minimum distance between regions for their merging (nucleotides). If 0, then the median is calculated taking into account the next section, and not just the section between regions.",
                                   default=5)
-    group_additional.add_argument('-d', '--deviation_percent', type=int,
-                                  help="measurement error", default=30)
+    group_additional.add_argument('-d', '--deviation_percent', type=int, help="measurement error", default=30)
     args = parser.parse_args()
     main()
