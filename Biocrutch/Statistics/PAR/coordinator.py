@@ -42,8 +42,7 @@ class Coordinator:
                     if between_regions_flag:
                         if self.region_gap_size != 0:
                             coverages_between_regions = coverages_between_regions[:-repeat_window]
-                        if len(coverages_between_regions) >= self.region_gap_size:
-                            # the median of the section between regions, which is less than region_gap_size, is considered acceptable
+                        if len(coverages_between_regions) > self.region_gap_size:
                             between_regions_coverage_dict = Counter()
                             for i in coverages_between_regions:
                                 between_regions_coverage_dict[i] += 1
@@ -51,7 +50,6 @@ class Coordinator:
                             between_regions_coverage_dict.clear()
                             coverages_between_regions = []
                         else:
-                            # if the distance between regions < minimum_coverage, then we consider the admissible median.
                             median_between_regions_list.append(self.minimum_coverage)
                         between_regions_flag = False
             elif coverage_value < self.minimum_coverage and start_coordinate is not None:
