@@ -74,7 +74,8 @@ if __name__ == "__main__":
     group_additional.add_argument('-g', '--region_gap_size', type=int,
                                   help="minimum allowable gap between regions for their merging (windows)", default=1)
     group_additional.add_argument('-l', '--min_region_length', type=int,
-                                  help="minimum distance between regions for their merging (windows)", default=5)
+                                  help="minimum distance between regions for their merging (nucleotides). If 0, then the median is calculated taking into account the next section, and not just the section between regions.",
+                                  default=5)
     group_additional.add_argument('-d', '--deviation_percent', type=int,
                                   help="measurement error", default=30)
     args = parser.parse_args()
