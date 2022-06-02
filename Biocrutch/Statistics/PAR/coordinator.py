@@ -43,6 +43,7 @@ class Coordinator:
                         if self.region_gap_size != 0:
                             # the median of the section between regions, which is less than region_gap_size, is considered acceptable
                             coverages_between_regions = coverages_between_regions[:-repeat_window]
+                        print("############################# ", coverages_between_regions)
                         # If 0, then it is considered to capture the next section, not only between regions
                         between_regions_coverage_dict = Counter()
                         for i in coverages_between_regions:
