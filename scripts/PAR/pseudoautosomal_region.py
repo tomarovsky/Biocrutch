@@ -31,7 +31,7 @@ def main():
     medians_list = coordinates_and_medians[1]
 
     print('---- Medians between regions ---- \n', medians_list, sep="")
-    print("Concatenate if the median >", round(coordinates.minimum_coverage, 2))
+    print("Concatenate if the median >=", round(coordinates.minimum_coverage, 2))
     print('---- Raw coordinates ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_list), sep="")
 
     coordinates_merge_by_median = Filter.concat_by_median(coordinates_list, # coordinates list
