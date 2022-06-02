@@ -40,7 +40,7 @@ def main():
                                               coordinates.maximum_coverage)
     print('---- Filtration by median ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median), sep="")
 
-    coordinates_merge_by_distance = Filter.concat_by_distance(coordinates, args.min_region_length)
+    coordinates_merge_by_distance = Filter.concat_by_distance(coordinates_merge_by_median, args.min_region_length)
 
     print('---- Filtration by distance ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance), sep="")
 
