@@ -25,7 +25,7 @@ def main():
     for scaffold, length in lengths_dict.items():
         count += 1
         if scaffold in reverselist:
-            chain = f"chain 1000000 {scaffold}_rc {length} - 0 {length} {scaffold} {length} + 0 {length} {count}\n{length}\n\n"
+            chain = f"chain 1000000 {scaffold} {length} + 0 {length} {scaffold}_rc {length} - 0 {length} {count}\n{length}\n\n"
         else:
             chain = f"chain 1000000 {scaffold} {length} + 0 {length} {scaffold} {length} + 0 {length} {count}\n{length}\n\n"
         outfile.write(chain)
