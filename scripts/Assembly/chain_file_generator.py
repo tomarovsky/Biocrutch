@@ -20,6 +20,7 @@ def lengths_to_dict(lenfile):
 def main():
     reverselist = reverselist_to_list(args.reverse_file)
     lengths_dict = lengths_to_dict(args.len_file)
+    outfile = open(args.output, 'wt')
     count = 0
     for scaffold, length in lengths_dict.items():
         count += 1
@@ -27,7 +28,7 @@ def main():
             chain = f"chain 1000000 {scaffold}_rc {length} - 0 {length} {scaffold} {length} + 0 {length} {count}\n{length}\n"
         else:
             chain = f"chain 1000000 {scaffold} {length} + 0 {length} {scaffold} {length} + 0 {length} {count}\n{length}\n"
-        print(chain)
+        outfile.write(chain)
 
 
 if __name__ == "__main__":
