@@ -10,17 +10,17 @@ CSCAFFOLDS = ['HiC_scaffold_1', 'HiC_scaffold_2', 'HiC_scaffold_3',
 'HiC_scaffold_16', 'HiC_scaffold_17', 'HiC_scaffold_18', 'HiC_scaffold_19']
 
 
-def lens_to_dict(lenfile):
-    lens_dict = {}
-    with open(lenfile, 'r') as lens:
-        for line in lens:
+def lengths_to_dict(lenfile):
+    lengths_dict = {}
+    with open(lenfile, 'r') as lengths:
+        for line in lengths:
             line = line.strip().split("\t")
-            lens_dict[line[0]] = int(line[1])
-    return lens_dict
+            lengths_dict[line[0]] = int(line[1])
+    return lengths_dict
 
 
 def main():
-    lens_dict = lens_to_dict(args.len_file)
+    lengths_dict = lengths_to_dict(args.len_file)
     result = []
     with open(args.dups_file, 'r') as dups:
         for line in dups:
@@ -31,9 +31,9 @@ def main():
                 if line[4] in CSCAFFOLDS and line[0] not in CSCAFFOLDS:
                     result.append(line[0])
                 if line[0] not in CSCAFFOLDS and line[4] not in CSCAFFOLDS:
-                    if lens_dict[line[0]] == lens_dict[line[4]]:
+                    if lengths_dict[line[0]] == lengths_dict[line[4]]:
                         result.append(line[4])
-                    elif lens_dict[line[0]] > lens_dict[line[4]]:
+                    elif lengths_dict[line[0]] > lengths_dict[line[4]]:
                         result.append(line[0])
                     else:
                         result.append(line[4])
