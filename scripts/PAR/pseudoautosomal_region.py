@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
-                                help="input coverage_statistics_output.csv (don`t use for STDIN)", default=stdin)
+                                help="input coverage_statistics_output.csv")
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
                                   help='output file prefix')
