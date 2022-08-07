@@ -22,7 +22,7 @@ def main():
             data_dict["Contigs(>={})".format(str(min_contig))].append(metrics.contig_count(min_contig))
 
         for min_contig in args.min_contig:
-            data_dict["Totallengh(>={})".format(str(min_contig))].append(metrics.total_length(min_contig))
+            data_dict["Totallength(>={})".format(str(min_contig))].append(metrics.total_length(min_contig))
 
         for min_contig in args.min_contig:
             data_dict["GC(%)(>={})".format(str(min_contig))].append(metrics.gc_content(min_contig))

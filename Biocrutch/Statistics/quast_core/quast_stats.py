@@ -12,7 +12,7 @@ class Quast_core:
         return len(self.df[self.df['lengths'] > min_contig].index)
 
     def largest_contig_lengh(self) -> int:
-        print("largest_contig_lengh started")
+        print("largest_contig_length started")
         return self.df['lengths'].max()
 
     def total_length(self, min_contig=500) -> int:
