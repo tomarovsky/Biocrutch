@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 
 def main():
     result = []
-    max_number_of_files = 30
+    max_number_of_files = args.max_files
     number_of_files = len(args.input)
 
     c = 1
@@ -42,5 +42,7 @@ if __name__ == "__main__":
     group_required.add_argument('-i', '--input', type=str,
                                 nargs='+', help="PSMC files (first rounds(1 and 2), then diploids(1 and 2)!)")
     group_required.add_argument('-o', '--output', type=str, help="outfile name", default="PSMC.results.tab")
+    group_additional = parser.add_argument_group('Additional options')
+    group_additional.add_argument('-f', '--max-files', type=int, default=30)
     args = parser.parse_args()
     main()
