@@ -33,7 +33,7 @@ def concat_regions_by_distance(df, min_distance):
     for scaffold in df['scaffold'].unique():
         for i in range(len(df)):
             if df.iloc[i]["scaffold"] == scaffold:
-                if prev_scaffold is None or prev_scaffold != scaffold:
+                if prev_scaffold != scaffold:
                     result.append([scaffold, df.iloc[i]["start"], df.iloc[i]["end"]])
                     prev_scaffold = scaffold
                     continue
@@ -41,16 +41,8 @@ def concat_regions_by_distance(df, min_distance):
                 if distance > min_distance:
                     result.append([scaffold, df.iloc[i]["start"], df.iloc[i]["end"]])
                 else:
-                    if start_flag:
-                        start = df.iloc[i - 1]["start"]
-                        start_flag = False
-                    end = df.iloc[i]["end"]
-                    if result[-1][-1] < start:
-                        result.append([scaffold, start, end])
-                        start_flag = True
-                    else:
-                        del result[-1][-1]
-                        result[-1].append(end)
+                    del result[-1][-1]
+                    result[-1].append(df.iloc[i]["end"])
     roh_df = pd.DataFrame(result, columns=['scaffold', 'start', 'end'])
     roh_df['length'] = roh_df['end'] - roh_df['start']
     print(roh_df)
@@ -60,6 +52,7 @@ def concat_regions_by_distance(df, min_distance):
 def main():
     df = pd.read_csv(args.input, sep="\t")
     df = filter_by_level_of_heterozygosity(df, args.threshold, args.max_threshold_factor, args.max_adjacent_windows)
+    print(df[df['scaffold'] == 'chr12'].to_string())
     roh_df = concat_regions_by_distance(df, args.min_distance)
     roh_df.to_csv(args.output, sep='\t', index=False)
 
