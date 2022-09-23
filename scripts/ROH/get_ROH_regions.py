@@ -52,7 +52,6 @@ def concat_regions_by_distance(df, min_distance):
 def main():
     df = pd.read_csv(args.input, sep="\t")
     df = filter_by_level_of_heterozygosity(df, args.threshold, args.max_threshold_factor, args.max_adjacent_windows)
-    print(df[df['scaffold'] == 'chr12'].to_string())
     roh_df = concat_regions_by_distance(df, args.min_distance)
     roh_df.to_csv(args.output, sep='\t', index=False)
 
