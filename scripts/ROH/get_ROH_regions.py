@@ -29,7 +29,6 @@ def concat_regions_by_distance(df, min_distance):
     '''
     prev_scaffold = None
     result = []
-    start_flag = True
     for scaffold in df['scaffold'].unique():
         for i in range(len(df)):
             if df.iloc[i]["scaffold"] == scaffold:
