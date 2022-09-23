@@ -72,6 +72,6 @@ if __name__ == "__main__":
     group_additional.add_argument('-t', '--threshold', type=int, default=0.05)
     group_additional.add_argument('-m', '--max_threshold_factor', type=int, default=2)
     group_additional.add_argument('-a', '--max_adjacent_windows', type=int, default=5)
-    group_additional.add_argument('-d', '--min_distance', type=int, default=100000)
+    group_additional.add_argument('-d', '--min_distance', type=int, default=500000)
     args = parser.parse_args()
     main()
