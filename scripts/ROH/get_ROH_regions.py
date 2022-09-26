@@ -4,17 +4,17 @@ from argparse import ArgumentParser
 import pandas as pd
 
 
-def filter_by_level_of_heterozygosity(df, threshold, max_threshold_factor, max_adjacent_windows):
-    # step 1: set max threshold
-    df = df.loc[df.iloc[:, -1] <= (args.threshold * args.max_threshold_factor)].reset_index(drop=True)
+def filter_by_level_of_heterozygosity(df, first_threshold, second_threshold, max_adjacent_windows):
+    # step 1: set second (in ascending order of heterozygosity value) threshold
+    df = df.loc[df.iloc[:, -1] < second_threshold].reset_index(drop=True)
     # step 2: remove adjacent windows exceeding the threshold if there are more than max_adjacent_windows
     remove_list = []
     count = 0
     for i in range(len(df)):
-        if df.iloc[i][-1] >= args.threshold:
+        if df.iloc[i][-1] >= first_threshold: # and < second_threshold
             count += 1
         else:
-            if count >= args.max_adjacent_windows:
+            if count >= max_adjacent_windows:
                 for j in range(i - count, i):
                     remove_list.append(j)
             count = 0
@@ -23,10 +23,8 @@ def filter_by_level_of_heterozygosity(df, threshold, max_threshold_factor, max_a
     return df
 
 
-def concat_regions_by_distance(df, min_distance):
-    '''
-    merge coordinates that are less than the specified distance + calculation of ROH lengths
-    '''
+def merge_regions_by_distance(df, min_distance):
+    # merge coordinates that are less than the specified distance + calculation of ROH lengths
     prev_scaffold = None
     result = []
     for scaffold in df['scaffold'].unique():
@@ -50,8 +48,8 @@ def concat_regions_by_distance(df, min_distance):
 
 def main():
     df = pd.read_csv(args.input, sep="\t")
-    df = filter_by_level_of_heterozygosity(df, args.threshold, args.max_threshold_factor, args.max_adjacent_windows)
-    roh_df = concat_regions_by_distance(df, args.min_distance)
+    df = filter_by_level_of_heterozygosity(df, args.first_threshold, args.second_threshold, args.max_adjacent_windows)
+    roh_df = merge_regions_by_distance(df, args.min_distance)
     roh_df.to_csv(args.output, sep='\t', index=False)
 
 if __name__ == "__main__":
@@ -60,9 +58,10 @@ if __name__ == "__main__":
     group_required.add_argument('-i', '--input', type=str, help="MACE BED file")
     group_required.add_argument('-o', '--output', type=str, help="outfile name")
     group_additional = parser.add_argument_group('Additional options')
-    group_additional.add_argument('-t', '--threshold', type=int, default=0.05)
-    group_additional.add_argument('-m', '--max_threshold_factor', type=int, default=2)
-    group_additional.add_argument('-a', '--max_adjacent_windows', type=int, default=5)
-    group_additional.add_argument('-d', '--min_distance', type=int, default=50000)
+    group_additional.add_argument('-f', '--first_threshold', type=int, default=0.05, help="lower threshold for filtering by adjacent windows")
+    group_additional.add_argument('-s', '--second_threshold', type=int, default=0.10, help="max (in ascending order of heterozygosity value) threshold")
+    group_additional.add_argument('-a', '--max_adjacent_windows', type=int, default=5, help="max value of adjacent windows")
+    group_additional.add_argument('-d', '--min_distance', type=int, default=50000, help="min distance for merging row ROHs")
     args = parser.parse_args()
     main()
+
