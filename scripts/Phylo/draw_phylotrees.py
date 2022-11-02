@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 __author__ = 'tomarovsky'
 from ete3 import TextFace, Tree, faces, AttrFace, TreeStyle, NodeStyle
-import argparse
+from argparse import ArgumentParser
 
 
 def mylayout(node):
