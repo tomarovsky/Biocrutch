@@ -23,7 +23,7 @@ def mylayout(node):
 
 
 def main():
-    t = Tree("/home/toma/Desktop/Science/BuscoPhylo.sablepine/IQtree/sablepine.iqtree.fna.treefile")
+    t = Tree(args.input)
     for i in t.get_leaves(): # 'Homo_sapiens' -> 'Homo sapiens'
         i.name = i.name.replace("_", " ")
     if args.outgroup:
