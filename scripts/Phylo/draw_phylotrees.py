@@ -24,13 +24,12 @@ def mylayout(node):
 
 def main():
     t = Tree(args.input)
-    for i in t.get_leaves(): # 'Homo_sapiens' -> 'Homo sapiens'
-        i.name = i.name.replace("_", " ")
     if args.outgroup:
         t.set_outgroup(args.outgroup)
     else:
         t.unroot()
-
+    for i in t.get_leaves(): # 'Homo_sapiens' -> 'Homo sapiens'
+        i.name = i.name.replace("_", " ")
     ts = TreeStyle()
     ts.mode = "r"
     ts.layout_fn = mylayout
