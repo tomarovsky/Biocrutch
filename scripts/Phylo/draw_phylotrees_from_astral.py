@@ -54,11 +54,9 @@ def main():
 
     for n in t.traverse():
         if hasattr(n,"q1"):
-            n.add_face(TextFace("  q1={:.2f}  ".format(float(n.q1))), column=2, position="branch-top")
-            n.add_face(TextFace("  q2={:.2f}  ".format(float(n.q2))), column=2, position="branch-top")
-            n.add_face(TextFace("  pp1={:.2f}  ".format(float(n.pp1))), column=2, position="branch-top")
-            n.add_face(TextFace("  pp2={:.2f}  ".format(float(n.pp2))), column=2, position="branch-top")
-            n.add_face(TextFace("  EN={:.2f}  ".format(float(n.EN))), column=2, position="branch-top")
+            for metric in args.metrics:
+                value = float(getattr(n, metric))
+                n.add_face(TextFace(f"  {metric}={value:.2f}  "), column=2, position="branch-top")
 
     ts.show_branch_length = False
     ts.show_branch_support = False
@@ -73,6 +71,8 @@ if __name__ == "__main__":
     group_required.add_argument('-o', '--output', type=str, help="outfile name")
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-g', '--outgroup', type=str, default=False, help="outgroup species name (default = unrooted)")
+    group_additional.add_argument('-m', '--metrics', type=lambda s: list(map(str, s.split(","))),
+                    default=['q1', 'q2', 'pp1', 'pp2', 'EN'], help="comma-separated list of necessary Astral metrics")
     args = parser.parse_args()
     main()
 
