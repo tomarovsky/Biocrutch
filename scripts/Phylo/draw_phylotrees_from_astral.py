@@ -63,7 +63,7 @@ def main():
     ts.show_branch_length = False
     ts.show_branch_support = False
     ts.branch_vertical_margin = -2
-    t.render(f"{args.output}.only_tree.svg", w=500, units="px", tree_style=ts)
+    t.render(f"{args.output}.astral_values.svg", w=500, units="px", tree_style=ts)
     # t.show(tree_style=ts)
 
 if __name__ == "__main__":
