@@ -65,7 +65,7 @@ def main():
         t.show(tree_style=ts)
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description="script to visualize phylogenetic trees using ete3 (required python < 3.10)")
+    parser = ArgumentParser(description="script to visualize phylogenetic trees using ete3 (required python3 < 3.10)")
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=str, help="NEWICK file")
     group_required.add_argument('-o', '--output', type=str, help="outfile name")
