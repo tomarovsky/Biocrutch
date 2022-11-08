@@ -63,7 +63,8 @@ def main():
     ts.show_branch_support = False
     ts.branch_vertical_margin = -2
     t.render(f"{args.output}.astral_values.svg", w=500, units="px", tree_style=ts)
-    # t.show(tree_style=ts)
+    if args.show:
+        t.show(tree_style=ts)
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="script to visualize phylogenetic trees using ete3 (required python < 3.10)")
@@ -76,6 +77,7 @@ if __name__ == "__main__":
                     default=['q1', 'q2', 'pp1', 'pp2', 'EN'], help="comma-separated list of necessary Astral metrics")
     group_additional.add_argument('-c', '--colors', type=lambda s: list(map(str, s.split(","))),
                     default=['Black', 'Black', 'Black', 'Black', 'Black'], help="comma-separated list of colors per metrics")
+    group_additional.add_argument('--show', action="store_true", help="option to show tree using GUI")
     args = parser.parse_args()
     main()
 

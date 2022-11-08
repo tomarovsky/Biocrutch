@@ -47,7 +47,8 @@ def main():
     ts.show_branch_support = False
     ts.branch_vertical_margin = -2
     t.render(f"{args.output}.only_tree.svg", w=500, units="px", tree_style=ts)
-    # t.show(tree_style=ts)
+    if args.show:
+        t.show(tree_style=ts)
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="script to visualize phylogenetic trees using ete3 (required python < 3.10)")
@@ -56,6 +57,7 @@ if __name__ == "__main__":
     group_required.add_argument('-o', '--output', type=str, help="outfile name")
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-g', '--outgroup', type=str, default=False, help="outgroup species name (default = unrooted)")
+    group_additional.add_argument('--show', action="store_true", help="option to show tree using GUI")
     args = parser.parse_args()
     main()
 
