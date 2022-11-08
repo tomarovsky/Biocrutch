@@ -13,13 +13,13 @@ def mylayout(node):
         node.img_style["size"] = 1
         node.img_style["shape"] = "circle"
         node.img_style["fgcolor"] = "Black"
-        node.dist = 0
+        node.dist = 0 # ASTRAL does not generate terminal branch lengths
 
 
 def newick_to_nhx(newick_file) -> str:
     with open(newick_file, 'r') as file:
         tree_string = ''
-        newick = file.readline().strip().split("'")
+        newick = file.readline().replace("_", " ").strip().split("'")
         tree_string += newick[0]
         for i in range(1, len(newick), 2):
             line = ''
@@ -45,8 +45,6 @@ def main():
         t.set_outgroup(args.outgroup)
     else:
         t.unroot()
-    for i in t.get_leaves(): # 'Homo_sapiens' -> 'Homo sapiens'
-        i.name = i.name.replace("_", " ")
     ts = TreeStyle()
     ts.mode = "r"
     ts.layout_fn = mylayout
