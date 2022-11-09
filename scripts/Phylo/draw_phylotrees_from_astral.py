@@ -116,8 +116,7 @@ if __name__ == "__main__":
                     default=['q1', 'q2', 'pp1', 'pp2', 'EN'], help="comma-separated list of necessary metrics")
     group_additional.add_argument('--color_per_metric', type=lambda s: list(map(str, s.split(","))),
                     default=['Black', 'Black', 'Black', 'Black', 'Black'], help="comma-separated list of constant colors per metrics")
-
-    group_additional.add_argument('--color_by_value', action="store_true", help="colors per metrics (disables '--only-colors' option)")
+    group_additional.add_argument('--color_by_value', action="store_true", help="colors per metrics (disables '--color_per_metric' option)")
     group_additional.add_argument('--thresholds_and_colors', type=lambda s: dict(zip([int(s) for i in s[::2]], s[1::2])),
                     default={90: 'Green', 70: 'Gold', 50: 'OrangeRed', 0: 'Red'}, help="colors per metrics (disables '--color_per_metric' option)."
                     "Example input: '90,Green,70,Gold,50,OrangeRed,0,Red'. "
