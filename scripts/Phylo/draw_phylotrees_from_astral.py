@@ -81,6 +81,8 @@ def main():
                     for threshold in sorted(args.thresholds_and_colors.keys()):
                         if normalized_value >= threshold:
                             color = args.thresholds_and_colors[threshold] if metric in args.colored_metrics_whitelist else "Black"
+                    if args.show_normalized_values:
+                        value = normalized_value
                     if len(metric) <= 2:
                         n.add_face(TextFace(f"  {metric}  =  "), column=1, position="branch-top")
                     else:
@@ -89,6 +91,8 @@ def main():
             else: # color by constant colors
                 for metric, color in zip(args.metrics, args.colors): # may be 'stable colors'
                     value = float(getattr(n, metric))
+                    if args.show_normalized_values:
+                        value = value / args.number_of_genes * 100 if metric == 'EN' else value * 100
                     color = "Black" if metric not in args.colored_metrics_whitelist else color
                     n.add_face(TextFace(f"  {metric}={value:.2f}  ", fgcolor = color), column=2, position="branch-top")
 
@@ -116,7 +120,7 @@ if __name__ == "__main__":
                     default=['q1', 'q2', 'pp1', 'pp2', 'EN'], help="comma-separated list of necessary metrics")
     group_additional.add_argument('--color_per_metric', type=lambda s: list(map(str, s.split(","))),
                     default=['Black', 'Black', 'Black', 'Black', 'Black'], help="comma-separated list of constant colors per metrics")
-    group_additional.add_argument('--color_by_value', action="store_true", help="colors per metrics (disables '--color_per_metric' option)")
+    group_additional.add_argument('--color_by_value', action="store_true", default=False, help="colors per metrics (disables '--color_per_metric' option)")
     group_additional.add_argument('--thresholds_and_colors', type=lambda s: dict(zip([int(s) for i in s[::2]], s[1::2])),
                     default={90: 'Green', 70: 'Gold', 50: 'OrangeRed', 0: 'Red'}, help="colors per metrics (disables '--color_per_metric' option)."
                     "Example input: '90,Green,70,Gold,50,OrangeRed,0,Red'. "
@@ -125,6 +129,7 @@ if __name__ == "__main__":
                     help="total number of gene trees in ASTRAL input treefle (necessary to normalize 'EN' option value)")
     group_additional.add_argument('-w', '--colored_metrics_whitelist', type=lambda s: list(map(str, s.split(","))),
                     default=['q1', 'pp1', 'EN'], help="comma-separated list of metrics for colorification (default metric color is 'Black')")
+    group_additional.add_argument('--show_normalized_values', action="store_true", default=False, help="show normalized metric values")
     # figure options:
     group_additional.add_argument('--width', type=int, default=1500, help="width for result rendering")
     group_additional.add_argument('--show', action="store_true", help="option to show tree using GUI")
