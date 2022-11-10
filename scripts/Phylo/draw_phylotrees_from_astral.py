@@ -45,7 +45,7 @@ def export_legend(palette, filename, dpi=400):
     handles = [Patch(label=f">= {label}", color=color) for label, color in palette.items()]
     fig = plt.figure()
     legend = fig.gca().legend(handles=handles, framealpha=1, frameon=True,
-                              title = "  Colorification of \nnormalized values") # spaces to center title
+                              title = "       Colors of \nnormalized values") # spaces to center title
     # Render the legend
     fig.canvas.draw()
     # Export the figure, limiting the bounding box to the legend area,
