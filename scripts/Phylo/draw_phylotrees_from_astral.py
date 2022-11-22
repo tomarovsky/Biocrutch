@@ -122,7 +122,7 @@ if __name__ == "__main__":
                     default=['Black', 'Black', 'Black', 'Black', 'Black'], help="comma-separated list of constant colors per metrics")
     group_additional.add_argument('-c', '--color_by_value', action="store_true", default=False, help="colors per metrics (disables '--color_per_metric' option)")
     group_additional.add_argument('--thresholds_and_colors', type=lambda s: dict(zip([int(s) for i in s[::2]], s[1::2])),
-                    default={90: 'Green', 70: 'Gold', 50: 'OrangeRed', 0: 'Red'}, help="colors per metrics (disables '--color_per_metric' option)."
+                    default={90: 'Green', 70: 'Purple', 50: 'Blue', 0: 'Red'}, help="colors per metrics (disables '--color_per_metric' option)."
                     "Example input: '90,Green,70,Gold,50,OrangeRed,0,Red'. "
                     "This means that normalized values above 90 will be colored Green, values above 70 will be colored Gold, etc.")
     group_additional.add_argument('-n', '--number_of_genes', type=int,
