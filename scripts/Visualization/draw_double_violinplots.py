@@ -98,8 +98,8 @@ if __name__ == '__main__':
                         help="Per sample width of figure in inches. Default: 1")
     parser.add_argument("--figure_grid", action="store_true", default=False,
                         help="Add grid lines to the figure. Default: False")
-    parser.add_argument("--font-size", action="store", dest="font_size", type=float, default=20,
-                        help="Font size. Default: 20")
+    parser.add_argument("--font-size", action="store", dest="font_size", type=float, default=16,
+                        help="Font size. Default: 16")
     parser.add_argument("-e", "--output_formats", action="store", dest="output_formats", type=lambda s: s.split(","),
                         default=("png", ),
                         help="Comma-separated list of formats (supported by matlotlib) of "

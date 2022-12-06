@@ -12,6 +12,8 @@ def main():
     if args.pretty:
         sns.set_theme(style="ticks")
         sns.set_context("talk")
+    else:
+        plt.rcParams.update({'font.size': args.font_size})
 
     with open(args.input, "r") as in_fd:
         file_dict = OrderedDict([line.strip().split("\t") for line in in_fd ])
@@ -27,11 +29,11 @@ def main():
     plt.xticks(rotation=args.rotation)
 
     sns.violinplot(data=[df_dict[entry]["density"] for entry in df_dict], palette='turbo', scale='width',
-                                inner=None, linewidth=0, saturation=0.4) # or inner="box"
-    sns.boxplot(data=[df_dict[entry]["density"] for entry in df_dict], palette='turbo', width=0.3,
-                        boxprops={'zorder': 2}, ax=ax)
+                   inner=None, linewidth=0, saturation=0.4) # or inner="box"
+    sns.boxplot(data=[df_dict[entry]["density"] for entry in df_dict], palette='turbo', width=0.1,
+            linewidth=0.4, flierprops={'marker':'o', 'markersize':1}, boxprops={'zorder': 2}, ax=ax)
 
-    ax.set_xticklabels(list(df_dict.keys()))
+    ax.set_xticklabels(list(df_dict.keys()), ha='right', rotation_mode='anchor')
     plt.yticks(args.yticklist)
     if args.horizontal_lines:
         for ycoord in args.horizontal_lines:
@@ -42,6 +44,7 @@ def main():
     if args.figure_grid:
         plt.grid(color="gray", linestyle = '--', linewidth = 0.5)
     ax.set_ylabel(args.ylabel)
+    ax.set_xlabel("Sample name")
     plt.title(args.title)
     plt.tight_layout()
     for ext in args.output_formats:
@@ -64,6 +67,8 @@ if __name__ == '__main__':
                         help="Per sample width of figure in inches. Default: 1")
     parser.add_argument("--figure_grid", action="store_true", default=False,
                         help="Add grid lines to the figure. Default: False")
+    parser.add_argument("--font-size", action="store", dest="font_size", type=float, default=16,
+                        help="Font size. Default: 16")
     parser.add_argument("-e", "--output_formats", action="store", dest="output_formats", type=lambda s: s.split(","),
                         default=("png", ), help="Comma-separated list of formats (supported by matlotlib) of "
                              "output figure.Default: png")
