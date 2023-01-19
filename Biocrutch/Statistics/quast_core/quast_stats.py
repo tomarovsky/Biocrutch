@@ -36,7 +36,7 @@ class Quast_core:
         result = round(count / self.total_length(min_contig) * 100, 2)
         return result
 
-    def n_l_statistics(self, percent=50, min_contig) -> list:
+    def n_l_statistics(self, percent, min_contig) -> list:
         print("n_l_statistics started")
         mean = self.total_length(min_contig) // 100 * percent
         lengths = self.df[self.df['lengths'] >= min_contig]['lengths'].sort_values(ascending=False)
