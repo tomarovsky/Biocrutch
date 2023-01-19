@@ -61,7 +61,7 @@ if __name__ == "__main__":
                              default=None, help=c.HELP_BUFFERING)
     group_additional.add_argument('-m', '--min-contig',
                              metavar='INT', type=int, nargs='+',
-                             default=[0, 500], help=c.HELP_MIN_CONTIG)
+                             default=[0, 150], help=c.HELP_MIN_CONTIG)
     group_additional.add_argument('-n', '--nl-statistics',
                              metavar='INT', type=int, nargs='+',
                              default=[50, 75], help=c.HELP_NL_STATISTICS)
