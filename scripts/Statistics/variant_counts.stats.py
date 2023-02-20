@@ -6,7 +6,7 @@ import pandas as pd
 
 def main():
     for file in args.input:
-        df = pd.read_csv(args.input, sep='\t', header=0)
+        df = pd.read_csv(file, sep='\t', header=0)
         sample = df.columns[2]
 
         # Calculate mean, median and mode
