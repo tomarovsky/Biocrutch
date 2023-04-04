@@ -6,7 +6,7 @@ import argparse
 
 
 def main():
-    with open(args.output, "a") as outfile, open(args.block, "r") as blockfile:
+    with open(args.output, "a") as outfile:
         AlignIO.convert(args.input, "fasta", outfile, args.format, args.type)
         outfile.write("\n")
 
@@ -18,6 +18,6 @@ if __name__ == "__main__":
     group_required.add_argument('-f', '--format', type=str,
                                 help="output file format ('nexus', 'phylip' or any other supported by Bio.AlignIO)")
     group_required.add_argument('-t', '--type', type=str, help="molecular type (DNA, RNA or protein)")
-    group_required.add_argument('-o', '--output', type=str, help="output NEXUS file name")
+    group_required.add_argument('-o', '--output', type=str, help="output file name")
     args = parser.parse_args()
     main()
