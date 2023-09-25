@@ -35,10 +35,10 @@ def main():
                             ';perc_match=' + perc_match +
                             ';perc_indels=' + perc_indels +
                             ';align_score=' + align_score +
-                            ';perc_A' + perc_A + 
-                            ';perc_C' + perc_C + 
-                            ';perc_G' + perc_G + 
-                            ';perc_T' + perc_T + 
+                            ';perc_A=' + perc_A + 
+                            ';perc_C=' + perc_C + 
+                            ';perc_G=' + perc_G + 
+                            ';perc_T=' + perc_T + 
                             ';entropy=' + entropy +
                             ';cons_seq=' + cons_seq +
                             ';repeat_seq=' + repeat_seq + '\n']
