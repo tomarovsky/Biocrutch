@@ -25,9 +25,7 @@ if __name__ == "__main__":
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-t', '--text', type=str, help="message text")
     group_additional = parser.add_argument_group('Additional options')
-    group_additional.add_argument('-s', '--sender', type=str,
-        default='atomarovsky@mcb.nsc.ru', help="server mail")
-    group_additional.add_argument('-r', '--recipient', type=str,
-        default='st079639@student.spbu.ru', help="mail address")
+    group_additional.add_argument('-s', '--sender', type=str, help="server mail")
+    group_additional.add_argument('-r', '--recipient', type=str, help="mail address")
     args = parser.parse_args()
     main()
