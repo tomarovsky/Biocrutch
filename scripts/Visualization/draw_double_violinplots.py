@@ -60,7 +60,7 @@ def main():
     result = pd.concat([result_df, result_df2], axis=0, ignore_index=True, sort=False)
     print(result)
 
-    sns.violinplot(data=result, x="id", y="density", hue="Reference", split = True, scale='width', inner='box', linewidth=1.5, saturation=1, boxprops={'alpha' : 1}) # palette = "turbo", inner="box", palette=['#6094C3', '#E04B4B']
+    sns.violinplot(data=result, x="id", y="density", hue="Reference", split = True, scale='width', inner='box', linewidth=1.5, saturation=1, boxprops={'alpha' : 1}, palette=args.colors_list)
 
     ax.set_xticklabels(list(df_dict.keys()))
     plt.yticks(args.yticklist)
@@ -91,6 +91,10 @@ if __name__ == '__main__':
                         default=("Species_1", "Species_2"),
                         help="Comma-separated list of species labels of output figure (for input1 and input2, respectively)."
                         "Default: Species_1, Species_2")
+    parser.add_argument("--colors_list", action="store", dest="colours_list", type=lambda s: s.split(","),
+                        default=('#6094C3', '#E04B4B'),
+                        help="Comma-separated list of colors of output figure (for input1 and input2, respectively)."
+                        "Default: #6094C3 (blue), #E04B4B (red)")
     parser.add_argument("-o", "--output_prefix", action="store", dest="output_prefix", required=True,
                         help="Prefix of output files")
     parser.add_argument("-d", "--dpi", action="store", dest="dpi", type=int, default=300,
