@@ -11,7 +11,7 @@ import seaborn as sns
 def main():
     plt.rcParams.update({'font.size': args.font_size})
 
-    with open(args.input, "r") as in_fd:
+    with open(args.input1, "r") as in_fd:
         file_dict = OrderedDict([line.strip().split("\t") for line in in_fd ])
 
     with open(args.input2, "r") as in_fd:
@@ -83,7 +83,7 @@ def main():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", required=True,
+    parser.add_argument("-i", "--input1", required=True,
                         help="Input file with two columns containing label in the first one and filename in the second.")
     parser.add_argument("--input2", required=True,
                         help="Input file with two columns containing label in the first one and filename in the second.")
@@ -107,7 +107,7 @@ if __name__ == '__main__':
 
     parser.add_argument("--legend_labels_list", action="store", dest="labels_list", type=lambda s: s.split(","),
                         default=("Species_1", "Species_2"),
-                        help="Comma-separated list of species labels of output figure (for input and input2, respectively)."
+                        help="Comma-separated list of species labels of output figure (for input1 and input2, respectively)."
                         "Default: Species_1, Species_2")
     parser.add_argument("-l", "--title", action="store", dest="title", default="Variant density",
                         help="Suptitle of figure. Default: 'Variant density'")
