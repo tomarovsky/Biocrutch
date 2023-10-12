@@ -91,7 +91,7 @@ if __name__ == '__main__':
                         default=("Species_1", "Species_2"),
                         help="Comma-separated list of species labels of output figure (for input1 and input2, respectively)."
                         "Default: Species_1, Species_2")
-    parser.add_argument("--colors_list", action="store", dest="colours_list", type=lambda s: s.split(","),
+    parser.add_argument("--colors_list", action="store", dest="colors_list", type=lambda s: s.split(","),
                         default=('#6094C3', '#E04B4B'),
                         help="Comma-separated list of colors of output figure (for input1 and input2, respectively)."
                         "Default: #6094C3 (blue), #E04B4B (red)")
