@@ -104,7 +104,6 @@ if __name__ == '__main__':
                         default=("svg", "png"),
                         help="Comma-separated list of formats (supported by matlotlib) of "
                              "output figure.Default: svg,png")
-
     parser.add_argument("--legend_labels_list", action="store", dest="labels_list", type=lambda s: s.split(","),
                         default=("Species_1", "Species_2"),
                         help="Comma-separated list of species labels of output figure (for input1 and input2, respectively)."
@@ -128,12 +127,10 @@ if __name__ == '__main__':
                              "Default: 0.05,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.25,1.5,2,3,4,5")
     parser.add_argument("--rotation",  action="store", dest="rotation", type=float, default=90,
                         help="Rotation angle for X labels. Default: 90")
-
     parser.add_argument("--horizontal_lines",  action="store", dest="horizontal_lines",
                         type=lambda s: list(map(float, s.split(","))),
                         help="Comma-separated list of y-coordinates to draw horizontal lines. "
                              "Default: not set")
-
     parser.add_argument("--subplots_adjust_left", action="store", dest="subplots_adjust_left", type=float,
                         help="Adjust left border of subplots on the figure. Default: matplotlib defaults")
     parser.add_argument("--subplots_adjust_top", action="store", dest="subplots_adjust_top", type=float,
@@ -144,7 +141,6 @@ if __name__ == '__main__':
                         help="Adjust bottom border of subplots on the figure. Default: matplotlib defaults")
     parser.add_argument("--only_count", action="store_true", dest="only_count", default=False,
                         help="Only count variants, do not draw them. Default: False")
-
     args = parser.parse_args()
     print(args.legend_labels_list)
     main()
