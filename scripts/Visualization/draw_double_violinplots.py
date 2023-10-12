@@ -42,7 +42,7 @@ def main():
         df_dict_den2[k] = v["density"]
 
     merge_df2 = pd.concat(df_dict_den2, axis=1)
-
+    print(args.legend_labels_list)
     result_df_list = []
     for col in merge_df.columns:
         for value in merge_df[col]:
