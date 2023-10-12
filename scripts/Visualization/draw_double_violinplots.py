@@ -46,14 +46,14 @@ def main():
     result_df_list = []
     for col in merge_df.columns:
         for value in merge_df[col]:
-            d = {'density': value, 'id': col,  'Reference': f'{args.legend_labels_list[0]}'}
+            d = {'density': value, 'id': col, 'Reference': f'{args.legend_labels_list[0]}'}
             result_df_list.append(d)
     result_df = pd.DataFrame(result_df_list, columns=('density', 'id', 'Reference'))
     print(result_df)
     result_df_list2 = []
     for col in merge_df2.columns:
         for value in merge_df2[col]:
-            d = {'density': value, 'id': col,  'Reference': f'{args.legend_labels_list[1]}'}
+            d = {'density': value, 'id': col, 'Reference': f'{args.legend_labels_list[1]}'}
             result_df_list2.append(d)
     result_df2 = pd.DataFrame(result_df_list2, columns=('density', 'id', 'Reference'))
     print(result_df2)
@@ -87,6 +87,10 @@ if __name__ == '__main__':
                         help="Input file with two columns containing label in the first one and filename in the second.")
     parser.add_argument("--input2", required=True,
                         help="Input file with two columns containing label in the first one and filename in the second.")
+    parser.add_argument("--legend_labels_list", action="store", dest="labels_list", type=lambda s: s.split(","),
+                        default=("Species_1", "Species_2"),
+                        help="Comma-separated list of species labels of output figure (for input1 and input2, respectively)."
+                        "Default: Species_1, Species_2")
     parser.add_argument("-o", "--output_prefix", action="store", dest="output_prefix", required=True,
                         help="Prefix of output files")
     parser.add_argument("-d", "--dpi", action="store", dest="dpi", type=int, default=300,
@@ -104,10 +108,7 @@ if __name__ == '__main__':
                         default=("svg", "png"),
                         help="Comma-separated list of formats (supported by matlotlib) of "
                              "output figure.Default: svg,png")
-    parser.add_argument("--legend_labels_list", action="store", dest="labels_list", type=lambda s: s.split(","),
-                        default=("Species_1", "Species_2"),
-                        help="Comma-separated list of species labels of output figure (for input1 and input2, respectively)."
-                             "Default: Species_1, Species_2")
+
     parser.add_argument("-l", "--title", action="store", dest="title", default="Variant density",
                         help="Suptitle of figure. Default: 'Variant density'")
     parser.add_argument("--ylabel", action="store", dest="ylabel", default="Heterozygous SNPs/kbp",
@@ -127,10 +128,12 @@ if __name__ == '__main__':
                              "Default: 0.05,0.0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.25,1.5,2,3,4,5")
     parser.add_argument("--rotation",  action="store", dest="rotation", type=float, default=90,
                         help="Rotation angle for X labels. Default: 90")
+
     parser.add_argument("--horizontal_lines",  action="store", dest="horizontal_lines",
                         type=lambda s: list(map(float, s.split(","))),
                         help="Comma-separated list of y-coordinates to draw horizontal lines. "
                              "Default: not set")
+
     parser.add_argument("--subplots_adjust_left", action="store", dest="subplots_adjust_left", type=float,
                         help="Adjust left border of subplots on the figure. Default: matplotlib defaults")
     parser.add_argument("--subplots_adjust_top", action="store", dest="subplots_adjust_top", type=float,
@@ -141,6 +144,7 @@ if __name__ == '__main__':
                         help="Adjust bottom border of subplots on the figure. Default: matplotlib defaults")
     parser.add_argument("--only_count", action="store_true", dest="only_count", default=False,
                         help="Only count variants, do not draw them. Default: False")
+
     args = parser.parse_args()
     print(args.legend_labels_list)
     main()
