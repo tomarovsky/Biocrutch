@@ -102,8 +102,8 @@ if __name__ == '__main__':
 
     parser.add_argument("--figure_height", action="store", dest="figure_height", type=float, default=6.0,
                         help="Height of figure in inches. Default: 6")
-    parser.add_argument("--figure_width_per_sample", action="store", dest="figure_width_per_sample", type=float, default=1,
-                        help="Per sample width of figure in inches. Default: 1")
+    parser.add_argument("--figure_width_per_sample", action="store", dest="figure_width_per_sample", type=float, default=0.5,
+                        help="Per sample width of figure in inches. Default: 0.5")
     parser.add_argument("--figure_grid", action="store_true", default=False,
                         help="Add grid lines to the figure. Default: False")
     parser.add_argument("--font-size", action="store", dest="font_size", type=float, default=16,
