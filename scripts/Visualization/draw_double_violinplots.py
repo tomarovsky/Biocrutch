@@ -49,16 +49,16 @@ def main():
             d = {'density': value, 'id': col, 'Reference': f'{args.legend_labels_list[0]}'}
             result_df_list.append(d)
     result_df = pd.DataFrame(result_df_list, columns=('density', 'id', 'Reference'))
-    print(result_df)
+    # print(result_df)
     result_df_list2 = []
     for col in merge_df2.columns:
         for value in merge_df2[col]:
             d = {'density': value, 'id': col, 'Reference': f'{args.legend_labels_list[1]}'}
             result_df_list2.append(d)
     result_df2 = pd.DataFrame(result_df_list2, columns=('density', 'id', 'Reference'))
-    print(result_df2)
+    # print(result_df2)
     result = pd.concat([result_df, result_df2], axis=0, ignore_index=True, sort=False)
-    print(result)
+    # print(result)
 
     sns.violinplot(data=result, x="id", y="density", hue="Reference", split = True, scale='width', inner='box', linewidth=1.5, saturation=1, boxprops={'alpha' : 1}, palette=args.colors_list)
 
@@ -75,7 +75,8 @@ def main():
     ax.set_ylabel(args.ylabel)
     ax.set_xlabel('')
     plt.title(args.title)
-    plt.legend(loc='upper left', title='Reference')
+    if args.legend:
+        plt.legend(loc='upper left', title='Reference', ncol = 2)
     plt.tight_layout()
     for ext in args.output_formats:
         plt.savefig("{0}.{1}".format(args.output_prefix, ext))
@@ -106,6 +107,8 @@ if __name__ == '__main__':
                         help="Per sample width of figure in inches. Default: 0.5")
     parser.add_argument("--figure_grid", action="store_true", default=False,
                         help="Add grid lines to the figure. Default: False")
+    parser.add_argument("--legend", action="store_true", default=True,
+                        help="Add legend to the figure. Default: True")
     parser.add_argument("--font-size", action="store", dest="font_size", type=float, default=16,
                         help="Font size. Default: 16")
     parser.add_argument("-e", "--output_formats", action="store", dest="output_formats", type=lambda s: s.split(","),
