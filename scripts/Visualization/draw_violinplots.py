@@ -29,7 +29,7 @@ def main():
     plt.xticks(rotation=args.rotation)
 
     sns.violinplot(data=[df_dict[entry]["density"] for entry in df_dict], palette='turbo', scale='width',
-                   inner=None, linewidth=0, saturation=0.4) # or inner="box"
+                   inner=None, linewidth=0, saturation=0.5) # or inner="box"
     sns.boxplot(data=[df_dict[entry]["density"] for entry in df_dict], palette='turbo', width=0.1,
             linewidth=0.4, flierprops={'marker':'o', 'markersize':1}, boxprops={'zorder': 2}, ax=ax)
 
@@ -44,7 +44,6 @@ def main():
     if args.figure_grid:
         plt.grid(color="gray", linestyle = '--', linewidth = 0.5)
     ax.set_ylabel(args.ylabel)
-    ax.set_xlabel("Sample name")
     plt.title(args.title)
     plt.tight_layout()
     for ext in args.output_formats:
