@@ -70,8 +70,8 @@ if __name__ == '__main__':
     parser.add_argument("--font-size", action="store", dest="font_size", type=float, default=16,
                         help="Font size. Default: 16")
     parser.add_argument("-e", "--output_formats", action="store", dest="output_formats", type=lambda s: s.split(","),
-                        default=("png", ), help="Comma-separated list of formats (supported by matlotlib) of "
-                             "output figure.Default: png")
+                        default=("png", "svg"), help="Comma-separated list of formats (supported by matlotlib) of "
+                             "output figure.Default: png,svg")
 
     parser.add_argument("-l", "--title", action="store", dest="title", default="Variant density",
                         help="Suptitle of figure. Default: 'Variant density'")
