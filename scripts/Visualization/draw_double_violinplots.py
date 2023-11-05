@@ -60,7 +60,7 @@ def main():
     result = pd.concat([result_df, result_df2], axis=0, ignore_index=True, sort=False)
     # print(result)
 
-    sns.violinplot(data=result, x="id", y="density", hue="Reference", split = True, scale='width', inner='box', inner_kws=dict(box_width=1.5, whis_width=0, marker = '.', markersize=2.2, markeredgewidth=0.6), linewidth=1.3, saturation=1, palette=args.colors_list)
+    sns.violinplot(data=result, x="id", y="density", hue="Reference", split = True, scale='width', inner='box', inner_kws=dict(box_width=1.5, whis_width=0, marker = '.', markersize=2.2, markeredgewidth=0.6), linewidth=0.5, saturation=1, palette=args.colors_list)
 
     ax.set_xticklabels(list(df_dict.keys()))
     plt.yticks(args.yticklist)
