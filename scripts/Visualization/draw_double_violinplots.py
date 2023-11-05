@@ -75,8 +75,7 @@ def main():
     ax.set_ylabel(args.ylabel)
     ax.set_xlabel('')
     plt.title(args.title)
-    if args.legend:
-        plt.legend(loc='upper left', title='Reference', ncol = 2)
+    plt.legend(loc='upper left', title='Reference', ncol = 2)
     plt.tight_layout()
     for ext in args.output_formats:
         plt.savefig("{0}.{1}".format(args.output_prefix, ext))
@@ -107,8 +106,6 @@ if __name__ == '__main__':
                         help="Per sample width of figure in inches. Default: 0.5")
     parser.add_argument("--figure_grid", action="store_true", default=False,
                         help="Add grid lines to the figure. Default: False")
-    parser.add_argument("--legend", action="store_true", default=False,
-                        help="Add legend to the figure. Default: False")
     parser.add_argument("--font-size", action="store", dest="font_size", type=float, default=16,
                         help="Font size. Default: 16")
     parser.add_argument("-e", "--output_formats", action="store", dest="output_formats", type=lambda s: s.split(","),
