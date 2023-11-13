@@ -67,7 +67,7 @@ if __name__ == "__main__":
                                   help="max (in ascending order of heterozygosity value) threshold")
     group_additional.add_argument('-a', '--max_adjacent_windows', type=int, default=5,
                                   help="max value of adjacent windows")
-    group_additional.add_argument('-d', '--min_distance', type=int, default=50000,
+    group_additional.add_argument('-d', '--min_distance', type=int, default=200000,
                                   help="min distance for merging row ROHs")
     group_additional.add_argument('-x', '--exclude_scaffold_list', type=lambda s: s.split(","), default=False,
                                   help="Comma-separated list of excluded scaffolds")
