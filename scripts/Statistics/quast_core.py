@@ -43,7 +43,7 @@ def main():
     if args.print: #print to terminal
         print(df.T.astype(str))
     if args.output: #create a report.csv
-        df.to_csv (args.output + ".csv", encoding = 'utf-8')
+        df.to_csv (args.output, encoding = 'utf-8')
 
     return df
 
