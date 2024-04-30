@@ -18,7 +18,7 @@ def main():
         mode = df[sample].mode()[0]
 
         # print("sample\tmax\tmin\tmean\tmedian\tmode")
-        print(f"{sample}\t{maxim}\t{minim}\t{mean:.3f}\t{median}\t{mode}")
+        print(f"{sample}\t{maxim:.2f}\t{minim:.2f}\t{mean:.2f}\t{median:.2f}\t{mode:.2f}")
 
 
 if __name__ == "__main__":
