@@ -28,7 +28,9 @@ def main():
                                                   args.window_column_name,
                                                   args.repeat_window_number)
     coordinates_list = coordinates_and_medians[0]
+    # print(f"Chains: {coordinates_list}")
     medians_list = coordinates_and_medians[1]
+    # print(f"Medians between chains: {medians_list}")
 
     print('---- Medians between regions ---- \n', medians_list, sep="")
     print("Concatenate if the median >=", coordinates.minimum_coverage)

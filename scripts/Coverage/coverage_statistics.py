@@ -21,7 +21,7 @@ def main():
         metrics = MosdepthCoverageStatistics(args.input, args.output, args.tool_name)
     elif args.tool_name == "genomecov":
         metrics = GenomecovCoverageStatistics(args.input, args.output, args.tool_name)
-    
+
     if args.whole_genome_stats:
         metrics.get_whole_genome_stats()
     if args.scaffolds_stats:
@@ -43,8 +43,8 @@ if __name__ == "__main__":
     group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
                                   help='output file prefix without frame size')
     group_additional.add_argument('-t', '--tool-name', type=str, default="mosdepth",
-                                  help="tool name parameter (you can use 'mosdepth' or 'genomecov')") 
-    group_additional.add_argument('-f', '--frame-size', type=int, 
+                                  help="tool name parameter (you can use 'mosdepth' or 'genomecov')")
+    group_additional.add_argument('-f', '--frame-size', type=int,
                                   help="<f> bp windows size (for windows statistics)", default=1000000)
     group_additional.add_argument('--frame-shift', type=int,
                                   help="window shift step (for windows statistics)", default=1000000)

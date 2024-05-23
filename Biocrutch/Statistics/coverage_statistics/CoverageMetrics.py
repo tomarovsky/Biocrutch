@@ -26,7 +26,7 @@ class CoveragesMetrics:
             average = sum_of_coverages/self.sum_values_coverages
             return round(average, 2)
 
-    def median_value(self) -> int:
+    def median_value(self):
         keys_coverages = sorted(self.coverages_amounts_dict.keys())
         half_sum_values_coverages = self.sum_values_coverages // 2
         count = 0
