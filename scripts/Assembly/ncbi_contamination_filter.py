@@ -7,8 +7,8 @@ from Bio.Seq import Seq, MutableSeq
 
 def parse_exclude_list(exclude_file):
     """
-    Parses the file containing the lists of scaffolds to exclude, coordinates for trimming,
-    and duplicated scaffolds.
+    Parses the NCBI contamination file containing the lists of scaffolds
+    to exclude, coordinates for trimming, and duplicated scaffolds.
     :param exclude_file: Path to the text file with sections "Exclude:", "Trim:", and "Duplicated:".
     :return: A set of scaffolds to exclude, a dictionary with coordinates for trimming, and a set of duplicated scaffolds.
     """
@@ -100,7 +100,7 @@ def main():
     parser = argparse.ArgumentParser(description="NCBI contamination filtration.")
     parser.add_argument("-i", "--input", required=True, help="Input FASTA file")
     parser.add_argument("-o", "--output", required=True, help="Output FASTA file")
-    parser.add_argument("-m", "--min_length", type=int, default=200, help="Minimal contig length")
+    parser.add_argument("-m", "--min_length", type=int, default=200, help="Minimal contig length. Default: 200")
     parser.add_argument("-c", "--contamination", help="NCBI contamination file", default=None)
 
     args = parser.parse_args()
