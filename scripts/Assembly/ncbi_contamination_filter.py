@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-__author__ = 'tomarovsky'
+__author__ = "tomarovsky"
 
 import argparse
+
 from Bio import SeqIO
-from Bio.Seq import Seq, MutableSeq
+from Bio.Seq import MutableSeq, Seq
+
 
 def parse_exclude_list(exclude_file):
     """
@@ -55,7 +57,11 @@ def parse_exclude_list(exclude_file):
                         trim_info[scaffold_name] = []
                     trim_info[scaffold_name].append((start, stop))
                 if duplicated_section:
-                    if not line.strip() or line.startswith("#") or line.startswith("Sequence"):
+                    if (
+                        not line.strip()
+                        or line.startswith("#")
+                        or line.startswith("Sequence")
+                    ):
                         continue
                     scaffolds = line.split()[:-2]
                     for scaffold in scaffolds[1:]:
@@ -63,6 +69,7 @@ def parse_exclude_list(exclude_file):
                             scaffold = scaffold[3:-1]
                         duplicated_scaffolds.add(scaffold)
     return exclude_scaffolds, trim_info, duplicated_scaffolds
+
 
 def trim_sequences(sequence, trim_coordinates):
     """
@@ -73,11 +80,19 @@ def trim_sequences(sequence, trim_coordinates):
     """
     mutable_seq = MutableSeq(str(sequence.seq))
     for start, stop in trim_coordinates:
-        mutable_seq[start-1:stop] = 'N' * (stop - start + 1)
+        mutable_seq[start - 1 : stop] = "N" * (stop - start + 1)
     sequence.seq = Seq(str(mutable_seq))
     return sequence
 
-def filter_and_trim_contigs(input_fasta, output_fasta, min_length, exclude_scaffolds, trim_info, duplicated_scaffolds):
+
+def filter_and_trim_contigs(
+    input_fasta,
+    output_fasta,
+    min_length,
+    exclude_scaffolds,
+    trim_info,
+    duplicated_scaffolds,
+):
     """
     Filters out contigs that are <= min_length, listed in the exclusion set,
     replaces regions with "N" based on the coordinates, and removes duplicated scaffolds.
@@ -88,26 +103,52 @@ def filter_and_trim_contigs(input_fasta, output_fasta, min_length, exclude_scaff
     :param trim_info: Dictionary with coordinates for trimming.
     :param duplicated_scaffolds: Set of duplicated scaffolds to exclude.
     """
-    with open(input_fasta, "r") as input_handle, open(output_fasta, "w") as output_handle:
+    with open(input_fasta, "r") as input_handle, open(
+        output_fasta, "w"
+    ) as output_handle:
         sequences = SeqIO.parse(input_handle, "fasta")
-        filtered_sequences = (seq for seq in sequences if len(seq) > min_length and seq.id not in exclude_scaffolds and seq.id not in duplicated_scaffolds)
+        filtered_sequences = (
+            seq
+            for seq in sequences
+            if len(seq) > min_length
+            and seq.id not in exclude_scaffolds
+            and seq.id not in duplicated_scaffolds
+        )
         for seq in filtered_sequences:
             if seq.id in trim_info:
                 seq = trim_sequences(seq, trim_info[seq.id])
             SeqIO.write(seq, output_handle, "fasta")
 
+
 def main():
     parser = argparse.ArgumentParser(description="NCBI contamination filtration.")
     parser.add_argument("-i", "--input", required=True, help="Input FASTA file")
     parser.add_argument("-o", "--output", required=True, help="Output FASTA file")
-    parser.add_argument("-m", "--min_length", type=int, default=200, help="Minimal contig length. Default: 200")
-    parser.add_argument("-c", "--contamination", help="NCBI contamination file", default=None)
+    parser.add_argument(
+        "-m",
+        "--min_length",
+        type=int,
+        default=200,
+        help="Minimal contig length. Default: 200",
+    )
+    parser.add_argument(
+        "-c", "--contamination", help="NCBI contamination file", default=None
+    )
 
     args = parser.parse_args()
 
-    exclude_scaffolds, trim_info, duplicated_scaffolds = parse_exclude_list(args.contamination)
-    filter_and_trim_contigs(args.input, args.output, args.min_length, exclude_scaffolds, trim_info, duplicated_scaffolds)
+    exclude_scaffolds, trim_info, duplicated_scaffolds = parse_exclude_list(
+        args.contamination
+    )
+    filter_and_trim_contigs(
+        args.input,
+        args.output,
+        args.min_length,
+        exclude_scaffolds,
+        trim_info,
+        duplicated_scaffolds,
+    )
+
 
 if __name__ == "__main__":
     main()
-
