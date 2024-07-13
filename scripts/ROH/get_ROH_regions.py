@@ -45,15 +45,34 @@ def merge_regions_by_distance(df, min_distance):
     return roh_df
 
 
+def mark_roh_regions(input_df, roh_df):
+    # Add 'roh' column to input_df
+    input_df['roh'] = False
+    for index, row in roh_df.iterrows():
+        mask = (input_df['scaffold'] == row['scaffold']) & \
+               (input_df['start'] >= row['start']) & \
+               (input_df['end'] <= row['end'])
+        input_df.loc[mask, 'roh'] = True
+    return input_df
+
+
 def main():
     df = pd.read_csv(args.input, sep="\t")
-    df = filter_by_level_of_heterozygosity(df, args.first_threshold, args.second_threshold, args.max_adjacent_windows)
-    roh_df = merge_regions_by_distance(df, args.min_distance)
+    df_filtered = filter_by_level_of_heterozygosity(df, args.first_threshold, args.second_threshold, args.max_adjacent_windows)
+    roh_df = merge_regions_by_distance(df_filtered, args.min_distance)
+
     if args.exclude_scaffold_list:
         for scaffold in args.exclude_scaffold_list:
             roh_df = roh_df[roh_df['scaffold'] != scaffold]
-    print(roh_df)
+
     roh_df.to_csv(args.output, sep='\t', index=False)
+    print(roh_df)
+
+    # Mark ROH regions in the original dataframe
+    df_with_roh = mark_roh_regions(df, roh_df)
+    input_with_rohs = args.output + ".features.bed"
+    df_with_roh.to_csv(input_with_rohs, sep='\t', index=False)
+
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="script for obtaining ROH regions from variant window densities from MACE BED files")
