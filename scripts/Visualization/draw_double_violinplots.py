@@ -3,73 +3,69 @@ __author__ = 'tomarovsky'
 import argparse
 from collections import OrderedDict
 import pandas as pd
-import matplotlib
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+
+def load_and_prepare_data(file_dict, label, args):
+    data_list = []
+    for entry in file_dict:
+        df = pd.read_csv(file_dict[entry], sep="\t")
+        if args.no_x:
+            df = df[~df["CHROM"].str.contains("chrX")]
+        df.set_index("CHROM", inplace=True)
+        density = df.iloc[:, -1] / args.window_size * args.multiplicator
+        data_list.extend([{'density': d, 'id': entry, 'Reference': label} for d in density])
+    return data_list
 
 
 def main():
     plt.rcParams.update({'font.size': args.font_size})
 
     with open(args.input1, "r") as in_fd:
-        file_dict = OrderedDict([line.strip().split("\t") for line in in_fd ])
+        file_dict1 = OrderedDict([line.strip().split("\t") for line in in_fd])
 
     with open(args.input2, "r") as in_fd:
-        file_dict2 = OrderedDict([line.strip().split("\t") for line in in_fd ])
+        file_dict2 = OrderedDict([line.strip().split("\t") for line in in_fd])
 
-    df_dict = OrderedDict({})
-    df_dict2 = OrderedDict({})
+    data1 = load_and_prepare_data(file_dict1, args.legend_labels_list[0], args)
+    data2 = load_and_prepare_data(file_dict2, args.legend_labels_list[1], args)
 
-    for entry in file_dict:
-        df_dict[entry] = pd.read_csv(file_dict[entry], sep="\t", index_col=["CHROM",])
-        df_dict[entry]["density"] = df_dict[entry][df_dict[entry].columns[-1]] / args.window_size * args.multiplicator
+    result = pd.DataFrame(data1 + data2)
+    if args.only_count:
+        result.to_csv("counts.csv", index=False)
 
-    for entry in file_dict2:
-        df_dict2[entry] = pd.read_csv(file_dict2[entry], sep="\t", index_col=["CHROM",])
-        df_dict2[entry]["density"] = df_dict2[entry][df_dict2[entry].columns[-1]] / args.window_size * args.multiplicator
 
-    fig, ax = plt.subplots(figsize=(args.figure_width_per_sample * len(file_dict), args.figure_height), dpi=args.dpi)
-    plt.xticks(rotation=args.rotation, ha='right') #, rotation_mode='anchor')
+    fig, ax = plt.subplots(figsize=(args.figure_width_per_sample * len(file_dict1), args.figure_height), dpi=args.dpi)
+    plt.xticks(rotation=args.rotation, ha='right')
 
-    df_dict_den = OrderedDict({})
-    for k,v in df_dict.items():
-        df_dict_den[k] = v["density"]
+    sns.violinplot(data=result,
+                   x="id",
+                   y="density",
+                   hue="Reference",
+                   split = True,
+                   density_norm='width',
+                   inner='box',
+                   inner_kws=dict(box_width=1.5,
+                                  whis_width=0,
+                                  marker = '.',
+                                  markersize=2.2,
+                                  markeredgewidth=0.6),
+                   linewidth=0.5,
+                   saturation=1,
+                   palette=args.colors_list)
 
-    merge_df = pd.concat(df_dict_den, axis=1)
-
-    df_dict_den2 = OrderedDict({})
-    for k,v in df_dict2.items():
-        df_dict_den2[k] = v["density"]
-
-    merge_df2 = pd.concat(df_dict_den2, axis=1)
-
-    result_df_list = []
-    for col in merge_df.columns:
-        for value in merge_df[col]:
-            d = {'density': value, 'id': col, 'Reference': f'{args.legend_labels_list[0]}'}
-            result_df_list.append(d)
-    result_df = pd.DataFrame(result_df_list, columns=('density', 'id', 'Reference'))
-    # print(result_df)
-    result_df_list2 = []
-    for col in merge_df2.columns:
-        for value in merge_df2[col]:
-            d = {'density': value, 'id': col, 'Reference': f'{args.legend_labels_list[1]}'}
-            result_df_list2.append(d)
-    result_df2 = pd.DataFrame(result_df_list2, columns=('density', 'id', 'Reference'))
-    # print(result_df2)
-    result = pd.concat([result_df, result_df2], axis=0, ignore_index=True, sort=False)
-    # print(result)
-
-    sns.violinplot(data=result, x="id", y="density", hue="Reference", split = True, scale='width', inner='box', inner_kws=dict(box_width=1.5, whis_width=0, marker = '.', markersize=2.2, markeredgewidth=0.6), linewidth=0.5, saturation=1, palette=args.colors_list)
-
-    ax.set_xticklabels(list(df_dict.keys()))
+    ax.set_xticks(range(len(file_dict1.keys())))
+    ax.set_xticklabels(file_dict1.keys())
     plt.yticks(args.yticklist)
     if args.horizontal_lines:
         for ycoord in args.horizontal_lines:
             plt.axhline(y=ycoord, color="#CC0000", linestyle="--", linewidth=1)
     plt.ylim(ymax=args.ymax, ymin=args.ymin)
-    plt.subplots_adjust(left=args.subplots_adjust_left, right=args.subplots_adjust_right,
-                        top=args.subplots_adjust_top, bottom=args.subplots_adjust_bottom)
+    plt.subplots_adjust(left=args.subplots_adjust_left,
+                        right=args.subplots_adjust_right,
+                        top=args.subplots_adjust_top,
+                        bottom=args.subplots_adjust_bottom)
     if args.figure_grid:
         plt.grid(color="gray", linestyle = '--', linewidth = 1.5)
     ax.set_ylabel(args.ylabel)
@@ -146,11 +142,14 @@ if __name__ == '__main__':
                         help="Adjust right border of subplots on the figure. Default: matplotlib defaults")
     parser.add_argument("--subplots_adjust_bottom", action="store", dest="subplots_adjust_bottom", type=float,
                         help="Adjust bottom border of subplots on the figure. Default: matplotlib defaults")
+    parser.add_argument("--no_x", action="store_true", dest="only_count", default=False,
+                        help="Do not use counts from X chromosome. Default: False")
     parser.add_argument("--only_count", action="store_true", dest="only_count", default=False,
-                        help="Only count variants, do not draw them. Default: False")
+                        help="Only count and save variants to CSV, do not draw them. Default: False")
 
     args = parser.parse_args()
-    print(args.legend_labels_list)
+
     main()
+
 
 
