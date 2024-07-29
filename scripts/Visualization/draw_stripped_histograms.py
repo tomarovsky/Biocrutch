@@ -63,9 +63,9 @@ def main():
         df = result[result['id'] == unique_id]['density']
 
         # bins
-        bin_width = 0.1
-        bins = np.arange(df.min(), df.max() + bin_width, bin_width)
+        bins = np.arange(df.min(), df.max() + args.bin_width, args.bin_width)
 
+        # draw poligon plot
         violin_to_poligon(ax, df, bins, i, '#E04B4B', '#575757', label='M. zibellina' if i == 0 else None)
 
         # boxplot
@@ -118,6 +118,8 @@ if __name__ == '__main__':
                                 help="y-axis label. Default: 'Heterozygous SNPs/kbp'")
     parser.add_argument("-w", "--window_size", action="store", dest="window_size", required=True, type=float,
                         help="Size of the windows use for counts.")
+    parser.add_argument("-b", "--bin_width", action="store", dest="bin_width", required=True, default=0.1, type=float,
+                        help="Width of bins in SNPs/1kbp")
     parser.add_argument("-m", "--multiplicator", action="store", dest="multiplicator", default=1000, type=float,
                         help="Multiplicator for variant counts. "
                              "Default: 1000, i.e variant counts will be scaled to per 1 kbp ")
