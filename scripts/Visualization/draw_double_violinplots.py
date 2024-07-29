@@ -142,7 +142,7 @@ if __name__ == '__main__':
                         help="Adjust right border of subplots on the figure. Default: matplotlib defaults")
     parser.add_argument("--subplots_adjust_bottom", action="store", dest="subplots_adjust_bottom", type=float,
                         help="Adjust bottom border of subplots on the figure. Default: matplotlib defaults")
-    parser.add_argument("--no_x", action="store_true", dest="no_x", default=False,
+    parser.add_argument("--no_x", action="store_true", dest="only_count", default=False,
                         help="Do not use counts from X chromosome. Default: False")
     parser.add_argument("--only_count", action="store_true", dest="only_count", default=False,
                         help="Only count and save variants to CSV, do not draw them. Default: False")
