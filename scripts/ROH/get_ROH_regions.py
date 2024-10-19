@@ -71,7 +71,7 @@ def main():
     # Mark ROH regions in the original dataframe
     df_with_roh = mark_roh_regions(df, roh_df)
     input_with_rohs = args.output + ".features.bed"
-    df_with_roh.to_csv(input_with_rohs, sep='\t', index=False)
+    df_with_roh.to_csv(input_with_rohs, sep='\t', index=False, header=False)
 
 
 if __name__ == "__main__":
