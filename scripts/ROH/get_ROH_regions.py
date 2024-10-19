@@ -65,13 +65,13 @@ def main():
         for scaffold in args.exclude_scaffold_list:
             roh_df = roh_df[roh_df['scaffold'] != scaffold]
 
-    roh_df.to_csv(args.output, sep='\t', index=False)
+    roh_df.to_csv(args.output, sep='\t', index=False, header=False)
     print(roh_df)
 
     # Mark ROH regions in the original dataframe
     df_with_roh = mark_roh_regions(df, roh_df)
     input_with_rohs = args.output + ".features.bed"
-    df_with_roh.to_csv(input_with_rohs, sep='\t', index=False, header=False)
+    df_with_roh.to_csv(input_with_rohs, sep='\t', index=False)
 
 
 if __name__ == "__main__":
