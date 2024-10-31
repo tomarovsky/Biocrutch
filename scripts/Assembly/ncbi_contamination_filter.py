@@ -48,8 +48,6 @@ def parse_exclude_list(exclude_file):
                     if not line.strip() or line.startswith("Sequence"):
                         continue
                     parts = line.split()
-                    # if len(parts) < 4:
-                    #     continue
                     scaffold_name = parts[0]
                     coordinates = parts[2]
                     start, stop = map(int, coordinates.split(".."))
@@ -57,11 +55,7 @@ def parse_exclude_list(exclude_file):
                         trim_info[scaffold_name] = []
                     trim_info[scaffold_name].append((start, stop))
                 if duplicated_section:
-                    if (
-                        not line.strip()
-                        or line.startswith("#")
-                        or line.startswith("Sequence")
-                    ):
+                    if not line.strip() or line.startswith("#") or line.startswith("Sequence"):
                         continue
                     scaffolds = line.split()[:-2]
                     for scaffold in scaffolds[1:]:
@@ -89,9 +83,9 @@ def filter_and_trim_contigs(
     input_fasta,
     output_fasta,
     min_length,
-    exclude_scaffolds,
-    trim_info,
-    duplicated_scaffolds,
+    exclude_scaffolds=None,
+    trim_info=None,
+    duplicated_scaffolds=None,
 ):
     """
     Filters out contigs that are <= min_length, listed in the exclusion set,
@@ -103,16 +97,15 @@ def filter_and_trim_contigs(
     :param trim_info: Dictionary with coordinates for trimming.
     :param duplicated_scaffolds: Set of duplicated scaffolds to exclude.
     """
-    with open(input_fasta, "r") as input_handle, open(
-        output_fasta, "w"
-    ) as output_handle:
+    exclude_scaffolds = exclude_scaffolds if exclude_scaffolds else set()
+    trim_info = trim_info if trim_info else {}
+    duplicated_scaffolds = duplicated_scaffolds if duplicated_scaffolds else set()
+    with open(input_fasta, "r") as input_handle, open(output_fasta, "w") as output_handle:
         sequences = SeqIO.parse(input_handle, "fasta")
         filtered_sequences = (
             seq
             for seq in sequences
-            if len(seq) > min_length
-            and seq.id not in exclude_scaffolds
-            and seq.id not in duplicated_scaffolds
+            if len(seq) >= min_length and seq.id not in exclude_scaffolds and seq.id not in duplicated_scaffolds and set(str(seq.seq)) != {"N"}
         )
         for seq in filtered_sequences:
             if seq.id in trim_info:
@@ -131,15 +124,11 @@ def main():
         default=200,
         help="Minimal contig length. Default: 200",
     )
-    parser.add_argument(
-        "-c", "--contamination", help="NCBI contamination file", default=None
-    )
+    parser.add_argument("-c", "--contamination", help="NCBI contamination file (not necessary)", default=None)
 
     args = parser.parse_args()
 
-    exclude_scaffolds, trim_info, duplicated_scaffolds = parse_exclude_list(
-        args.contamination
-    )
+    exclude_scaffolds, trim_info, duplicated_scaffolds = parse_exclude_list(args.contamination) if args.contamination else (set(), {}, set())
     filter_and_trim_contigs(
         args.input,
         args.output,
