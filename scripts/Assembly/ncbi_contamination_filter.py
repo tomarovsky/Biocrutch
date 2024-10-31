@@ -105,7 +105,7 @@ def filter_and_trim_contigs(
         filtered_sequences = (
             seq
             for seq in sequences
-            if len(seq) >= min_length and seq.id not in exclude_scaffolds and seq.id not in duplicated_scaffolds and set(str(seq.seq)) != {"N"}
+            if len(seq) > min_length and seq.id not in exclude_scaffolds and seq.id not in duplicated_scaffolds and set(str(seq.seq)) != {"N"}
         )
         for seq in filtered_sequences:
             if seq.id in trim_info:
