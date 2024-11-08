@@ -7,7 +7,7 @@ from Bio import SeqIO
 from Bio.Seq import MutableSeq, Seq
 
 
-def parse_exclude_list(exclude_file):
+def parse_exclude_list(exclude_files):
     """
     Parses the NCBI contamination file containing the lists of scaffolds
     to exclude, coordinates for trimming, and duplicated scaffolds.
@@ -18,50 +18,51 @@ def parse_exclude_list(exclude_file):
     trim_info = {}
     duplicated_scaffolds = set()
 
-    if exclude_file:
-        with open(exclude_file, "r") as file:
-            exclude_section = False
-            trim_section = False
-            duplicated_section = False
-            for line in file:
-                if line.startswith("Exclude:"):
-                    exclude_section = True
-                    trim_section = False
-                    duplicated_section = False
-                    continue
-                if line.startswith("Trim:"):
-                    trim_section = True
-                    exclude_section = False
-                    duplicated_section = False
-                    continue
-                if line.startswith("Duplicated:"):
-                    duplicated_section = True
-                    exclude_section = False
-                    trim_section = False
-                    continue
-                if exclude_section:
-                    if not line.strip() or line.startswith("Sequence"):
+    if exclude_files:
+        for exclude_file in exclude_files:
+            with open(exclude_file, "r") as file:
+                exclude_section = False
+                trim_section = False
+                duplicated_section = False
+                for line in file:
+                    if line.startswith("Exclude:"):
+                        exclude_section = True
+                        trim_section = False
+                        duplicated_section = False
                         continue
-                    scaffold_name = line.split()[0]
-                    exclude_scaffolds.add(scaffold_name)
-                if trim_section:
-                    if not line.strip() or line.startswith("Sequence"):
+                    if line.startswith("Trim:"):
+                        trim_section = True
+                        exclude_section = False
+                        duplicated_section = False
                         continue
-                    parts = line.split()
-                    scaffold_name = parts[0]
-                    coordinates = parts[2]
-                    start, stop = map(int, coordinates.split(".."))
-                    if scaffold_name not in trim_info:
-                        trim_info[scaffold_name] = []
-                    trim_info[scaffold_name].append((start, stop))
-                if duplicated_section:
-                    if not line.strip() or line.startswith("#") or line.startswith("Sequence"):
+                    if line.startswith("Duplicated:"):
+                        duplicated_section = True
+                        exclude_section = False
+                        trim_section = False
                         continue
-                    scaffolds = line.split()[:-2]
-                    for scaffold in scaffolds[1:]:
-                        if scaffold.startswith("RC("):
-                            scaffold = scaffold[3:-1]
-                        duplicated_scaffolds.add(scaffold)
+                    if exclude_section:
+                        if not line.strip() or line.startswith("Sequence"):
+                            continue
+                        scaffold_name = line.split()[0]
+                        exclude_scaffolds.add(scaffold_name)
+                    if trim_section:
+                        if not line.strip() or line.startswith("Sequence"):
+                            continue
+                        parts = line.split()
+                        scaffold_name = parts[0]
+                        coordinates = parts[2]
+                        start, stop = map(int, coordinates.split(".."))
+                        if scaffold_name not in trim_info:
+                            trim_info[scaffold_name] = []
+                        trim_info[scaffold_name].append((start, stop))
+                    if duplicated_section:
+                        if not line.strip() or line.startswith("#") or line.startswith("Sequence"):
+                            continue
+                        scaffolds = line.split()[:-2]
+                        for scaffold in scaffolds[1:]:
+                            if scaffold.startswith("RC("):
+                                scaffold = scaffold[3:-1]
+                            duplicated_scaffolds.add(scaffold)
     return exclude_scaffolds, trim_info, duplicated_scaffolds
 
 
@@ -124,7 +125,7 @@ def main():
         default=200,
         help="Minimal contig length. Default: 200",
     )
-    parser.add_argument("-c", "--contamination", help="NCBI contamination file (not necessary)", default=None)
+    parser.add_argument("-c", "--contamination", nargs='+', help="NCBI contamination files (not necessary)", default=None)
 
     args = parser.parse_args()
 
