@@ -9,6 +9,9 @@ def main():
         df = pd.read_csv(file, sep='\t', header=0)
         sample = df.columns[2]
 
+        if args.exclude:
+            df = df[df['CHROM'] != args.exclude]
+
         df[sample] = df[sample] / args.window_size * args.multiplicator
 
         maxim = df[sample].max()
@@ -27,7 +30,8 @@ if __name__ == "__main__":
     group_required.add_argument('-i', '--input', type=str, nargs='+', help="MACE BED file")
     group_required.add_argument('-w', '--window_size', type=int, help="Window size", default=1000000)
     group_required.add_argument('-m', '--multiplicator', type=int, help="Multiplicator", default=1000)
-    # group_additional = parser.add_argument_group('Additional options')
+    group_additional = parser.add_argument_group('Additional options')
+    group_additional.add_argument('-e', '--exclude', type=str, default=False, help="Exclude chr")
     # group_additional.add_argument('-o', '--output', type=str, default=False, help="outfile name")
     # group_additional.add_argument('-h', '--header', type=bool, default=False, help="write header to outfile")
     args = parser.parse_args()
