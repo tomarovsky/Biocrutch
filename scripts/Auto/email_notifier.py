@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 
 LABEL = 'Message from server'
 
+
 def main():
     me = args.sender
     you = args.recipient
@@ -20,12 +21,12 @@ def main():
     s.quit()
 
 
-if __name__ == "__main__":
-    parser = ArgumentParser(description="for sending messages")
+if __name__ == '__main__':
+    parser = ArgumentParser(description='for sending messages')
     group_required = parser.add_argument_group('Required options')
-    group_required.add_argument('-t', '--text', type=str, help="message text")
+    group_required.add_argument('-t', '--text', type=str, help='message text')
     group_additional = parser.add_argument_group('Additional options')
-    group_additional.add_argument('-s', '--sender', type=str, help="server mail")
-    group_additional.add_argument('-r', '--recipient', type=str, help="mail address")
+    group_additional.add_argument('-s', '--sender', type=str, help='server mail')
+    group_additional.add_argument('-r', '--recipient', type=str, help='mail address')
     args = parser.parse_args()
     main()

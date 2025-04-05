@@ -9,7 +9,7 @@ from Biocrutch.Statistics.coverage_statistics.CoverageMetrics import CoveragesMe
 
 
 def main():
-    outfile = metaopen(metaoutput(args.output, ".csv"), "wt")
+    outfile = metaopen(metaoutput(args.output, '.csv'), 'wt')
     frame_coverages_amounts_dict = Counter()
     line_counter = 0
     frame_line_counter = 0
@@ -24,7 +24,7 @@ def main():
             stop = line_counter
             metrics = CoveragesMetrics(frame_coverages_amounts_dict)
             coverage = metrics.median_value()
-            outfile.write("\t".join(["MT", str(start), str(stop), str(coverage)]) + "\n")
+            outfile.write('\t'.join(['MT', str(start), str(stop), str(coverage)]) + '\n')
             frame_coverages_amounts_dict.clear()
             frame_line_counter = 0
     if frame_coverages_amounts_dict:
@@ -32,18 +32,15 @@ def main():
         stop = line_counter
         metrics = CoveragesMetrics(frame_coverages_amounts_dict)
         coverage = metrics.median_value()
-        outfile.write("\t".join(["MT", str(start), str(stop), str(coverage)]) + "\n")
+        outfile.write('\t'.join(['MT', str(start), str(stop), str(coverage)]) + '\n')
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="get kmers coverage statistics for circos")
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='get kmers coverage statistics for circos')
     group_required = parser.add_argument_group('Required options')
-    group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
-                                help="input splited_fasta_1.fasta", default=stdin)
-    group_required.add_argument('-k', '--kmer-length', type=int,
-                                help="kmer length", default=23)
-    group_required.add_argument('-f', '--frame-size', type=int,
-                                help="non-overlapping frame size", default=10)
-    group_required.add_argument('-o', '--output', type=str,
-                                help="output file prefix")
+    group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, 'rt'), help='input splited_fasta_1.fasta', default=stdin)
+    group_required.add_argument('-k', '--kmer-length', type=int, help='kmer length', default=23)
+    group_required.add_argument('-f', '--frame-size', type=int, help='non-overlapping frame size', default=10)
+    group_required.add_argument('-o', '--output', type=str, help='output file prefix')
     args = parser.parse_args()
     main()

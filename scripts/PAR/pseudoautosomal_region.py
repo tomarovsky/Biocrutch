@@ -15,70 +15,68 @@ def coordinates_list_to_BED(scaffold_name: str, coordinates: list) -> str:
     function to create BED format from a list of coordinates
     takes list [[start, stop], [start, stop]]
     """
-    result = ""
+    result = ''
     for lst in coordinates:
-        result += (scaffold_name + '\t' + str(lst[0]) + '\t' + str(lst[1]) + '\n')
+        result += scaffold_name + '\t' + str(lst[0]) + '\t' + str(lst[1]) + '\n'
     return result
 
 
 def main():
     coordinates = Coordinator(args.input, float(args.whole_genome_value), args.region_gap_size, args.deviation_percent)
-    coordinates_and_medians = coordinates.get_coordinates(args.window_size,
-                                                  args.coverage_column_name,
-                                                  args.window_column_name,
-                                                  args.repeat_window_number)
+    coordinates_and_medians = coordinates.get_coordinates(
+        args.window_size, args.coverage_column_name, args.window_column_name, args.repeat_window_number
+    )
     coordinates_list = coordinates_and_medians[0]
     # print(f"Chains: {coordinates_list}")
     medians_list = coordinates_and_medians[1]
     # print(f"Medians between chains: {medians_list}")
 
-    print('---- Medians between regions ---- \n', medians_list, sep="")
-    print("Concatenate if the median >=", coordinates.minimum_coverage)
-    print('---- Raw coordinates ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_list), sep="")
+    print('---- Medians between regions ---- \n', medians_list, sep='')
+    print('Concatenate if the median >=', coordinates.minimum_coverage)
+    print('---- Raw coordinates ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_list), sep='')
 
-    coordinates_merge_by_median = Filter.concat_by_median(coordinates_list, # coordinates list
-                                              medians_list, # median list between regions
-                                              coordinates.minimum_coverage,
-                                              coordinates.maximum_coverage)
-    print('---- Filtration by median ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median), sep="")
+    coordinates_merge_by_median = Filter.concat_by_median(
+        coordinates_list,  # coordinates list
+        medians_list,  # median list between regions
+        coordinates.minimum_coverage,
+        coordinates.maximum_coverage,
+    )
+    print('---- Filtration by median ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_median), sep='')
 
     coordinates_merge_by_distance = Filter.concat_by_distance(coordinates_merge_by_median, args.min_region_length)
 
-    print('---- Filtration by distance ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance), sep="")
+    print('---- Filtration by distance ---- \n', coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance), sep='')
 
     if args.output:
-        outfile = open(args.output + "_pseudoreg.bed", "w")
+        outfile = open(args.output + '_pseudoreg.bed', 'w')
         outfile.writelines(coordinates_list_to_BED(args.scaffold_name, coordinates_merge_by_distance))
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Script for determining the coordinates of the PAR. Output of coordinates to BED file")
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Script for determining the coordinates of the PAR. Output of coordinates to BED file')
 
     group_required = parser.add_argument_group('Required options')
-    group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, "rt"),
-                                help="input coverage_statistics_output.csv")
+    group_required.add_argument('-i', '--input', type=lambda s: metaopen(s, 'rt'), help='input coverage_statistics_output.csv')
     group_additional = parser.add_argument_group('Additional options')
-    group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False,
-                                  help='output file prefix')
-    group_additional.add_argument('-f', '--window-size', type=int,
-                                  help="the window size used in your data")
-    group_additional.add_argument('--window_column_name', type=int,
-                                  help="number of column in coverage file with window number", default=1)
-    group_additional.add_argument('--coverage_column_name', type=int,
-                                  help="number of column in coverage file with mean/median coverage per window", default=2)
-    group_additional.add_argument('-s', '--scaffold-name', type=str,
-                                  help="name of column in coverage file with scaffold name", default="ChrX")
-    group_additional.add_argument('-m', '--whole_genome_value', type=str,
-                                  help="whole genome median/mean value")
-    group_additional.add_argument('-r', '--repeat_window_number', type=int,
-                                  help="number of repeating windows for a given condition", default=10)
-    group_additional.add_argument('-g', '--region_gap_size', type=int,
-                                  help="minimum allowable gap between regions for their merging (windows). If 0, then the median is calculated taking into account the next section, and not just the section between regions.",
-                                  default=0)
-    group_additional.add_argument('-l', '--min_region_length', type=int,
-                                  help="minimum distance between regions for their merging (nucleotides)",
-                                  default=0)
-    group_additional.add_argument('-d', '--deviation_percent', type=int,
-                                  help="measurement error", default=30)
+    group_additional.add_argument('-o', '--output', metavar='PATH', type=str, default=False, help='output file prefix')
+    group_additional.add_argument('-f', '--window-size', type=int, help='the window size used in your data')
+    group_additional.add_argument('--window_column_name', type=int, help='number of column in coverage file with window number', default=1)
+    group_additional.add_argument(
+        '--coverage_column_name', type=int, help='number of column in coverage file with mean/median coverage per window', default=2
+    )
+    group_additional.add_argument('-s', '--scaffold-name', type=str, help='name of column in coverage file with scaffold name', default='ChrX')
+    group_additional.add_argument('-m', '--whole_genome_value', type=str, help='whole genome median/mean value')
+    group_additional.add_argument('-r', '--repeat_window_number', type=int, help='number of repeating windows for a given condition', default=10)
+    group_additional.add_argument(
+        '-g',
+        '--region_gap_size',
+        type=int,
+        help='minimum allowable gap between regions for their merging (windows). If 0, then the median is calculated taking into account the next section, and not just the section between regions.',
+        default=0,
+    )
+    group_additional.add_argument(
+        '-l', '--min_region_length', type=int, help='minimum distance between regions for their merging (nucleotides)', default=0
+    )
+    group_additional.add_argument('-d', '--deviation_percent', type=int, help='measurement error', default=30)
     args = parser.parse_args()
     main()

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-__author__ = "tomarovsky"
+__author__ = 'tomarovsky'
 
 import argparse
 
@@ -20,47 +20,47 @@ def parse_exclude_list(exclude_files):
 
     if exclude_files:
         for exclude_file in exclude_files:
-            with open(exclude_file, "r") as file:
+            with open(exclude_file, 'r') as file:
                 exclude_section = False
                 trim_section = False
                 duplicated_section = False
                 for line in file:
-                    if line.startswith("Exclude:"):
+                    if line.startswith('Exclude:'):
                         exclude_section = True
                         trim_section = False
                         duplicated_section = False
                         continue
-                    if line.startswith("Trim:"):
+                    if line.startswith('Trim:'):
                         trim_section = True
                         exclude_section = False
                         duplicated_section = False
                         continue
-                    if line.startswith("Duplicated:"):
+                    if line.startswith('Duplicated:'):
                         duplicated_section = True
                         exclude_section = False
                         trim_section = False
                         continue
                     if exclude_section:
-                        if not line.strip() or line.startswith("Sequence"):
+                        if not line.strip() or line.startswith('Sequence'):
                             continue
                         scaffold_name = line.split()[0]
                         exclude_scaffolds.add(scaffold_name)
                     if trim_section:
-                        if not line.strip() or line.startswith("Sequence"):
+                        if not line.strip() or line.startswith('Sequence'):
                             continue
                         parts = line.split()
                         scaffold_name = parts[0]
                         coordinates = parts[2]
-                        start, stop = map(int, coordinates.split(".."))
+                        start, stop = map(int, coordinates.split('..'))
                         if scaffold_name not in trim_info:
                             trim_info[scaffold_name] = []
                         trim_info[scaffold_name].append((start, stop))
                     if duplicated_section:
-                        if not line.strip() or line.startswith("#") or line.startswith("Sequence"):
+                        if not line.strip() or line.startswith('#') or line.startswith('Sequence'):
                             continue
                         scaffolds = line.split()[:-2]
                         for scaffold in scaffolds[1:]:
-                            if scaffold.startswith("RC("):
+                            if scaffold.startswith('RC('):
                                 scaffold = scaffold[3:-1]
                             duplicated_scaffolds.add(scaffold)
     return exclude_scaffolds, trim_info, duplicated_scaffolds
@@ -75,7 +75,7 @@ def trim_sequences(sequence, trim_coordinates):
     """
     mutable_seq = MutableSeq(str(sequence.seq))
     for start, stop in trim_coordinates:
-        mutable_seq[start - 1 : stop] = "N" * (stop - start + 1)
+        mutable_seq[start - 1 : stop] = 'N' * (stop - start + 1)
     sequence.seq = Seq(str(mutable_seq))
     return sequence
 
@@ -101,31 +101,31 @@ def filter_and_trim_contigs(
     exclude_scaffolds = exclude_scaffolds if exclude_scaffolds else set()
     trim_info = trim_info if trim_info else {}
     duplicated_scaffolds = duplicated_scaffolds if duplicated_scaffolds else set()
-    with open(input_fasta, "r") as input_handle, open(output_fasta, "w") as output_handle:
-        sequences = SeqIO.parse(input_handle, "fasta")
+    with open(input_fasta, 'r') as input_handle, open(output_fasta, 'w') as output_handle:
+        sequences = SeqIO.parse(input_handle, 'fasta')
         filtered_sequences = (
             seq
             for seq in sequences
-            if len(seq) > min_length and seq.id not in exclude_scaffolds and seq.id not in duplicated_scaffolds and set(str(seq.seq)) != {"N"}
+            if len(seq) > min_length and seq.id not in exclude_scaffolds and seq.id not in duplicated_scaffolds and set(str(seq.seq)) != {'N'}
         )
         for seq in filtered_sequences:
             if seq.id in trim_info:
                 seq = trim_sequences(seq, trim_info[seq.id])
-            SeqIO.write(seq, output_handle, "fasta")
+            SeqIO.write(seq, output_handle, 'fasta')
 
 
 def main():
-    parser = argparse.ArgumentParser(description="NCBI contamination filtration.")
-    parser.add_argument("-i", "--input", required=True, help="Input FASTA file")
-    parser.add_argument("-o", "--output", required=True, help="Output FASTA file")
+    parser = argparse.ArgumentParser(description='NCBI contamination filtration.')
+    parser.add_argument('-i', '--input', required=True, help='Input FASTA file')
+    parser.add_argument('-o', '--output', required=True, help='Output FASTA file')
     parser.add_argument(
-        "-m",
-        "--min_length",
+        '-m',
+        '--min_length',
         type=int,
         default=200,
-        help="Minimal contig length. Default: 200",
+        help='Minimal contig length. Default: 200',
     )
-    parser.add_argument("-c", "--contamination", nargs='+', help="NCBI contamination files (not necessary)", default=None)
+    parser.add_argument('-c', '--contamination', nargs='+', help='NCBI contamination files (not necessary)', default=None)
 
     args = parser.parse_args()
 
@@ -140,5 +140,5 @@ def main():
     )
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
