@@ -6,3 +6,6 @@ __pycache__/
 
 # PyCharm workspace settings
 .idea/
+
+# Pyright
+pyproject.toml
