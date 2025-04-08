@@ -44,10 +44,11 @@ def main():
     t = Tree(args.input)
     t.sort_descendants()
 
-    for i in t.get_leaves():  # 'Homo_sapiens' -> 'Homo sapiens'
-        i.name = i.name.replace('_', ' ').replace('GCA ', 'GCA_').replace('GCF ', 'GCF_').replace("'", '')
     if args.outgroup:
         t.set_outgroup(args.outgroup)
+
+    for i in t.get_leaves():  # 'Homo_sapiens' -> 'Homo sapiens'
+        i.name = i.name.replace('_', ' ').replace('GCA ', 'GCA_').replace('GCF ', 'GCF_').replace("'", '')
 
     t.ladderize(direction=1)
 
