@@ -43,9 +43,9 @@ def process_tree(input_file, output_file):
             {
                 'Node_ID': i + 1,
                 'Description': desc,
-                'Date': round(dist_to_root, 6),
-                'HPD_Lower': round(hpd_lower, 6),
-                'HPD_Upper': round(hpd_upper, 6),
+                'Date': dist_to_root,
+                'HPD_Lower': hpd_lower,
+                'HPD_Upper': hpd_upper,
             }
         )
 
