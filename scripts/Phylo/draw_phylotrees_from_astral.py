@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 __author__ = 'tomarovsky'
 from ete3 import TextFace, Tree, faces, AttrFace, TreeStyle, NodeStyle
 from argparse import ArgumentParser
@@ -88,7 +88,7 @@ def main():
                         n.add_face(TextFace(f'  {metric} = '), column=1, position='branch-top')
                     n.add_face(TextFace(f'{value:.2f}  ', fgcolor=color), column=2, position='branch-top')
             else:  # color by constant colors
-                for metric, color in zip(args.metrics, args.colors):  # may be 'stable colors'
+                for metric, color in zip(args.metrics, args.color_per_metric):  # may be 'stable colors'
                     value = float(getattr(n, metric))
                     if args.show_normalized_values:
                         value = value / args.number_of_genes * 100 if metric == 'EN' else value * 100
