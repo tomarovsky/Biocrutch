@@ -55,36 +55,36 @@ class Quast_core:
                 return [n_count, l_count]
 
 
-def n_l_contig_statistics(self, percent, min_contig, drop_top_scaffolds=None, drop_named_scaffolds=None) -> list:
-    print("n_l_statistics_contigs started")
+    def n_l_contig_statistics(self, percent, min_contig, drop_top_scaffolds=None, drop_named_scaffolds=None) -> list:
+        print("n_l_statistics_contigs started")
 
-    df_filtered = self.df[self.df["lengths"] >= min_contig].copy()
+        df_filtered = self.df[self.df["lengths"] >= min_contig].copy()
 
-    if drop_named_scaffolds:
-        drop_list = [name.strip() for name in drop_named_scaffolds.split(",")]
-        df_filtered = df_filtered[~df_filtered["names"].isin(drop_list)]
+        if drop_named_scaffolds:
+            drop_list = [name.strip() for name in drop_named_scaffolds.split(",")]
+            df_filtered = df_filtered[~df_filtered["names"].isin(drop_list)]
 
-    elif drop_top_scaffolds is not None:
-        df_filtered = df_filtered.sort_values(by="lengths", ascending=False).iloc[drop_top_scaffolds:]
+        elif drop_top_scaffolds is not None:
+            df_filtered = df_filtered.sort_values(by="lengths", ascending=False).iloc[drop_top_scaffolds:]
 
-    if df_filtered.empty:
+        if df_filtered.empty:
+            return [None, None]
+
+        lengths = df_filtered["lengths"].sort_values(ascending=False)
+        mean = lengths.sum() // 100 * percent
+
+        l_count = 0
+        count = 0
+        for l in lengths:
+            count += l
+            if count <= mean:
+                l_count += 1
+            else:
+                l_count += 1
+                n_count = l
+                return [n_count, l_count]
+
         return [None, None]
-
-    lengths = df_filtered["lengths"].sort_values(ascending=False)
-    mean = lengths.sum() // 100 * percent
-
-    l_count = 0
-    count = 0
-    for l in lengths:
-        count += l
-        if count <= mean:
-            l_count += 1
-        else:
-            l_count += 1
-            n_count = l
-            return [n_count, l_count]
-
-    return [None, None]
 
 
 if __name__ == "__main__":
