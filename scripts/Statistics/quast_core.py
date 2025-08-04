@@ -41,13 +41,13 @@ def main():
             for i in args.nl_statistics:
                 for min_contig in args.min_contig:
                     if args.drop_named_scaffolds:
-                        n_l_stat_contigs = metrics.n_l_statistics_contigs(
+                        n_l_stat_contigs = metrics.n_l_contig_statistics(
                             percent=i,
                             min_contig=min_contig,
                             drop_named_scaffolds=args.drop_named_scaffolds
                         )
                     else:
-                        n_l_stat_contigs = metrics.n_l_statistics_contigs(
+                        n_l_stat_contigs = metrics.n_l_contig_statistics(
                             percent=i,
                             min_contig=min_contig,
                             drop_top_scaffolds=args.drop_top_scaffolds

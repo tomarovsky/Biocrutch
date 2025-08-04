@@ -55,7 +55,7 @@ class Quast_core:
                 return [n_count, l_count]
 
 
-def n_l_statistics_contigs(self, percent, min_contig, drop_top_scaffolds=None, drop_named_scaffolds=None) -> list:
+def n_l_contig_statistics(self, percent, min_contig, drop_top_scaffolds=None, drop_named_scaffolds=None) -> list:
     print("n_l_statistics_contigs started")
 
     df_filtered = self.df[self.df["lengths"] >= min_contig].copy()
