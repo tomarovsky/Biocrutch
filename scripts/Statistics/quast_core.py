@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     group_additional.add_argument('-c', '--nl-contig-statistics', action='store_true', default=False,
                               help='Calculate N/L statistics only for contigs (excluding scaffolds). Requires --drop-top-scaffolds or --drop-named-scaffolds.')
-    group_additional.add_argument('--drop-top-scaffolds', metavar='INT', type=int, default=None,
+    group_additional.add_argument('-d', '--drop-top-scaffolds', metavar='INT', type=int, default=None,
                                   help='Number of longest scaffolds to exclude when calculating contig-only N/L statistics.')
     group_additional.add_argument('--drop-named-scaffolds', metavar='STR', type=str, default=None,
                                   help='Comma-separated list of scaffold names to exclude for contig-only N/L statistics, e.g. "scaf_1,scaf_2".')
