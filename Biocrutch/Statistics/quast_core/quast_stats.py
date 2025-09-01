@@ -39,21 +39,21 @@ class Quast_core:
 
     def n_l_statistics(self, percent, min_contig) -> list:
         print("n_l_statistics started")
-        mean = self.total_length(min_contig) // 100 * percent
         lengths = self.df[self.df["lengths"] >= min_contig]["lengths"].sort_values(ascending=False)
         if lengths.empty:
             return [None, None]
+
+        mean = lengths.sum() * (percent / 100)
+
         l_count = 0
         count = 0
         for l in lengths:
             count += l
-            if count <= mean:
-                l_count += 1
-            else:
-                l_count += 1
-                n_count = l
-                return [n_count, l_count]
+            l_count += 1
+            if count >= mean:
+                return [l, l_count]
 
+        return [None, None]
 
     def n_l_contig_statistics(self, percent, min_contig, drop_top_scaffolds=None, drop_named_scaffolds=None) -> list:
         print("n_l_statistics_contigs started")
@@ -64,25 +64,22 @@ class Quast_core:
             drop_list = [name.strip() for name in drop_named_scaffolds.split(",")]
             df_filtered = df_filtered[~df_filtered["names"].isin(drop_list)]
 
-        elif drop_top_scaffolds is not None:
+        if drop_top_scaffolds is not None:
             df_filtered = df_filtered.sort_values(by="lengths", ascending=False).iloc[drop_top_scaffolds:]
 
         if df_filtered.empty:
             return [None, None]
 
         lengths = df_filtered["lengths"].sort_values(ascending=False)
-        mean = lengths.sum() // 100 * percent
+        mean = lengths.sum() * (percent / 100)
 
         l_count = 0
         count = 0
         for l in lengths:
             count += l
-            if count <= mean:
-                l_count += 1
-            else:
-                l_count += 1
-                n_count = l
-                return [n_count, l_count]
+            l_count += 1
+            if count >= mean:
+                return [l, l_count]
 
         return [None, None]
 
@@ -92,4 +89,3 @@ if __name__ == "__main__":
     fasta = Fasta_opener(PATH)
     sequences_dict = fasta.parse_sequences()
     metrics = Quast_core(sequences_dict, fasta.lengths_to_frame())
-    print(metrics.n_amount())
