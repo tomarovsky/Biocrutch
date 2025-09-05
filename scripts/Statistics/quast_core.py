@@ -63,11 +63,11 @@ if __name__ == '__main__':
     group_required.add_argument('-i', '--input', type=str, nargs='+', required=True, help=c.HELP_INPUT)
 
     group_additional = parser.add_argument_group('Additional options')
-    group_additional.add_argument('-b', '--buffering', metavar='INT', type=int, default=None, help=c.HELP_BUFFERING)
+    group_additional.add_argument('-b', '--buffering', metavar='INT', type=int, default=10000000, help=c.HELP_BUFFERING)
     group_additional.add_argument('-m', '--min-contig', metavar='INT', type=int, nargs='+', default=[0, 150, 500, 1000, 2500, 5000], help=c.HELP_MIN_CONTIG)
     group_additional.add_argument('-n', '--nl-statistics', metavar='INT', type=int, nargs='+', default=[50, 75], help=c.HELP_NL_STATISTICS)
     group_additional.add_argument('-c', '--nl-contig-statistics', action='store_true', default=True, help='Calculate N/L statistics only for contigs')
-    group_additional.add_argument('-o', '--output', type=str, help=c.HELP_OUTPUT)
+    group_additional.add_argument('-o', '--output', type=str, default="quast_stats.csv", help=c.HELP_OUTPUT)
     group_additional.add_argument('-p', '--print', type=lambda x: (str(x).lower() in ['true', 'yes', '1']), default=True, help=c.HELP_PRINT)
     args = parser.parse_args()
 
