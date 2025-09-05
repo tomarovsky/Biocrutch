@@ -62,10 +62,13 @@ class Quast_core:
         contig_lengths = []
 
         for _, seq in self.sequences_dict.items():
+            # print(f"seq: {seq}")
             for match in re.finditer(r"[^Nn]+", seq):
                 l = match.end() - match.start()
                 if l >= min_contig:
                     contig_lengths.append(l)
+                    # print(f"contig: {l}")
+        # print(contig_lengths)
 
         if not contig_lengths:
             return [None, None]
