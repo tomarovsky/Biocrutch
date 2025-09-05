@@ -58,7 +58,7 @@ class Quast_core:
         return [Nxx, Lxx]
 
     def n_l_contig_statistics(self, percent: int, min_contig: int) -> list:
-
+        print("n_l_statistics contig started")
         contig_lengths = []
 
         for _, seq in self.sequences_dict.items():
