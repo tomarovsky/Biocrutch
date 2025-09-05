@@ -40,18 +40,7 @@ def main():
         if args.nl_contig_statistics:
             for i in args.nl_statistics:
                 for min_contig in args.min_contig:
-                    if args.drop_named_scaffolds:
-                        n_l_stat_contigs = metrics.n_l_contig_statistics(
-                            percent=i,
-                            min_contig=min_contig,
-                            drop_named_scaffolds=args.drop_named_scaffolds
-                        )
-                    else:
-                        n_l_stat_contigs = metrics.n_l_contig_statistics(
-                            percent=i,
-                            min_contig=min_contig,
-                            drop_top_scaffolds=args.drop_top_scaffolds
-                        )
+                    n_l_stat_contigs = metrics.n_l_contig_statistics(percent=i, min_contig=min_contig)
 
                     data_dict['N{0}contig stats(>={1})'.format(str(i), str(min_contig))].append(n_l_stat_contigs[0])
                     data_dict['L{0}contig stats(>={1})'.format(str(i), str(min_contig))].append(n_l_stat_contigs[1])
@@ -75,16 +64,9 @@ if __name__ == '__main__':
 
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-b', '--buffering', metavar='INT', type=int, default=None, help=c.HELP_BUFFERING)
-    group_additional.add_argument('-m', '--min-contig', metavar='INT', type=int, nargs='+', default=[0, 150], help=c.HELP_MIN_CONTIG)
+    group_additional.add_argument('-m', '--min-contig', metavar='INT', type=int, nargs='+', default=[0, 150, 500, 1000, 2500, 5000], help=c.HELP_MIN_CONTIG)
     group_additional.add_argument('-n', '--nl-statistics', metavar='INT', type=int, nargs='+', default=[50, 75], help=c.HELP_NL_STATISTICS)
-
-    group_additional.add_argument('-c', '--nl-contig-statistics', action='store_true', default=False,
-                              help='Calculate N/L statistics only for contigs (excluding scaffolds). Requires --drop-top-scaffolds or --drop-named-scaffolds.')
-    group_additional.add_argument('-d', '--drop-top-scaffolds', metavar='INT', type=int, default=None,
-                                  help='Number of longest scaffolds to exclude when calculating contig-only N/L statistics.')
-    group_additional.add_argument('--drop-named-scaffolds', metavar='STR', type=str, default=None,
-                                  help='Comma-separated list of scaffold names to exclude for contig-only N/L statistics, e.g. "scaf_1,scaf_2".')
-
+    group_additional.add_argument('-c', '--nl-contig-statistics', action='store_true', default=True, help='Calculate N/L statistics only for contigs')
     group_additional.add_argument('-o', '--output', type=str, help=c.HELP_OUTPUT)
     group_additional.add_argument('-p', '--print', type=lambda x: (str(x).lower() in ['true', 'yes', '1']), default=True, help=c.HELP_PRINT)
     args = parser.parse_args()

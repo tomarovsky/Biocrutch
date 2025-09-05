@@ -1,6 +1,8 @@
 __author__ = "tomarovsky"
 from Biocrutch.Parsers.fasta_opener import Fasta_opener
 import pandas as pd
+import numpy as np
+import re
 
 
 class Quast_core:
@@ -37,51 +39,49 @@ class Quast_core:
         result = round(count / self.total_length(min_contig) * 100, 2)
         return result
 
-    def n_l_statistics(self, percent, min_contig) -> list:
+    def n_l_statistics(self, percent: int, min_contig: int) -> list:
         print("n_l_statistics started")
-        lengths = self.df[self.df["lengths"] >= min_contig]["lengths"].sort_values(ascending=False)
-        if lengths.empty:
+        lengths = self.df[self.df["lengths"] >= min_contig]["lengths"].to_numpy(dtype=np.int64)
+        if lengths.size == 0:
             return [None, None]
 
-        mean = lengths.sum() * (percent / 100)
+        lengths = np.sort(lengths)[::-1]
+        total = lengths.sum()
+        target = total * (percent / 100.0)
 
-        l_count = 0
-        count = 0
-        for l in lengths:
-            count += l
-            l_count += 1
-            if count >= mean:
-                return [l, l_count]
+        csum = np.cumsum(lengths)
+        idx = int(np.searchsorted(csum, target, side="left"))
 
-        return [None, None]
+        Nxx = int(lengths[idx])
+        Lxx = idx + 1
 
-    def n_l_contig_statistics(self, percent, min_contig, drop_top_scaffolds=None, drop_named_scaffolds=None) -> list:
-        print("n_l_statistics_contigs started")
+        return [Nxx, Lxx]
 
-        df_filtered = self.df[self.df["lengths"] >= min_contig].copy()
+    def n_l_contig_statistics(self, percent: int, min_contig: int) -> list:
 
-        if drop_named_scaffolds:
-            drop_list = [name.strip() for name in drop_named_scaffolds.split(",")]
-            df_filtered = df_filtered[~df_filtered["names"].isin(drop_list)]
+        contig_lengths = []
 
-        if drop_top_scaffolds is not None:
-            df_filtered = df_filtered.sort_values(by="lengths", ascending=False).iloc[drop_top_scaffolds:]
+        for _, seq in self.sequences_dict.items():
+            for match in re.finditer(r"[^Nn]+", seq):
+                l = match.end() - match.start()
+                if l >= min_contig:
+                    contig_lengths.append(l)
 
-        if df_filtered.empty:
+        if not contig_lengths:
             return [None, None]
 
-        lengths = df_filtered["lengths"].sort_values(ascending=False)
-        mean = lengths.sum() * (percent / 100)
+        lengths = np.sort(np.array(contig_lengths, dtype=np.int64))[::-1]
 
-        l_count = 0
-        count = 0
-        for l in lengths:
-            count += l
-            l_count += 1
-            if count >= mean:
-                return [l, l_count]
+        total = lengths.sum()
+        target = total * (percent / 100.0)
 
-        return [None, None]
+        csum = np.cumsum(lengths)
+        idx = int(np.searchsorted(csum, target, side="left"))
+
+        Nxx = int(lengths[idx])
+        Lxx = idx + 1
+
+        return [Nxx, Lxx]
 
 
 if __name__ == "__main__":
