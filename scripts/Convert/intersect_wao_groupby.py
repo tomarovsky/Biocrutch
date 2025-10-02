@@ -11,7 +11,7 @@ if len(sys.argv) != 3:
 input_file = sys.argv[1]
 output_file = sys.argv[2]
 
-df = pd.read_csv(input_file, sep='\s+', header=None)
+df = pd.read_csv(input_file, sep='\t', header=None)
 df.columns = ['scaffold1', 'start', 'end', 'scaffold2', 'start2', 'end2', 'value']
 
 result = df.groupby(['scaffold1', 'start', 'end'])['value'].sum().reset_index()
