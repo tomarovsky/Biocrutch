@@ -28,7 +28,5 @@ if __name__ == '__main__':
     group_required.add_argument('-m', '--multiplicator', type=int, help='Multiplicator', default=1000)
     group_additional = parser.add_argument_group('Additional options')
     group_additional.add_argument('-e', '--exclude', type=str, default=False, help='Exclude chr')
-    # group_additional.add_argument('-o', '--output', type=str, default=False, help="outfile name")
-    # group_additional.add_argument('-h', '--header', type=bool, default=False, help="write header to outfile")
     args = parser.parse_args()
     main()
