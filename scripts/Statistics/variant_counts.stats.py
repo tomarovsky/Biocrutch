@@ -2,144 +2,224 @@
 __author__ = 'tomarovsky'
 
 import argparse
-import gzip
-import statistics
 import sys
-from collections import defaultdict
+import statistics
+import gzip
+import pandas as pd
+from io import StringIO
+import numpy as np
 
 
 def open_file(filename):
+    """Возвращает файловый дескриптор или gzip.open."""
     if filename.endswith(".gz"):
         return gzip.open(filename, 'rt', encoding='utf-8')
     else:
         return open(filename, 'r', encoding='utf-8')
 
+# --- Функции парсинга ---
 
 def parse_scaffold_lengths_tsv(tsv_file):
-    scaffold_lengths = {}
-    with open_file(tsv_file) as f:
+    """Парсит TSV файл с длинами скаффолдов с помощью Pandas."""
+    try:
+        # Читаем TSV, используя первый столбец как индекс (имя скаффолда)
+        df = pd.read_csv(tsv_file, sep='\s+', header=None, names=['CHROM', 'LENGTH'], dtype={'CHROM': str, 'LENGTH': np.int64})
+
+        if df.empty:
+            raise ValueError(f"Файл {tsv_file} не содержит валидных данных.")
+
+        # Преобразуем DataFrame в словарь {scaffold: length}
+        scaffold_lengths = df.set_index('CHROM')['LENGTH'].to_dict()
+        return scaffold_lengths
+
+    except Exception as e:
+        sys.stderr.write(f"Ошибка при чтении TSV с длинами: {e}\n")
+        sys.exit(1)
+
+
+def read_vcf_data(vcf_file, exclude_set):
+    """
+    Читает VCF файл (только данные, без заголовка) в Pandas DataFrame.
+    Сразу фильтрует по exclude_set.
+    """
+    header_lines = 0
+
+    # 1. Находим, где заканчивается заголовок VCF
+    with open_file(vcf_file) as f:
         for line in f:
-            parts = line.split()
-            chrom, length = parts[0], int(parts[1])
-            scaffold_lengths[chrom] = length
-    return scaffold_lengths
-
-
-def run_with_bed(vcf_file, bed_file, threshold, exclude_set):
-    """Логика для режима VCF + BED."""
-    valid_windows = defaultdict(list)
-    kb_divisor = None
-
-    # 1. Читаем BED, фильтруем окна по --exclude и --filter_threshold
-    with open_file(bed_file) as f_bed:
-        for line in f_bed:
-            parts = line.split()
-
-            chrom = parts[0]
-            if chrom in exclude_set or float(parts[3]) > threshold:
-                continue
-
-            start, end = int(parts[1]), int(parts[2])
-            valid_windows[chrom].append([start, end, 0])
-
-            if kb_divisor is None:
-                kb_divisor = (end - start) / 1000.0
-
-    # 2. Читаем VCF и считаем SNP
-    total_snp_count = 0
-    with open_file(vcf_file) as f_vcf:
-        for line in f_vcf:
             if line.startswith("#"):
-                continue
+                header_lines += 1
+            else:
+                break
 
-            parts = line.split()
-            chrom = parts[0]
+    # 2. Читаем данные VCF
+    try:
+        df_vcf = pd.read_csv(
+            vcf_file,
+            sep='\t',
+            skiprows=header_lines - 1, # Пропускаем строки заголовка, кроме последней (#CHROM...)
+            header=0,
+            usecols=[0, 1], # Интересуют только CHROM и POS
+            names=['CHROM', 'POS'],
+            dtype={'CHROM': str, 'POS': np.int32}
+        )
+        # Отсчет позиции делаем 0-based
+        df_vcf['POS_0BASED'] = df_vcf['POS'] - 1
 
-            if chrom in exclude_set:
-                continue
+        # 3. Фильтрация по exclude_set
+        total_snps_before_exclude = len(df_vcf)
+        if exclude_set:
+             df_vcf = df_vcf[~df_vcf['CHROM'].isin(exclude_set)]
 
-            total_snp_count += 1
-            pos_0based = int(parts[1]) - 1
+        return df_vcf, total_snps_before_exclude
 
-            if chrom in valid_windows:
-                for window_data in valid_windows[chrom]:
-                    # Интервал [start, end)
-                    if pos_0based >= window_data[0] and pos_0based < window_data[1]:
-                        window_data[2] += 1
+    except Exception as e:
+        sys.stderr.write(f"Ошибка при чтении VCF данных: {e}\n")
+        sys.exit(1)
 
-    # 3. Собираем плотности (SNP/kb)
-    snp_densities = [window[2] / kb_divisor for chrom_list in valid_windows.values() for window in chrom_list]
+# --- Логика анализа ---
 
-    return total_snp_count, snp_densities
+def run_with_bed_pandas(df_vcf, bed_file, threshold, exclude_set):
+    """
+    Логика VCF + BED с использованием Pandas.
+    Это самая быстрая часть.
+    """
+
+    # 1. Читаем и фильтруем BED
+    try:
+        # Читаем только 4 столбца: CHROM, START, END, VALUE
+        df_bed = pd.read_csv(
+            bed_file,
+            sep='\t',
+            comment='#',
+            header=None,
+            usecols=[0, 1, 2, 3],
+            names=['CHROM', 'START', 'END', 'VALUE'],
+            dtype={'CHROM': str, 'START': np.int32, 'END': np.int32, 'VALUE': np.float64}
+        )
+    except Exception as e:
+        sys.stderr.write(f"Ошибка при чтении BED файла: {e}\n")
+        sys.exit(1)
+
+    # Применяем фильтры
+    df_bed = df_bed[~df_bed['CHROM'].isin(exclude_set)]
+    df_bed = df_bed[df_bed['VALUE'] <= threshold]
+
+    if df_bed.empty:
+         return len(df_vcf), []
+
+    # 2. Определение окна и kb_divisor
+    # Берем размер первого валидного окна как kb_divisor
+    window_size = (df_bed['END'].iloc[0] - df_bed['START'].iloc[0])
+    kb_divisor = window_size / 1000.0
+
+    # 3. Присвоение SNP окнам (Spatial Join с Pandas/NumPy)
+
+    # Создаем индекс для быстрого поиска
+    df_bed = df_bed.set_index(['CHROM', 'START', 'END'])
+
+    # Инициализируем счетчики
+    window_counts = pd.Series(0, index=df_bed.index, dtype=np.int32)
+
+    # Перебираем скаффолды, присутствующие в валидных окнах BED
+    for chrom in df_bed.index.get_level_values('CHROM').unique():
+        # Фильтруем SNP по текущему скаффолду
+        snp_subset = df_vcf[df_vcf['CHROM'] == chrom]
+
+        # Фильтруем окна по текущему скаффолду
+        bed_subset = df_bed.xs(chrom, level='CHROM')
+
+        # Основной цикл по окнам (трудно векторизовать без специализированных либ)
+        for idx in bed_subset.index:
+            start, end = idx
+
+            # Векторизованный подсчет SNP, попадающих в текущее окно [start, end)
+            count = ((snp_subset['POS_0BASED'] >= start) & (snp_subset['POS_0BASED'] < end)).sum()
+            window_counts.loc[(chrom, start, end)] = count
+
+    # 4. Расчет плотности
+    snp_densities = (window_counts / kb_divisor).tolist()
+
+    return len(df_vcf), snp_densities
 
 
-def run_vcf_only(vcf_file, scaffold_lengths, exclude_set):
-    """Логика для режима VCF-only (скользящие окна 1Мб/100кб) с учетом длин скаффолдов."""
+def run_vcf_only_pandas(df_vcf, scaffold_lengths, exclude_set):
+    """
+    Логика VCF-only (скользящие окна) с использованием Pandas.
+    """
     window_size = 1000000
     step = 100000
-    kb_divisor = window_size / 1000
+    kb_divisor = window_size / 1000.0
 
-    # 1. Генерируем список ВАЛИДНЫХ окон
-    window_counts = {}
-    valid_scaffolds_for_windowing = set()
+    # 1. Генерируем список ВАЛИДНЫХ окон.
+    window_data = []
 
     for chrom, length in scaffold_lengths.items():
         if chrom in exclude_set or length < window_size:
             continue
 
-        valid_scaffolds_for_windowing.add(chrom)
+        # Создаем окна, которые ПОЛНОСТЬЮ помещаются (векторизованно)
+        starts = np.arange(0, length - window_size + 1, step)
+        ends = starts + window_size
 
-        # Создаем окна, которые ПОЛНОСТЬЮ помещаются на скаффолде.
-        current_start = 0
-        while (current_start + window_size) <= length:
-            window_counts[(chrom, current_start)] = 0
-            current_start += step
+        # Добавляем данные в список
+        for start, end in zip(starts, ends):
+            window_data.append((chrom, start, end))
 
-    # 2. Читаем VCF, считаем Total_SNPs и распределяем по валидным окнам
-    total_snp_count = 0
-    with open_file(vcf_file) as f_vcf:
-        for line in f_vcf:
-            if line.startswith("#"):
-                continue
+    if not window_data:
+        return len(df_vcf), []
 
-            parts = line.split()
-            chrom = parts[0]
+    # Преобразуем в DataFrame окон
+    df_windows = pd.DataFrame(window_data, columns=['CHROM', 'START', 'END'])
+    df_windows['COUNT'] = 0
 
-            if chrom in exclude_set:
-                continue
+    # 2. Подсчет SNP в окнах
 
-            total_snp_count += 1
+    # Инициализируем счетчики (будем использовать их как Series)
+    window_counts = pd.Series(0, index=df_windows.index, dtype=np.int32)
 
-            if chrom not in valid_scaffolds_for_windowing:
-                continue
+    # Группируем SNP по скаффолдам
+    grouped_vcf = df_vcf.groupby('CHROM')
 
-            pos_0based = int(parts[1]) - 1
+    # Итерация по скаффолдам, где были сгенерированы окна
+    for chrom in df_windows['CHROM'].unique():
 
-            # Определяем, в какие перекрывающиеся окна попадает SNP
-            s_max = (pos_0based // step) * step
-            s_min_limit = pos_0based - window_size + 1
+        try:
+            snp_subset = grouped_vcf.get_group(chrom)
+        except KeyError:
+            # Если скаффолд есть в --scaffolds, но нет SNP в VCF, пропускаем
+            continue
 
-            current_s = s_max
-            while current_s >= 0 and current_s >= s_min_limit:
-                key = (chrom, current_s)
-                # Увеличиваем счетчик, только если окно является "валидным" (полностью влезает в скаффолд)
-                if key in window_counts:
-                    window_counts[key] += 1
-                current_s -= step
+        # Фильтруем окна для текущего скаффолда
+        window_subset = df_windows[df_windows['CHROM'] == chrom]
 
-    # 3. Собираем плотности (SNP/kb)
-    snp_densities = [count / kb_divisor for count in window_counts.values()]
+        # --- Векторизованная логика подсчета перекрытий ---
+        # В этом режиме одна SNP может попасть в 10 окон (1Мб/100кб),
+        # поэтому нам нужно найти все перекрытия.
 
-    return total_snp_count, snp_densities
+        for index, row in window_subset.iterrows():
+            start = row['START']
+            end = row['END']
+
+            # Векторизованный подсчет SNP, попадающих в текущее окно [start, end)
+            count = ((snp_subset['POS_0BASED'] >= start) & (snp_subset['POS_0BASED'] < end)).sum()
+            window_counts.loc[index] = count
+
+    # 3. Расчет плотности
+    snp_densities = (window_counts / kb_divisor).tolist()
+
+    return len(df_vcf), snp_densities
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Анализ плотности SNP.")
-    parser.add_argument("-i", "--vcf", required=True, help="path to VCF file")
-    parser.add_argument("-l", "--scaffold_length_file", required=True, help=".len file")
-    parser.add_argument("-b", "--bed", required=False, default=None, help="path to BED counts file")
-    parser.add_argument("-t", "--filter_threshold", type=float, default=None, help="threshold for filtering")
-    parser.add_argument("--exclude", required=False, nargs='+', help="list of scaffolds/chromosomes to exclude")
+    parser = argparse.ArgumentParser(description="Анализ плотности SNP с использованием Pandas.")
+    parser.add_argument("--vcf", required=True, help="Путь к VCF файлу.")
+    parser.add_argument("--scaffolds", required=True,
+                        help="Путь к TSV файлу с длинами скаффолдов (scaffold_name\\tlength).")
+    parser.add_argument("--bed", required=False, default=None,
+                        help="(Опционально) Путь к BED файлу с окнами. Если не указан, используется режим скользящих окон (1Мб/100кб).")
+    parser.add_argument("--filter_threshold", type=float, default=75000.0, help="Порог для 4-го столбца BED (игнорируется в VCF-only).")
+    parser.add_argument("--exclude", required=False, nargs='+', help="Список скаффолдов/хромосом для исключения.")
 
     args = parser.parse_args()
     exclude_set = set(args.exclude) if args.exclude else set()
@@ -148,15 +228,24 @@ def main():
     densities = []
 
     try:
-        # Считывание длин скаффолдов обязательно
-        scaffold_lengths = parse_scaffold_lengths_tsv(args.scaffold_length_file)
+        # 1. Чтение длин скаффолдов
+        scaffold_lengths = parse_scaffold_lengths_tsv(args.scaffolds)
+
+        # 2. Чтение и предварительная фильтрация VCF
+        df_vcf, total_snps_with_exclude = read_vcf_data(args.vcf, exclude_set)
+
+        # total_snps_final - это количество SNP, которые не попали в --exclude
+        total_snps_final = len(df_vcf)
+
+        if total_snps_final == 0:
+            sys.stderr.write("Предупреждение: После фильтрации --exclude не осталось SNP для анализа.\n")
 
         if args.bed:
-            total_snps, densities = run_with_bed(
-                args.vcf, args.bed, args.filter_threshold, exclude_set
+            total_snps, densities = run_with_bed_pandas(
+                df_vcf, args.bed, args.filter_threshold, exclude_set
             )
         else:
-            total_snps, densities = run_vcf_only(args.vcf, scaffold_lengths, exclude_set)
+            total_snps, densities = run_vcf_only_pandas(df_vcf, scaffold_lengths, exclude_set)
 
         if densities:
             mean_density = statistics.mean(densities)
@@ -166,7 +255,7 @@ def main():
             median_density = 0.0
 
         # Формат вывода: Total_SNPs Mean_Density Median_Density
-        print(f"{total_snps}\t{mean_density:.4f}\t{median_density:.4f}")
+        print(f"{total_snps_final}\t{mean_density:.4f}\t{median_density:.4f}")
 
     except Exception as e:
         sys.stderr.write(f"Критическая ошибка: {e}\n")
