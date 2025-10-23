@@ -14,18 +14,14 @@ def main():
 
         df[sample] = df[sample] / args.window_size * args.multiplicator
 
-        maxim = df[sample].max()
-        minim = df[sample].min()
         mean = df[sample].mean()
         median = df[sample].median()
-        mode = df[sample].mode()[0]
 
-        # print("sample\tmax\tmin\tmean\tmedian\tmode")
-        print(f'{sample}\t{maxim:.2f}\t{minim:.2f}\t{mean:.2f}\t{median:.2f}\t{mode:.2f}')
+        print(f'{sample}\t{mean:.2f}\t{median:.2f}')
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='script to calculate max, min, mean, median and mode based .variant_counts.tsv (SNPs/1kbp)')
+    parser = ArgumentParser(description='script to calculate mean and median based .variant_counts.tsv (SNPs/1kbp)')
     group_required = parser.add_argument_group('Required options')
     group_required.add_argument('-i', '--input', type=str, nargs='+', help='MACE BED file')
     group_required.add_argument('-w', '--window_size', type=int, help='Window size', default=1000000)
