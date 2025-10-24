@@ -159,7 +159,7 @@ def main():
                         help="Sliding window size in bp. (Default: 1000000)")
     parser.add_argument("-s", "--step_size", type=int, default=100000,
                         help="Sliding window step size in bp. (Default: 100000)")
-    parser.add_argument("--exclude", required=False, nargs='+', help="List of scaffolds/chromosomes to exclude.")
+    parser.add_argument("-e", "--exclude", required=False, nargs='+', help="List of scaffolds/chromosomes to exclude.")
 
     args = parser.parse_args()
     exclude_set = set(args.exclude) if args.exclude else set()
