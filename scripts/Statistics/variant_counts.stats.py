@@ -190,7 +190,7 @@ def main():
             median_density = np_median(densities)
 
         # Total_SNPs Mean_Density Median_Density
-        print(f"{total_snps_final}\t{mean_density:.4f}\t{median_density:.4f}")
+        print(f"{total_snps_final}\t{mean_density:.2f}\t{median_density:.2f}")
 
     except Exception as e:
         sys.stderr.write(f"Critical error: {e}\n")
