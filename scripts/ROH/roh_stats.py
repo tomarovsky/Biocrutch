@@ -56,7 +56,7 @@ def analyze_roh(input_file: str, genome_length: int, exclude_chr: str = None):
 
     # Формирование списка результатов
     result_metrics = [
-        Number_of_ROHs, Total_length, Percent_of_ROHs,
+        Number_of_ROHs, Total_length / 1000000, Percent_of_ROHs,
         Number_of_S_ROH, Percent_of_S_ROH,
         Number_of_L_ROH, Percent_of_L_ROH,
         Number_of_UL_ROH, Percent_of_UL_ROH
