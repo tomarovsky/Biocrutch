@@ -75,14 +75,14 @@ def analyze_roh(input_file: str, genome_length: int, exclude_chr: str = None):
     # Форматирование значений
     output_values = [
         f"{result_metrics[0]:d}",        # Number_of_ROHs (целое)
-        f"{result_metrics[1]:.0f}",      # Total_length (целое, без десятичных)
-        f"{result_metrics[2]:.2f}",      # Percent_of_ROHs (6 знаков после запятой)
+        f"{result_metrics[1]:.2f}",      # Total_length (2 знаков после запятой)
+        f"{result_metrics[2]:.2f}",      # Percent_of_ROHs (2 знаков после запятой)
         f"{result_metrics[3]:d}",        # Number_of_S_ROH (целое)
-        f"{result_metrics[4]:.2f}",      # Percent_of_S_ROH (6 знаков после запятой)
+        f"{result_metrics[4]:.2f}",      # Percent_of_S_ROH (2 знаков после запятой)
         f"{result_metrics[5]:d}",        # Number_of_L_ROH (целое)
-        f"{result_metrics[6]:.2f}",      # Percent_of_L_ROH (6 знаков после запятой)
+        f"{result_metrics[6]:.2f}",      # Percent_of_L_ROH (2 знаков после запятой)
         f"{result_metrics[7]:d}",        # Number_of_UL_ROH (целое)
-        f"{result_metrics[8]:.2f}"       # Percent_of_UL_ROH (6 знаков после запятой)
+        f"{result_metrics[8]:.2f}"       # Percent_of_UL_ROH (2 знаков после запятой)
     ]
 
     # Вывод заголовка и данных
