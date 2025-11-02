@@ -6,8 +6,10 @@ import numpy as np
 
 def load_bed(bed_file):
     """Load BED file into a pandas DataFrame and group by scaffold."""
-    bed = pd.read_csv(bed_file, sep='\t', header=None, usecols=[0, 1, 2], names=['scaffold', 'start', 'end'])
-    return bed.groupby('scaffold').apply(lambda x: list(x[['start','end']].itertuples(index=False, name=None))).to_dict()
+    bed = pd.read_csv(bed_file, sep='\t', header=None, usecols=[0, 1, 2],
+                     names=['scaffold', 'start', 'end'])
+    return {scaffold: list(zip(group['start'], group['end']))
+            for scaffold, group in bed.groupby('scaffold')}
 
 def parse_consensus_fastq(handle):
     """Generator: yields (header, seq, qual)."""
