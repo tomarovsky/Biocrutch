@@ -3,6 +3,7 @@ __author__ = 'tomarovsky'
 
 import sys
 import gzip
+import textwrap
 
 def fasta_parser(filename):
     header = None
@@ -34,6 +35,8 @@ def mask_quality(masked_fasta_file, original_qual_file, output_qual_file):
     seq_gen = fasta_parser(masked_fasta_file)
     qual_gen = fasta_parser(original_qual_file)
 
+    wrapper = textwrap.TextWrapper(width=60, break_long_words=True, replace_whitespace=False) # <-- Инициализируем wrapper
+
     try:
         with gzip.open(output_qual_file, 'wt') as q_out:
             for (seq_header, masked_seq), (qual_header, original_qual) in zip(seq_gen, qual_gen):
@@ -53,11 +56,13 @@ def mask_quality(masked_fasta_file, original_qual_file, output_qual_file):
                 masked_qual = "".join(masked_qual_list)
 
                 q_out.write(f">{qual_header}\n")
-                q_out.write(masked_qual + "\n")
+                if masked_qual:
+                    q_out.write("\n".join(wrapper.wrap(masked_qual)) + "\n")
 
     except Exception as e:
         print(f"Error writing QUAL: {e}", file=sys.stderr)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:

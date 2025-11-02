@@ -3,12 +3,15 @@ __author__ = 'tomarovsky'
 
 import sys
 import gzip
+import textwrap
 
 def split_consensus_fastq(fastq_gz_path, fasta_path, qual_path):
     state = None # 'seq' or 'qual'
     current_header = None
     current_seq = []
     current_qual = []
+
+    wrapper = textwrap.TextWrapper(width=60, break_long_words=True, replace_whitespace=False)
 
     try:
         if fastq_gz_path.endswith('.gz'):
@@ -23,10 +26,16 @@ def split_consensus_fastq(fastq_gz_path, fasta_path, qual_path):
             def write_record():
                 if current_header:
                     clean_header = current_header.split()[0]
+
+                    full_seq = "".join(current_seq)
                     f_out.write(f">{clean_header}\n")
-                    f_out.write("".join(current_seq) + "\n")
+                    if full_seq:
+                        f_out.write("\n".join(wrapper.wrap(full_seq)) + "\n")
+
+                    full_qual = "".join(current_qual)
                     q_out.write(f">{clean_header}\n")
-                    q_out.write("".join(current_qual) + "\n")
+                    if full_qual:
+                        q_out.write("\n".join(wrapper.wrap(full_qual)) + "\n")
 
             for line in f_in:
                 line = line.strip()
