@@ -46,10 +46,10 @@ def mask_with_numpy(seq, qual, regions):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Fast masking of consensus FASTQ using BED file")
-    parser.add_argument("-i", "--fastq", required=True, help="Input consensus FASTQ (.gz allowed)")
+    parser = argparse.ArgumentParser(description="Masking of consensus FASTQ")
+    parser.add_argument("-i", "--fastq", required=True, help="Input consensus FQ.gz")
     parser.add_argument("-m", "--bed", required=True, help="BED file with regions to mask")
-    parser.add_argument("-o", "--output", required=True, help="Output masked consensus FASTQ (.gz allowed)")
+    parser.add_argument("-o", "--output", required=True, help="Output masked consensus FQ.gz")
     args = parser.parse_args()
 
     bed_dict = load_bed(args.bed)
