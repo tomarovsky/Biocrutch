@@ -4,10 +4,6 @@ import gzip
 import pandas as pd
 import numpy as np
 
-def wrap_string(s, width=60):
-    """Wraps a string into lines of specified width."""
-    return '\n'.join(s[i:i+width] for i in range(0, len(s), width))
-
 def load_bed(bed_file):
     """Load BED file into a pandas DataFrame and group by scaffold."""
     bed = pd.read_csv(bed_file, sep='\t', header=None, usecols=[0, 1, 2],
@@ -41,20 +37,14 @@ def parse_consensus_fastq(handle):
 
 def mask_with_numpy(seq, qual, regions):
     """Fast masking of consensus FASTQ using NumPy"""
-    seq_ba = bytearray(seq.encode('ascii'))
-    qual_ba = bytearray(qual.encode('ascii'))
+    seq_arr = np.frombuffer(seq.encode('ascii'), dtype='S1').copy()
+    qual_arr = np.frombuffer(qual.encode('ascii'), dtype='S1').copy()
 
-    seq_arr = np.frombuffer(seq_ba, dtype='S1')
-    qual_arr = np.frombuffer(qual_ba, dtype='S1')
-
-    mask = np.zeros(len(seq_arr), dtype=bool)
     for start, end in regions:
-        mask[start:end] = True
+        seq_arr[start:end] = b'n'
+        qual_arr[start:end] = b'!'
 
-    seq_arr[mask] = b'n'
-    qual_arr[mask] = b'!'
-
-    return seq_ba.decode('ascii'), qual_ba.decode('ascii')
+    return seq_arr.tobytes().decode('ascii'), qual_arr.tobytes().decode('ascii')
 
 
 def main():
@@ -73,11 +63,12 @@ def main():
         for header, seq, qual in parse_consensus_fastq(fin):
             if header in bed_dict:
                 seq, qual = mask_with_numpy(seq, qual, bed_dict[header])
-
             fout.write(f"@{header}\n")
-            fout.write(wrap_string(seq, 60) + '\n')
+            for i in range(0, len(seq), 60):
+                fout.write(seq[i:i+60] + '\n')
             fout.write("+\n")
-            fout.write(wrap_string(qual, 60) + '\n')
+            for i in range(0, len(qual), 60):
+                fout.write(qual[i:i+60] + '\n')
 
 if __name__ == "__main__":
     main()
