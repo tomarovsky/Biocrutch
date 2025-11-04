@@ -10,6 +10,8 @@ def remove_fq_block_by_id(input_file, output_file, remove_id):
             if not header:
                 break
             header = header.rstrip()
+            if not header.startswith("@"):
+                raise ValueError(f"Unexpected consensus FQ format: header does not start with '@': {header}")
             # read sequence
             seq_lines = []
             while True:
