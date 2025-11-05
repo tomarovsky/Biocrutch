@@ -12,27 +12,37 @@ def load_bed(bed_file):
             for scaffold, group in bed.groupby('scaffold')}
 
 def parse_consensus_fastq(handle):
-    """Generator: yields (header, seq, qual)."""
-    header, seq_lines, qual_lines = None, [], []
-    reading_seq, reading_qual = False, False
+    """
+    Generator: yields (header, seq_lines, qual_lines)
+    Assumes that for each scaffold:
+        header line -> sequence lines -> '+' line -> quality lines
+        number of sequence lines == number of quality lines
+    """
+    while True:
+        header_line = handle.readline()
+        if not header_line:
+            break
+        header = header_line.rstrip()[1:]  # remove '@'
 
-    for line in handle:
-        line = line.rstrip('\n')
-        if line.startswith('@'):
-            if header:
-                yield header, ''.join(seq_lines), ''.join(qual_lines)
-            header = line[1:].strip()
-            seq_lines, qual_lines = [], []
-            reading_seq, reading_qual = True, False
-        elif line.startswith('+'):
-            reading_seq, reading_qual = False, True
-        else:
-            if reading_seq:
-                seq_lines.append(line)
-            elif reading_qual:
-                qual_lines.append(line)
+        # read sequence lines until '+'
+        seq_lines = []
+        while True:
+            line = handle.readline()
+            if not line:
+                raise ValueError(f"Unexpected end of file while reading sequence for {header}")
+            line = line.rstrip()
+            if line.startswith('+'):
+                break
+            seq_lines.append(line)
 
-    if header:
+        # read same number of quality lines as sequence lines
+        qual_lines = []
+        for _ in seq_lines:
+            qline = handle.readline()
+            if not qline:
+                raise ValueError(f"Unexpected end of file while reading quality for {header}")
+            qual_lines.append(qline.rstrip())
+
         yield header, ''.join(seq_lines), ''.join(qual_lines)
 
 def mask_with_numpy(seq, qual, regions):
@@ -45,7 +55,6 @@ def mask_with_numpy(seq, qual, regions):
         qual_arr[start:end] = b'!'
 
     return seq_arr.tobytes().decode('ascii'), qual_arr.tobytes().decode('ascii')
-
 
 def main():
     parser = argparse.ArgumentParser(description="Masking of consensus FASTQ")
